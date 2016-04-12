@@ -1,0 +1,4 @@
+- Presentation av gruppens medlemmar
+- Gruppkontrakt
+- Projektdagböcker
+- Reflektioner på gruppens arbete
