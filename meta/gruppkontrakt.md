@@ -1,6 +1,6 @@
 # Gruppkontrakt
 
-OSPP (1DT096) 2015 - Grupp XX
+OSPP (1DT096) 2016 - Grupp XX
 
 > Ändra XX till numret på gruppen.
 
