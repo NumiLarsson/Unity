@@ -7,22 +7,14 @@ import (
 	"time"
 )
 func main() {
-	ln, err := net.Listen("tcp", ":9000")
+	addrs, err := net.Listen("tcp", ":9000")
 	if (err != nil){
 		panic(err)
 	}
-	defer ln.Close()
 
-	for {
-		conn, err := ln.Accept()
-		if err != nil {
-			panic(err)
-		}
+	io.Copy(conn, conn)
 
-		io.WriteString(conn, fmt.Sprint("Hello World\n", time.Now(), "\n"))
-		
-		conn.Close()
-	}
+	conn.Close()
 }
 
 func say(print_this string, sync_channel chan bool){
