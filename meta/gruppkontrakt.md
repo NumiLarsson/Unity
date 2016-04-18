@@ -32,7 +32,7 @@ Vi ämnar att komma överrens genom majoritetsbeslut vid möten med föreliggand
 
 
 ## Arbetsinsats
-Exempel på olika former av arbetsinsatser:
+**Exempel på olika former av arbetsinsatser:**
 - Programmering
 - Planering
 - Testning
@@ -44,13 +44,6 @@ Kraven vi ställer på varandra är att insatserna sker inom rimlig tid och med 
 
 
 ## Ansvar
-
-Exempel på innehåll:
-
-- Hur ska arbetet fördelas i gruppen?
-- Hur ska gruppen hantera om någon inte gör sin del av arbetet?
-- Hur mycket arbete ska göras mellan möten?
-
 Under våra gruppmöten så kommer vi att dela upp arbetet så mycket som möjligt. För att ge alla medlemmar i gruppen en bra översyn på projektet så ska vi låta medlemmar byta arbetsuppgifter under projektets gång. Om någon inte sköter sig och inte gör sitt jobb får gruppen diskutera med personen i frågan och se över anledningarna. Tillräckligt med tid mellan mötena ska läggas för att kunna åstadkomma uppgiften enligt överrenskommelse.
  
 
