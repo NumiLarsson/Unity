@@ -100,11 +100,7 @@ Bra ölhävararm.
   Jag vill få erfarenhet av att göra ett projekt från grunden till färdig produkt och försöka lära mig av alla delarna av projektet. Vill speciellt lära mig att planera, designa och göra specifikationen för ett system.
 
 
---------
-
-> Utgå sedan från mallen nedan och skapa ett avsnitt för varje medlem
-i gruppen sorterade i bokstavsordning  <a name="anders877"></a>
-
+<a name="anders877"></a>
 ## Anton Larsson
 
 
