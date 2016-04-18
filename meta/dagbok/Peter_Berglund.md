@@ -4,10 +4,6 @@ OSPP (1DT096) 2016 - Grupp 08
 
 <img src="../images/user.png" width="200">
 
-
-Gör en kort anteckning i dagboken under aktuell vecka och dag nedan
-varje gång du arbetat på projektet.
-
 ## Vecka 15
 
 ##### Måndag
