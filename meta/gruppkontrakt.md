@@ -28,8 +28,6 @@ Dessa roller bör roteras, förmodligen på veckobasis, så att alla får en bra
 
 
 ## Beslutsformer
-Hur ska gruppen komma överens om vad som ska göras?
-
 Vi ämnar att komma överrens genom majoritetsbeslut vid möten med föreliggande diskussion. Dessutom tänker vi skapa en detaljerad projektplan och produktspecifikation första veckan för att undvika tveksamheter. Skulle vi vara helt låsta kan det vara relevant att få input från extern part för att vikta förslagen.
 
 
@@ -53,34 +51,27 @@ Exempel på innehåll:
 - Hur ska gruppen hantera om någon inte gör sin del av arbetet?
 - Hur mycket arbete ska göras mellan möten?
 
-## Konflikter
+Under våra gruppmöten så kommer vi att dela upp arbetet så mycket som möjligt. För att ge alla medlemmar i gruppen en bra översyn på projektet så ska vi låta medlemmar byta arbetsuppgifter under projektets gång. Om någon inte sköter sig och inte gör sitt jobb får gruppen diskutera med personen i frågan och se över anledningarna. Tillräckligt med tid mellan mötena ska läggas för att kunna åstadkomma uppgiften enligt överrenskommelse.
+ 
 
-Hur skall man gå tillväga om det uppstår konflikter?
+## Konflikter
+Hela gruppen får träffas och fredligt diskutera för att försöka komma fram till en kompromiss. 
+
 
 ## Brott mot bestämmelserna i gruppkontraktet
+Kontakt och diskussion med personen, hjälp om det behövs. Eventuellt kontakt med kursansvarige (Karl) om *"brottet"* bedöms någorlunda grovt.
 
-Var och en berättar om hur man vill bli påmind om de överenskomna
-bestämmelserna. Ett sätt är att var och en inför de andra i
-projektgruppen beskriver hur man vill bli påmind om att man har brutit
-mot någon punk i gruppkontraktet. Viktigt för att underlätta för
-projektgruppen att under det kommande arbetet såväl ge som att ta
-kritik.
 
 ## Utskrift och underskrifter
-
-Kontraktet skall skrivas ut på papper, skrivas under
-(namnförtydligande och signatur av samtliga gruppmedlemmar) och lämnas
-in till ansvarig lärare på kursen. Därefter skall kontraktet hållas
-uppdaterat som en del av gruppens repository på Github.
 
 Detta kontrakt har den __________________________  upprättats av:
 
 
 Förnamn | Efternamn | . . . . . . . . . . . Underskrift . . . . . . . . . . .
 --------|-----------|------------
-Anders  | Andersson |
-Britta  | Björk     |
-Cecila  | Carlsson  |
-Daniel  | Dahlqvist |
-Erik    | Eklund    |
-Fanny   | Forsberg  |
+Marcus  | Andersson |
+Peter   | Berglund  |
+Hampus  | Falk      |
+Karl    | Johansson |
+Anton   | Larsson   |
+Axel    | Poromaa   |
