@@ -63,8 +63,7 @@ Jag anser själv att jag är relativ samarbetsvillig och kommer att göra mitt y
 Under projektet vill jag utvecklas i allt som har med programutveckling att göra. Från att bli bättre på planering till att skriva kod. Jag tror att om man lär sig att planera bra från början så har man goda förutsättningar för att få till ett bra projekt. 
 
 -------------
-> Utgå sedan från mallen nedan och skapa ett avsnitt för varje medlem
-i gruppen sorterade i bokstavsordning  <a name="anders877"></a>
+
 
 ## Hampus Falk
 
