@@ -1,57 +1,15 @@
 # Gruppkontrakt
 
-OSPP (1DT096) 2016 - Grupp XX
+OSPP (1DT096) 2016 - Grupp 08
 
-> Ändra XX till numret på gruppen.
-
-Det huvudsakliga syftet med att upprätta ett gruppkontrakt är att alla
-i gruppen ska vara överens om mål och arbetssätt för det fortsatta
-arbetet. Utarbetandet av ett gruppkontrakt leder till diskussion och
-reflektion kring frågor som är viktiga för gruppens arbete och
-trivsel. Vid utformandet av gruppkontraktet är det viktigt att alla i
-gruppen deltar aktivt och att hänsyn tas till alla gruppmedlemmars
-synpunkter och önskemål.
-
-Ett gruppkontrakt ska vara underskrivet av samtliga
-projektmedlemmar. Följande områden kan vara del av vad man kommer
-överens om i gruppkontraktet:
-
-- Målsättning och förväntningar på gruppdeltagarna.
-- Arbetsformer och arbetsfördelning.
-- Normer i projektgruppen – överenskommelse om goda gruppegenskaper.
-- Brott mot reglerna i gruppkontraktet.
-- Allmänna förutsättningar.
-
-Denna mall för gruppkontrakt är baserat på:
-
-- http://www.cemus.uu.se/dokument/hub2010/Gruppkontrakt.pdf
-
-> Kontraktet är skrivet i formatet Markdown, läs mer här:
-- https://help.github.com/articles/markdown-basics/
-
-> Gruppen skall tillsammans utgå från denna mall (ändra, ta bort eller
-> lägga till text och rubriker) för att komma fram till ett
-> gruppkontrakt som alla i gruppen är nöjda med.
 
 ## Rutiner
-
-Exempel på innehåll:
-
-- Skall gruppen i huvudsak sitta och arbeta tillsammans eller endast
-  träffas för kortare möten?
-- Hur ofta ska gruppen träffas?
-- Hur långa ska mötena vara?
-- När på dagen ska mötena läggas?
-- Vilka godtagbara skäl finns för frånvaro på möten?
+Vi har tänkt att i huvudsak arbeta tillsammans. Speciellt i början när grunderna är oklara och det är extra viktigt att alla är med på noterna. Mötena bör ske minst tre gånger i veckan med efterföljande gemensamt arbete. Dess möten planeras en vecka i förtid med hänsyn av schemat. Möteslängden beror på innehållet men vår ambition är att dessa börjar senast 10:00. Frånvaro ifrån dessa är endast tillåten i samband med dödsfall, sjukdom, skolrelaterade skäl (lektioner, tentor osv) och andra händelser som gruppen anser godtagbara.
 
 
 ## Kommunikationen i gruppen
+Kommunikationen sker framförallt via Slack, framförallt den formella informationen. Mer informell info kan skötas via Facebook. Frånvaro från ett möte får diskuteras i gruppen och gemensamt bedöma om anledning till frånvaron är godtagbar inklusive eventuella påföljder. Samordning och planering sker primärt med hjälp av Trello, men också i Slack och Facebook.
 
-Exempel på innehåll:
-
-- Hur ska gruppen kommunicera mellan möten?
-- Hur ska gruppen agera om någon inte kommer på ett möte?
-- Hur ska samordning och rapportering ske inom projektgruppen?
 
 ## Frånvaro
 
