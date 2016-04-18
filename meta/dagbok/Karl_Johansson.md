@@ -25,8 +25,8 @@ varje gång du arbetat på projektet.
 
 ## Vecka 16
 
-##### Måndag
-
+##### Måndag 
+Gruppkontrakt 12:00-13:15 , Påbörja admin på github(medlemmar.md etc) 13:45-16:15
 ##### Tisdag
 
 ##### Onsdag
