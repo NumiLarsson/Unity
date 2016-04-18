@@ -12,41 +12,38 @@ Kommunikationen sker framförallt via Slack, framförallt den formella informati
 
 
 ## Frånvaro
+Eventuell frånvaro anmäls via Slack och Facebook, innan gruppen träffas. Vid upprepad ogiltig frånvaro tas kontakt med kursansvarig (Karl). Frånvarande leder till minskat inflytande i besluten som tas just då. Frånvaron kan kompenseras om det bedöms relevant. Upprepade förseningar leder till att man måste bjuda på enklare fika!
 
-Exempel på innehåll:
-
-- Hur och när skall frånvaro meddelas?
-- Hur skall man göra om någon varit frånvarande?
-- Skall frånvaro kompenseras genom annan arbetsinsats eller gäller det
-  bara viss typ av frånvaro?
 
 ## Roller
+Vi har identifierat följande roller som **kan** behövas under hela eller delar av projektet:
+- Projektledare
+- Back-end ansvarig
+- Front-end ansvarig
+- Testansvarig
+- Integrationsansvarig
+- Verktygsansvarig
 
-Exempel på innehåll:
+Dessa roller bör roteras, förmodligen på veckobasis, så att alla får en bra översyn av projektet.
 
-- Ska varje person i gruppen ha en formell roll?
-- Ska ni växla formella roller vid varje möte?
-- Vilka roller behövs:
-  - Projektledare?
-  - Sekreterare?
-  - Dokumentansvarig?
 
 ## Beslutsformer
+Hur ska gruppen komma överens om vad som ska göras?
 
-Exempel på innehåll:
-- Hur ska gruppen komma överens om vad som ska göras?
-- Ska majoritetsbeslut gälla eller ska gruppen genom diskussion
-  försöka få alla att vara överens om beslutet?
-- Hur ska ni gör ifall ni är oeniga?
+Vi ämnar att komma överrens genom majoritetsbeslut vid möten med föreliggande diskussion. Dessutom tänker vi skapa en detaljerad projektplan och produktspecifikation första veckan för att undvika tveksamheter. Skulle vi vara helt låsta kan det vara relevant att få input från extern part för att vikta förslagen.
+
 
 ## Arbetsinsats
+Exempel på olika former av arbetsinsatser:
+- Programmering
+- Planering
+- Testning
+- Dokumentering
+- Rapportskrivning
+- Administration
 
-För att undvika en del missförstånd och irritation kan det vara bra
-att redan från början göra klart för varandra vilka olika typer av
-arbetsinsatser som kan förekomma.  Exempel på innehåll:
+Kraven vi ställer på varandra är att insatserna sker inom rimlig tid och med överrenskommen utkomst och kvalité. Varje gruppmedlem förväntas också spendera ungefär 20-25 timmar i veckan på projektet.
 
-- Exempel på olika former av arbetsinsatser.
-- Vilka krav kan man ställa på varandra?
 
 ## Ansvar
 
