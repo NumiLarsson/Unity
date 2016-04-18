@@ -62,6 +62,8 @@ Jag anser själv att jag är relativ samarbetsvillig och kommer att göra mitt y
 
 Under projektet vill jag utvecklas i allt som har med programutveckling att göra. Från att bli bättre på planering till att skriva kod. Jag tror att om man lär sig att planera bra från början så har man goda förutsättningar för att få till ett bra projekt. 
 
+Jag ska lära mig att forka på git/github
+
 -------------
 
 
