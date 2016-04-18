@@ -16,7 +16,7 @@ Bild                                       | Förnamn               | Efternamn 
 -------------------------------------------|-----------------------|-----------|--------------|----------------------
 <img src="images/marcus.png" width="100px">  | [Marcus](#anderssonma)  | Andersson | 910202-4735  | `anderssonma`
 <img src="images/user.png" width="100px">  | [Peter](#anders877)  | Berlund | 900927-0191  | `anders877`
-<img src="images/user.png" width="100px">  | [Hampus](#anders877)  | Falk | 930217-1898  | `anders877`
+<img src="images/hampus.jpg" width="100px">  | [Hampus](#hafa8286)  | Falk | 930217-1898  | `kokapelli`
 <img src="images/user.png" width="100px">  | [Karl](#karljohansson86)  | Johansson | 860728-0099  | `karljohansson86`
 <img src="images/user.png" width="100px">  | [Anton](#anders877)  | Larsson | 931119-6456  | `anders877`
 <img src="images/user.png" width="100px">  | [Axel](#anders877)  | Poromaa | 931218-1754  | `anders877`
@@ -72,43 +72,16 @@ Jag ska lära mig att forka på git/github
 
 ### Okänd talang
 
-> Beskriv kortfattad något du gillar att göra vid sidan av dina
-> studier.
+Blir inte berusad av snaps, dock av allt annat... Väldigt enkelt
 
 ### Starka sidor
 
-> Kortfattad beskrivning över områden där du tror du har lättast att
-> bidra till projektet, till exempel:
+Är en person som egentligen inte bör handskas med matematik. Skrift, research och planering är mina starka sidor. Kodskrivande tenderar att vara enkel då en specifik och komplett specifikation finns färdig.
 
-- analys/design/specifikation
-- problemlösning och algoritmer
-- skriva kod utifrån färdig specifikation
-- planering
-- samarbete
-- ledarskap
-- research (söka och sammanställa information)
-- dokumentation
-- rapportskrivande
-- muntlig presentation
-- lägg gärna till flera punkter ...
 
 ### Personlig utveckling
 
-> Under projektet hoppas jag förutom att bli ännu bättre på mina redan
-> starka sidor även ges möjlighet att utveckla följande färdigheter,
-> till exempel:
-
-- analys/design/specifikation
-- problemlösning och algoritmer
-- skriva kod utifrån färdig specifikation
-- planering
-- samarbete
-- ledarskap
-- research (söka och sammanställa information)
-- dokumentation
-- rapportskrivande
-- muntlig presentation
-- lägg gärna till flera punkter ...
+Av projektet hoppas jag att lära mig de ting som de facto används inom arbetslivet. Programmet har tills nu enbart hanterat grundläggande information och jag ser fram emot att ta nästa steg. Jag hoppas lära mig en hel del om nätverksprogrammering samt möjligheten att kombinera flera programmeringsspråk för att uppnå en mer komplett slutprodukt.
 
 
 ------
