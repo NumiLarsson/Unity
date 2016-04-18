@@ -1,6 +1,6 @@
-# Dagbok för Förnamn Efternamn
+# Dagbok för Peter Berglund
 
-OSPP (1DT096) 2016 - Grupp XX
+OSPP (1DT096) 2016 - Grupp 08
 
 > Ändra XX till numret på din grupp.
 
