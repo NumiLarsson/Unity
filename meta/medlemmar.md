@@ -41,8 +41,7 @@ Bild                                       | Förnamn               | Efternamn 
 
 
 ------------------
-> Utgå sedan från mallen nedan och skapa ett avsnitt för varje medlem
-i gruppen sorterade i bokstavsordning  <a name="anders877"></a>
+
 
 ## Peter Berglund
 
@@ -54,8 +53,7 @@ Pratar flytande rövarspråk.
 ### Starka sidor
 
 
-> Kortfattad beskrivning över områden där du tror du har lättast att
-> bidra till projektet, till exempel:
+
 
 Jag anser själv att jag är relativ samarbetsvillig och kommer att göra mitt yttersta för att genomföra ett så bra projekt som möjligt. När jag väl förstått vad jag ska göra i ett programmeringsprojekt så tror jag att jag kan bidra rätt så bra med att producera kod.
 
