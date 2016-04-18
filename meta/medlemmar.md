@@ -83,48 +83,22 @@ Blir inte berusad av snaps, dock av allt annat... Väldigt enkelt
 
 Av projektet hoppas jag att lära mig de ting som de facto används inom arbetslivet. Programmet har tills nu enbart hanterat grundläggande information och jag ser fram emot att ta nästa steg. Jag hoppas lära mig en hel del om nätverksprogrammering samt möjligheten att kombinera flera programmeringsspråk för att uppnå en mer komplett slutprodukt.
 
-
+<a name="karljohansson86"></a>
 ## Karl Johansson
 
 
 ### Okänd talang
   
-  Bra ölhävararm.
+Bra ölhävararm.
 
 ### Starka sidor
 
-> Kortfattad beskrivning över områden där du tror du har lättast att
-> bidra till projektet, till exempel:
-
-- analys/design/specifikation
-- problemlösning och algoritmer
-- skriva kod utifrån färdig specifikation
-- planering
-- samarbete
-- ledarskap
-- research (söka och sammanställa information)
-- dokumentation
-- rapportskrivande
-- muntlig presentation
-- lägg gärna till flera punkter ...
+  Jag gillar att jobba med problemlösning och hitta algoritmen för uppgiften, tror att det är dem områden där jag kan bidra mest. Har lätt för att jobba i grupp och gillar att samarbeta med andra. 
 
 ### Personlig utveckling
 
-> Under projektet hoppas jag förutom att bli ännu bättre på mina redan
-> starka sidor även ges möjlighet att utveckla följande färdigheter,
-> till exempel:
+  Jag vill få erfarenhet av att göra ett projekt från grunden till färdig produkt och försöka lära mig av alla delarna av projektet. Vill speciellt lära mig att planera, designa och göra specifikationen för ett system.
 
-- analys/design/specifikation
-- problemlösning och algoritmer
-- skriva kod utifrån färdig specifikation
-- planering
-- samarbete
-- ledarskap
-- research (söka och sammanställa information)
-- dokumentation
-- rapportskrivande
-- muntlig presentation
-- lägg gärna till flera punkter ...
 
 --------
 
