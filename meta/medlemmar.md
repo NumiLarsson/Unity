@@ -84,10 +84,6 @@ Blir inte berusad av snaps, dock av allt annat... Väldigt enkelt
 Av projektet hoppas jag att lära mig de ting som de facto används inom arbetslivet. Programmet har tills nu enbart hanterat grundläggande information och jag ser fram emot att ta nästa steg. Jag hoppas lära mig en hel del om nätverksprogrammering samt möjligheten att kombinera flera programmeringsspråk för att uppnå en mer komplett slutprodukt.
 
 
-------
-> Utgå sedan från mallen nedan och skapa ett avsnitt för varje medlem
-i gruppen sorterade i bokstavsordning  <a name="karljohansson86"></a>
-
 ## Karl Johansson
 
 
