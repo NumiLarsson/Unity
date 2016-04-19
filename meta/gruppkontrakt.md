@@ -12,78 +12,59 @@ Kommunikationen sker framförallt via Slack, framförallt den formella informati
 
 
 ## Frånvaro
+Eventuell frånvaro anmäls via Slack och Facebook, innan gruppen träffas. Vid upprepad ogiltig frånvaro tas kontakt med kursansvarig (Karl). Frånvarande leder till minskat inflytande i besluten som tas just då. Frånvaron kan kompenseras om det bedöms relevant. Upprepade förseningar leder till att man måste bjuda på enklare fika!
 
-Exempel på innehåll:
-
-- Hur och när skall frånvaro meddelas?
-- Hur skall man göra om någon varit frånvarande?
-- Skall frånvaro kompenseras genom annan arbetsinsats eller gäller det
-  bara viss typ av frånvaro?
 
 ## Roller
+Vi har identifierat följande roller som **kan** behövas under hela eller delar av projektet:
+- Projektledare
+- Back-end ansvarig
+- Front-end ansvarig
+- Testansvarig
+- Integrationsansvarig
+- Verktygsansvarig
 
-Exempel på innehåll:
+Dessa roller bör roteras, förmodligen på veckobasis, så att alla får en bra översyn av projektet.
 
-- Ska varje person i gruppen ha en formell roll?
-- Ska ni växla formella roller vid varje möte?
-- Vilka roller behövs:
-  - Projektledare?
-  - Sekreterare?
-  - Dokumentansvarig?
 
 ## Beslutsformer
+Vi ämnar att komma överrens genom majoritetsbeslut vid möten med föreliggande diskussion. Dessutom tänker vi skapa en detaljerad projektplan och produktspecifikation första veckan för att undvika tveksamheter. Skulle vi vara helt låsta kan det vara relevant att få input från extern part för att vikta förslagen.
 
-Exempel på innehåll:
-- Hur ska gruppen komma överens om vad som ska göras?
-- Ska majoritetsbeslut gälla eller ska gruppen genom diskussion
-  försöka få alla att vara överens om beslutet?
-- Hur ska ni gör ifall ni är oeniga?
 
 ## Arbetsinsats
+**Exempel på olika former av arbetsinsatser:**
+- Programmering
+- Planering
+- Testning
+- Dokumentering
+- Rapportskrivning
+- Administration
 
-För att undvika en del missförstånd och irritation kan det vara bra
-att redan från början göra klart för varandra vilka olika typer av
-arbetsinsatser som kan förekomma.  Exempel på innehåll:
+Kraven vi ställer på varandra är att insatserna sker inom rimlig tid och med överrenskommen utkomst och kvalité. Varje gruppmedlem förväntas också spendera ungefär 20-25 timmar i veckan på projektet.
 
-- Exempel på olika former av arbetsinsatser.
-- Vilka krav kan man ställa på varandra?
 
 ## Ansvar
-
-Exempel på innehåll:
-
-- Hur ska arbetet fördelas i gruppen?
-- Hur ska gruppen hantera om någon inte gör sin del av arbetet?
-- Hur mycket arbete ska göras mellan möten?
+Under våra gruppmöten så kommer vi att dela upp arbetet så mycket som möjligt. För att ge alla medlemmar i gruppen en bra översyn på projektet så ska vi låta medlemmar byta arbetsuppgifter under projektets gång. Om någon inte sköter sig och inte gör sitt jobb får gruppen diskutera med personen i frågan och se över anledningarna. Tillräckligt med tid mellan mötena ska läggas för att kunna åstadkomma uppgiften enligt överrenskommelse.
+ 
 
 ## Konflikter
+Hela gruppen får träffas och fredligt diskutera för att försöka komma fram till en kompromiss. 
 
-Hur skall man gå tillväga om det uppstår konflikter?
 
 ## Brott mot bestämmelserna i gruppkontraktet
+Kontakt och diskussion med personen, hjälp om det behövs. Eventuellt kontakt med kursansvarige (Karl) om *"brottet"* bedöms någorlunda grovt.
 
-Var och en berättar om hur man vill bli påmind om de överenskomna
-bestämmelserna. Ett sätt är att var och en inför de andra i
-projektgruppen beskriver hur man vill bli påmind om att man har brutit
-mot någon punk i gruppkontraktet. Viktigt för att underlätta för
-projektgruppen att under det kommande arbetet såväl ge som att ta
-kritik.
 
 ## Utskrift och underskrifter
-
-Kontraktet skall skrivas ut på papper, skrivas under
-(namnförtydligande och signatur av samtliga gruppmedlemmar) och lämnas
-in till ansvarig lärare på kursen. Därefter skall kontraktet hållas
-uppdaterat som en del av gruppens repository på Github.
 
 Detta kontrakt har den __________________________  upprättats av:
 
 
 Förnamn | Efternamn | . . . . . . . . . . . Underskrift . . . . . . . . . . .
 --------|-----------|------------
-Anders  | Andersson |
-Britta  | Björk     |
-Cecila  | Carlsson  |
-Daniel  | Dahlqvist |
-Erik    | Eklund    |
-Fanny   | Forsberg  |
+Marcus  | Andersson |
+Peter   | Berglund  |
+Hampus  | Falk      |
+Karl    | Johansson |
+Anton   | Larsson   |
+Axel    | Poromaa   |

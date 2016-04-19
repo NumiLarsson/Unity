@@ -1,11 +1,10 @@
-# Dagbok för Förnamn Efternamn
+# Dagbok för Hampus Falk
 
-OSPP (1DT096) 2016 - Grupp XX
+OSPP (1DT096) 2016 - Grupp 8
 
-> Ändra XX till numret på din grupp.
 
-<img src="../images/user.png" width="200">
-> Ändra så att bilden länkar till bilden på dig.
+<img src="../images/hampus.jpg" width="200">
+
 
 Gör en kort anteckning i dagboken under aktuell vecka och dag nedan
 varje gång du arbetat på projektet.
