@@ -25,8 +25,12 @@ varje gång du arbetat på projektet.
 ## Vecka 16
 
 ##### Måndag
+Arbete med gruppkontraktet ca 12:00 - 13:15
+Fyllde i min del av medlemmar.md samt generellt kodskrivande med syftet att lära sig Go ca 5h
 
 ##### Tisdag
+Arbete med projektspecification samt påbörjan av peer review-frågor ca 09:00-12:00
+Generellt kodskrivande med syftet att lära sig Go ca 2h
 
 ##### Onsdag
 
