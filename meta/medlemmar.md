@@ -18,7 +18,7 @@ Bild                                       | Förnamn               | Efternamn 
 <img src="images/peter.png" width="100px">  | [Peter](#peberglund)  | Berglund | 900927-0191  | `peberglund`
 <img src="images/hampus.jpg" width="100px">  | [Hampus](#hafa8286)  | Falk | 930217-1898  | `kokapelli`
 <img src="images/user.png" width="100px">  | [Karl](#karljohansson86)  | Johansson | 860728-0099  | `karljohansson86`
-<img src="images/user.png" width="100px">  | [Anton](#anders877)  | Larsson | 931119-6456  | `anders877`
+<img src="images/Anton.png" width="100px">  | [Anton](#anders877)  | Larsson | 931119-6456  | `anders877`
 <img src="images/user.png" width="100px">  | [Axel](#anders877)  | Poromaa | 931218-1754  | `anders877`
 
 
@@ -116,15 +116,10 @@ Bra ölhävararm.
 
 - analys/design/specifikation
 - problemlösning och algoritmer
-- skriva kod utifrån färdig specifikation
-- planering
-- samarbete
 - ledarskap
 - research (söka och sammanställa information)
-- dokumentation
-- rapportskrivande
-- muntlig presentation
-- lägg gärna till flera punkter ...
+
+Jag gillar att spendera mycket tid på att säkerställa inte enbart att projekt jag spenderar tid på blir klara, utan även att de håller den standard jag dömer mig själv kapabel till, detta gör att jag har lätt för att spendera den tid som krävs för att projektet skall bli klart, men även att jag har mycket kraft att erbjuda till att hjälpa till i de områden där det kan behövas extra hjälp.
 
 ### Personlig utveckling
 
@@ -133,17 +128,13 @@ Bra ölhävararm.
 > till exempel:
 
 - analys/design/specifikation
-- problemlösning och algoritmer
-- skriva kod utifrån färdig specifikation
 - planering
-- samarbete
 - ledarskap
-- research (söka och sammanställa information)
-- dokumentation
-- rapportskrivande
-- muntlig presentation
-- lägg gärna till flera punkter ...
-- 
+- dela arbetsbörda
+
+Jag hoppas på att lära mig mer om att utveckla programmeringsprojekt i grupp, något jag har bristande erfarenhet av, samtidigt som jag lär mig att dela arbetsbörda med de som önskar hjälpa till, något jag har problem med då jag ofta vill ha det gjort "på mitt sätt".
+
+Jag hoppas även på att vidareutveckla mina erfarenheter främst inom nätverksprogrammering, men även etablerade standarder som t.ex nätverksprogramming och programmering i Go.
 
 ---------
 
