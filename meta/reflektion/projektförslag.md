@@ -14,11 +14,11 @@ Reflektion över arbetet med det skriftliga projektförslaget och den muntliga p
 
 ##### Detta fungerade bra
 
-> Lägg till text ...
+Allmänt bra flyt och bra överlämningar. Vi var väl förberedda och det gick mer eller mindre som vi tänkt. Bra, unika slides. 
 
 ##### Detta kan förbättras
 
-> Lägg till text ...
+Vi spenderade lite för mycket tid på våra alternativa, ratade projektförslag. Därmed blev det lite oklart exakt vad vi skulle göra. Lite mer detaljerade och relevanta slides som inte bara är fina att titta på. 
 
 ## Skriftligt projektförslag
 
