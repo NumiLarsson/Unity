@@ -15,7 +15,7 @@ OSPP (1DT096) 2016 - Grupp 08
 Bild                                       | Förnamn               | Efternamn | Personnummer | Användarnamn (Github)
 -------------------------------------------|-----------------------|-----------|--------------|----------------------
 <img src="images/marcus.png" width="100px">  | [Marcus](#anderssonma)  | Andersson | 910202-4735  | `anderssonma`
-<img src="images/user.png" width="100px">  | [Peter](#anders877)  | Berlund | 900927-0191  | `anders877`
+<img src="images/peter.png" width="100px">  | [Peter](#peberglund)  | Berlund | 900927-0191  | `peberglund`
 <img src="images/hampus.jpg" width="100px">  | [Hampus](#hafa8286)  | Falk | 930217-1898  | `kokapelli`
 <img src="images/user.png" width="100px">  | [Karl](#karljohansson86)  | Johansson | 860728-0099  | `karljohansson86`
 <img src="images/user.png" width="100px">  | [Anton](#anders877)  | Larsson | 931119-6456  | `anders877`
