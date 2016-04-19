@@ -1,6 +1,6 @@
 # Reflektion på arbetet med projektförslaget
 
-OSPP (1DT096) 2016 - Grupp XX
+OSPP (1DT096) 2016 - Grupp 08
 
 Reflektion över arbetet med det skriftliga projektförslaget och den muntliga presentationen av projektförslaget. 
 
