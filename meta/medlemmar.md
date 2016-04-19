@@ -18,7 +18,7 @@ Bild                                       | Förnamn               | Efternamn 
 <img src="images/peter.png" width="100px">  | [Peter](#peberglund)  | Berglund | 900927-0191  | `peberglund`
 <img src="images/hampus.jpg" width="100px">  | [Hampus](#hafa8286)  | Falk | 930217-1898  | `kokapelli`
 <img src="images/user.png" width="100px">  | [Karl](#karljohansson86)  | Johansson | 860728-0099  | `karljohansson86`
-<img src="images/Anton.png" width="100px">  | [Anton](#anders877)  | Larsson | 931119-6456  | `anders877`
+<img src="images/anton.png" width="100px">  | [Anton](#anders877)  | Larsson | 931119-6456  | `anders877`
 <img src="images/user.png" width="100px">  | [Axel](#anders877)  | Poromaa | 931218-1754  | `anders877`
 
 
@@ -106,8 +106,7 @@ Bra ölhävararm.
 
 ### Okänd talang
 
-> Beskriv kortfattad något du gillar att göra vid sidan av dina
-> studier.
+Överlever på otroligt lite sömn så länge det finns tillgång till kaffe.
 
 ### Starka sidor
 
