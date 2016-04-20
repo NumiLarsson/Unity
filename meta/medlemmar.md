@@ -8,7 +8,7 @@ Bild                                       | Förnamn                 | Efternam
 <img src="images/anton.png" width="100px"> | [Anton](#NumiLarsson)   | Larsson   | 931119-6456  | `NumiLarsson`
 <img src="images/user.png" width="100px">  | [Axel](#anders877)      | Poromaa   | 931218-1754  | `anders877`
 <img src="images/hampus.jpg" width="100px">| [Hampus](#kokapelli)    | Falk      | 930217-1898  | `kokapelli`
-<img src="images/user.png" width="100px">  | [Karl](#karljohansson86)| Johansson | 860728-0099  | `karljohansson86`
+<img src="images/karl.png" width="100px">  | [Karl](#karljohansson86)| Johansson | 860728-0099  | `karljohansson86`
 <img src="images/marcus.png" width="100px">| [Marcus](#anderssonma)  | Andersson | 910202-4735  | `anderssonma`
 <img src="images/peter.png" width="100px"> | [Peter](#peberglund)    | Berglund  | 900927-0191  | `peberglund`
 
