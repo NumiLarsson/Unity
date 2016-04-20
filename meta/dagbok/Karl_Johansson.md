@@ -2,13 +2,10 @@
 
 OSPP (1DT096) 2016 - Grupp 08
 
-> Ändra XX till numret på din grupp.
+
 
 <img src="../images/karl.png" width="200">
-> Ändra så att bilden länkar till bilden på dig.
 
-Gör en kort anteckning i dagboken under aktuell vecka och dag nedan
-varje gång du arbetat på projektet.
 
 ## Vecka 15
 
@@ -21,9 +18,9 @@ varje gång du arbetat på projektet.
 Jobba med muntliga projektpresentation
 ##### Torsdag
 **10:00-12:00**
-Förberedelse ovh öva inför muntliga presentation
+Förberedelse ovh öva inför muntliga presentation<br>
 **13:00-16:00**
-Presentation av projektförslagen
+Presentation av projektförslagen<br>
 **22:00-00:00**
 Jobba med den skriftliga projektpresentationen
 
