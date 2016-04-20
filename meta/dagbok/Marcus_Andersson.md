@@ -37,6 +37,10 @@ Diskuterade gruppkontrakt och skrev om detta från punktform till löpande text.
 Skapade en initial projektspec samt skrev feedback på andra gruppers projektförslag.
 
 ##### Onsdag
+**10:15-15:15**
+Peer reviews samt reflektion. Utvecklad projektspec och initial uppdelning av arbetet. Möte med Karl Marklund.
+**20:30-22:30**
+Undersökte tidsbegränsad synkronisering av olika kanaler i Go
 
 ##### Torsdag
 
