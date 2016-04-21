@@ -31,9 +31,10 @@ Arbete med gruppkontraktet ca 12:00 - 13:15. Fyllde i min del av medlemmar.md sa
 Arbete med projektspecification samt påbörjan av peer review-frågor ca 09:00-12:00. Generellt kodskrivande med syftet att lära sig Go ca 2h
 
 ##### Onsdag
-Fortsatt arbete me peer review-frågor samt mindre genomgång av projektspecifikationen. Mindre strukturering av vad medlemmarna i gruppen vardera skall göra, strukturering av arbetet som kommer att komma samt påbörjan av nätverksprogrammering. Första mötet med Karl Marklund angående projektet, 10:30-15:30. Generellt kodskrivande med syftet att lära mig nätverksprogrammering i Go ca 2h.
+Fortsatt arbete med peer review-frågor samt mindre genomgång av projektspecifikationen. Mindre strukturering av vad medlemmarna i gruppen vardera skall göra, strukturering av arbetet som kommer att komma samt påbörjan av nätverksprogrammering. Första mötet med Karl Marklund angående projektet, 10:30-15:30. Generellt kodskrivande med syftet att lära mig nätverksprogrammering i Go ca 2h.
 
 ##### Torsdag
+Mer specifika uppdelningar av arbetet har gjorts och arbete har påbörjats med dessa 13:00-16:30. Generellt kodskrivande med syftet att lära mig nätverksprogrammering i Go ca 2h.
 
 ##### Fredag
 
