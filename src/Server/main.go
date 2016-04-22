@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func main() {
+func main2() {
 	ln, err := net.Listen("tcp", ":9000")
 	defer ln.Close()
 	if err != nil {
