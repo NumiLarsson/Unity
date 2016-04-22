@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"time"
+	"encoding/binary"
 )
 
 func main() {
@@ -21,20 +22,22 @@ func main() {
 
 	for {
 		/*
-		message, err := bufio.NewReader(conn).ReadString('\n')
-		if err != nil {
-			panic(err)
-		}
-				
-		fmt.Print("Message Received:", string(message))
+			message, err := bufio.NewReader(conn).ReadString('\n')
+			if err != nil {
+				panic(err)
+			}
 
-		newmessage := strings.ToUpper(message)
+			fmt.Print("Message Received:", string(message))
 
-		conn.Write([]byte(newmessage + "\n"))
+			newmessage := strings.ToUpper(message)
+
+			conn.Write([]byte(newmessage + "\n"))
 		*/
 		//This is the echo function we used earlier
-		
-		conn.Write([]byte("Hello World"))
+		var portUInt uint16 = 9001
+		port := make([]byte, 2)
+		binary.LittleEndian.PutUint16(port, portUInt);
+		conn.Write(port)
 		time.Sleep(time.Second)
 	}
 }
