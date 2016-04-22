@@ -16,15 +16,15 @@ Muntlig projektpresentation
 
 ##### Torsdag
 **10:00-12:00**
-Förberedelse och genrep av presentation<br>
+Förberedelse och genrep av presentation.<br>
 **13:00-16:00**
-Presentationer av projektförslag.
+Presentationer av projektförslag.<br>
 **22:00-00:00**
-Skriftlig projektpresentation
+Skriftlig projektpresentation.
 
 ##### Fredag
 **10:00-12:00**
-Skriftlig projektpresentation
+Skriftlig projektpresentation.
 
 ## Vecka 16
 
@@ -37,12 +37,16 @@ Diskuterade gruppkontrakt och skrev om detta från punktform till löpande text.
 Skapade en initial projektspec samt skrev feedback på andra gruppers projektförslag.
 
 ##### Onsdag
-**10:15-15:15**
-Peer reviews samt reflektion. Utvecklad projektspec och initial uppdelning av arbetet. Möte med Karl Marklund.
+**10:15-15:00**
+Peer reviews samt reflektion. Utvecklad projektspec och initial uppdelning av arbetet.<br>
+**15:00-15:15**
+Möte med Karl Marklund.<br>
 **20:30-22:30**
-Undersökte tidsbegränsad synkronisering av olika kanaler i Go
+Undersökte tidsbegränsad synkronisering av olika kanaler i Go.
 
 ##### Torsdag
+**13:15-16:00**
+Första implementation av den interna kommunikationen i servern.
 
 ##### Fredag
 
