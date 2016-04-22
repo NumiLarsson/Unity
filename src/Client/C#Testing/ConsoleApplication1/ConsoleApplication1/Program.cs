@@ -5,9 +5,8 @@ using System.Text;
 
 public class SynchronousSocketClient
 {
-
-    public static IPEndPoint GetIPEndPoint(int port) {
-        IPAddress ipAddress = IPAddress.Parse("127.0.0.1"); //Parse "localhost" to an IPaddress
+    public static IPEndPoint GetIPEndPoint(String Address, int port) {
+        IPAddress ipAddress = IPAddress.Parse(Address); //Parse Address string to an IPaddress
         return new IPEndPoint(ipAddress, port);
     }
 
@@ -17,10 +16,10 @@ public class SynchronousSocketClient
     }
 
     //REturns the number of bytes sent, Automatically converts everything to UTF-8 standard (that GO uses).
-    public static int SendStringTo(String message, Socket socket)
+    public static void SendStringTo(String message, Socket socket)
     {
         byte[] msg = Encoding.UTF8.GetBytes("This is a test\n    hejsan");
-        return socket.Send(msg);
+        socket.Send(msg);
     }
 
     //Returns an UTF8 string, passed to it through the Socket. The message is also kept in an array, if the 
@@ -32,54 +31,48 @@ public class SynchronousSocketClient
         return Encoding.UTF8.GetString(message, 0, bytesReceived);
     }
 
-    //Receives a message from socket and place it in message before returning message.
-    public static byte[] SocketReceiveBytes(byte[] message, Socket socket)
+    //Receives a message from socket and place it in message before returning the amount of bytes received.
+    public static int SocketReceiveBytes(byte[] message, Socket socket)
     {
         int bytesReceived = socket.Receive(message);
-        return message;
+        return bytesReceived;
     }
 
-    public static void StartClient()
-    {
-        // Data buffer for incoming data.
-        byte[] bytes = new byte[1024];
+   
 
-        // Connect to a remote device.
+
+    //Connect to server, receive and return uint16
+
+    public static UInt16 ReceivePort(Socket socket)
+    {
+        byte[] portBytes = new byte[2];
+        int bytesReceived = socket.Receive(portBytes);
+        UInt16 portInt = BitConverter.ToUInt16(portBytes, 0);
+        return portInt;
+    }
+
+    public static UInt16 RequestPort (String ipAddress, int port)
+    {
+        IPEndPoint remoteEP = GetIPEndPoint(ipAddress, port);
+        UInt16 UIntPort = 0;
+
         try
         {
-            /*IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
-            //IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-            //IPEndPoint remoteEP = new IPEndPoint(ipAddress, 9000); */
-
-            //Replaced with a functioncall
-            IPEndPoint remoteEP = GetIPEndPoint(9000);
-            //Create / Find an IP address that we can use to establish a connection.
-
-            // Create a TCP/IP  socket.
             Socket sender = New_Streaming_IP_TCP_Socket();
 
-            // Connect the socket to the remote endpoint. Catch any errors.
             try
             {
                 sender.Connect(remoteEP);
-  
+
                 Console.WriteLine("Socket connected to {0}",
                     sender.RemoteEndPoint.ToString());
 
-                // Encode the data string into a byte array.
-                String msg = "This is a test\n hejsan";
+                UIntPort = ReceivePort(sender);
 
-                // Send the data through the socket.
-                // int bytesSent = SendStringTo(msg, sender);
-
-                // Receive the response from the remote device.
-                for (int i = 0; i < 10; i++) {
-                    Console.WriteLine("Echoed test = {0}",
-                        SocketReceiveString(sender));
-                }
-                // Release the socket.
                 sender.Shutdown(SocketShutdown.Both);
                 sender.Close();
+
+                return UIntPort;
             }
             catch (ArgumentNullException ane)
             {
@@ -93,21 +86,75 @@ public class SynchronousSocketClient
             {
                 Console.WriteLine("Unexpected exception : {0}", e.ToString());
             }
-
         }
         catch (Exception e)
         {
             Console.WriteLine(e.ToString());
         }
-        Console.WriteLine("Program completed succesfully.");
-        Console.ReadLine();
+
+
+
+        return UIntPort;
     }
 
+    public static Socket ConnectToListener(String ipAddress, UInt16 port)
+    {
+        IPEndPoint remoteEP = GetIPEndPoint(ipAddress, port);
+        UInt16 UIntPort = 0;
+        Socket socket = null;
+        try
+        {
+            //Socket
+            socket = New_Streaming_IP_TCP_Socket();
 
+            try
+            {
+                socket.Connect(remoteEP);
+
+                Console.WriteLine("Socket connected to {0}",
+                    socket.RemoteEndPoint.ToString());
+
+                String name = "Anton";
+
+                SendStringTo(name, socket);
+                Console.WriteLine("Message received from server: {0}", SocketReceiveString(socket));
+                return socket;
+            }
+            catch (ArgumentNullException ane)
+            {
+                Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+            }
+            catch (SocketException se)
+            {
+                Console.WriteLine("SocketException : {0}", se.ToString());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unexpected exception : {0}", e.ToString());
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+        return socket;
+    }
 
     public static int Main(String[] args)
     {
-        StartClient();
+        UInt16 port = RequestPort("127.0.0.1", 9000);
+        Console.WriteLine(port);
+        Console.ReadLine();
+        Socket socket = ConnectToListener("127.0.0.1", port);
+        Console.ReadLine();
+        for (int i = 0; i < 10; i++)
+        {
+            String input = Console.ReadLine();
+            SendStringTo(input, socket);
+            Console.WriteLine(SocketReceiveString(socket));
+        }
+        socket.Shutdown(SocketShutdown.Both);
+        socket.Close();
         return 0;
     }
 }
