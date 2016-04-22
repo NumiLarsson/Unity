@@ -100,7 +100,7 @@ public class SynchronousSocketClient
     public static Socket ConnectToListener(String ipAddress, UInt16 port)
     {
         IPEndPoint remoteEP = GetIPEndPoint(ipAddress, port);
-        UInt16 UIntPort = 0;
+        UInt16 UIntPort;
         Socket socket = null;
         try
         {
@@ -109,6 +109,7 @@ public class SynchronousSocketClient
 
             try
             {
+                //Create a connection with remote end point.
                 socket.Connect(remoteEP);
 
                 Console.WriteLine("Socket connected to {0}",
