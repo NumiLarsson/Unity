@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net"
+	"os"
+	"strconv"
+	"time"
 )
 
 type Data struct {
@@ -69,23 +73,17 @@ func Session(conn *Connection) {
 	connList.write = make(chan Data)
 	connList.read = make(chan Data)
 
-	listener := CreateListener(connList)
-
-	go ListenerFunc(listener)
-
 	i := 0
 	for i < 100 {
-
+		time.Sleep(time.Second)
 		select {
 		case <-conn.read:
-			fmt.Printf("Spawn user\n")
+			go manager(connList)
 
-			message := Data{action: "port", result: 9000}
-			conn.write <- message
-
-		case userdata := <-connList.read:
+		case userdata := <-connList.write:
 			fmt.Printf("New data from user %d\n", userdata.result)
 			//toListener <- 1
+			conn.write <- userdata
 
 		default:
 			fmt.Println("Nothing to do")
@@ -107,6 +105,7 @@ func CreateListener(conn *Connection) *Listener {
 
 }
 
+/*
 func ListenerFunc(listener *Listener) {
 
 	for {
@@ -114,4 +113,47 @@ func ListenerFunc(listener *Listener) {
 		listener.write <- message
 	}
 
+}
+*/
+
+type ListenerManager struct {
+	currentPort    int
+	listenerAmount []Listener
+	connection     Connection
+}
+
+func createManager() *ListenerManager {
+	manager := new(ListenerManager)
+	manager.currentPort = 9000
+
+	return manager
+}
+
+func createListener(port string) net.Listener {
+
+	fmt.Println("Creating listener...")
+	connection, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	} else {
+		fmt.Println("Listener created!")
+	}
+
+	return connection
+}
+
+func manager(conn *Connection) {
+	manager := createManager()
+	go createListener(strconv.Itoa(manager.currentPort))
+
+	//New connection
+	//NewCOnnection read = old.write
+	//Newcon write = old.read
+
+	tempShit := Data{"port", manager.currentPort}
+
+	conn.write <- tempShit
+
+	manager.currentPort++
 }
