@@ -38,13 +38,20 @@ Gruppkontrakt,Påbörja admin på github(medlemmar.md etc)
 Projektspec,reflektion,peer-review
 ##### Onsdag
 **10:00-15:25**
-Fortsättning peer-review, bestämma vad alla ska jobba med tills nästa vecka, möte med handledare
+Fortsättning peer-review, bestämma vad alla ska jobba med tills nästa vecka, möte med handledare<br>
 **19:00-21:00** 
-Tutorials i GO, fixa till emacs att kunna hantera GO. Kolla tester
-
+Tutorials i GO, fixa till emacs att kunna hantera GO. Resarch testing i GO
 ##### Torsdag
-
+**13:15-17:00**
+Påbörja uppdelning av arbete, försöka bryta ner vad som ska göras i vilken del.<br> 
+Dela upp gruppen och påbörja implementera den interna kommunikationen i servern
 ##### Fredag
+**10:00-14:30**
+Fortsätta jobba med interna kommunikationen för att nå milstolpe 1.<br> 
+Ingen bra dag då det dubbeljobbas för att delar av gruppen inte håller sig till uppdelningen<br>
+Interna kommunikation klar för milstolpe 1. Påbörjar att bryta ner interna komm. ytterligare får att göra <br>
+det enklare för senare i projektet
+#### Lördag
 
 
 ## Vecka 17
