@@ -37,7 +37,7 @@ Fortsatt arbete med peer review-frågor samt mindre genomgång av projektspecifi
 Mer specifika uppdelningar av arbetet har gjorts och arbete har påbörjats med dessa 13:00-16:30. Generellt kodskrivande med syftet att lära mig nätverksprogrammering i Go ca 2h.
 
 ##### Fredag
-
+Träff med grupp för fortsatt arbete med den uppdelning som skapades under torsdagen. Ny struktur av systemet skapades och version 1 av listenerManager skapades, 10:00-13:00. Generellt påläsning om diverse API:er i Golang ca 1h
 
 ## Vecka 17
 
