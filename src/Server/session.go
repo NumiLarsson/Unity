@@ -21,20 +21,23 @@ func Session(cServer *Connection) {
 
 	i := 0
 	for i < 100 {
-		time.Sleep(1 * time.Second)
+		time.Sleep(500 * time.Millisecond)
 		select {
 		case data := <-cServer.read:
-			// Spawn listener
-			fmt.Println("Read from server")
+
+			// Receive info to spawn new listener
+			// Should this be a go-routine?
+			//
+			fmt.Println("Session Read from server: ", data.action)
 			cManager.write <- data
 
 		case userdata := <-cManager.read:
-			fmt.Printf("New data from user %d\n", userdata.result)
+			fmt.Printf("Session New data from user %d\n", userdata.result)
 			//toListener <- 1
 			cServer.write <- userdata
 
 		default:
-			fmt.Println("Nothing to do")
+			fmt.Println("Session Nothing to do")
 		}
 
 		i++
