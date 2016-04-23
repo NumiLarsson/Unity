@@ -45,7 +45,7 @@ func main() {
 		fmt.Print("Received: ", string(message))
 
 		bytes := make([]byte, 1024)
-		bytes = []byte("Succesfully sent")
+		bytes = []byte("Successfully sent")
 		conn.Write(bytes)
 		
 		fmt.Println()
