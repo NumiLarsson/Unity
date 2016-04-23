@@ -44,6 +44,7 @@ func main() {
 	//Send Port to client?
 	//fmt.Printf("Port %d\n", port)
 
+	//Only used to get som kind of input from a "user"
 	go func() {
 
 		time.Sleep(2 * time.Second)
@@ -71,14 +72,28 @@ func listen(external chan int) {
 	for {
 		select {
 		case <-external:
+			//TODO Should store new user to be able to send back Port once
+			//the listener is created for specific user
+
 			// Probably a go-routine in the future to prevent blocking
+			//cInternal should be changed to
 			port := connectToSession(cInternal, server.nextPort)
 			fmt.Printf("Port %d\n", port)
 
 			server.totalPlayers++
 			server.nextPort++
 
+			//TODO: Send response back to user
+
 		}
+
+		//Next step to implement creating more sessions
+		//Be able to store channels to different sessions
+		//Read input from new user.
+		//Create new channels to new session
+		//store sessioninfo + channels
+		//...
+
 	}
 
 }
@@ -94,11 +109,17 @@ func createSession(conn *Connection) {
 
 }
 
+//Used to create a new listener for a new user
 func connectToSession(conn *Connection, port int) int {
 
+	//Should send request to a session below used only for testing
+	fmt.Printf("connect to session %d\n", port)
 	conn.write <- Data{"connect", port}
-
 	response := <-conn.read
+
+	//If go-routine should it loop and wait for response that listener created
+	//and then send response/port back to user
+
 	return response.result
 
 }
