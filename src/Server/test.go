@@ -118,7 +118,6 @@ func Session(conn *Connection) {
 			conn.write <- userdata
 
 		default:
-			fmt.Println("Nothing to do")
 		}
 
 		i++
@@ -171,12 +170,13 @@ func listener(conn *Connection, port string) {
 	listenerConn.read = conn.write
 	
 	listener := createListener(port)
+	fmt.Println("New Listener created", port)
 	if listener == nil {
 		panic("Listener creation failed")
 	}
 	portInt, _ := strconv.Atoi(port)
-	tempData := Data{"port", portInt}
-	conn.write <- tempData
+	portData := Data{"port", portInt}
+	conn.write <- portData
 	
 	connection, err := listener.Accept()
 	if err != nil {
@@ -185,14 +185,17 @@ func listener(conn *Connection, port string) {
 	fmt.Println("Client connected to the new listener!")
 	
 	for {
-		b := bufio.NewReader(connection)
-    	for {
-        	line, err := b.ReadBytes('\n')
-        	if err != nil { // EOF, or worse
-            	break
-        	}
-        	connection.Write(line)
-    	}	
+		message, err := bufio.NewReader(connection).ReadString('\n')
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Print("Received: ", string(message))
+
+		bytes := make([]byte, 1024)
+		bytes = []byte(message)
+		connection.Write(bytes)
+		
 	}
 		
 }
@@ -208,10 +211,9 @@ func manager(conn *Connection) {
 	//New connection
 	//NewCOnnection read = old.write
 	//Newcon write = old.read
+	readMessage := <- listenerConn.write
 
-	tempShit := Data{"port", manager.currentPort}
-
-	conn.write <- tempShit
+	conn.write <- readMessage
 
 	manager.currentPort++
 }

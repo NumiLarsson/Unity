@@ -18,7 +18,7 @@ public class SynchronousSocketClient
     //REturns the number of bytes sent, Automatically converts everything to UTF-8 standard (that GO uses).
     public static void SendStringTo(String message, Socket socket)
     {
-        byte[] msg = Encoding.UTF8.GetBytes("This is a test\n    hejsan");
+        byte[] msg = Encoding.UTF8.GetBytes(message);
         socket.Send(msg);
     }
 
@@ -115,7 +115,7 @@ public class SynchronousSocketClient
                 Console.WriteLine("Socket connected to {0}",
                     socket.RemoteEndPoint.ToString());
 
-                String name = "Anton";
+                String name = "Anton\n";
 
                 SendStringTo(name, socket);
                 Console.WriteLine("Message received from server: {0}", SocketReceiveString(socket));
@@ -147,10 +147,11 @@ public class SynchronousSocketClient
         Console.WriteLine(port);
         Console.ReadLine();
         Socket socket = ConnectToListener("127.0.0.1", port);
-        Console.ReadLine();
+
         for (int i = 0; i < 10; i++)
         {
             String input = Console.ReadLine();
+            input = input + "\n ";
             SendStringTo(input, socket);
             Console.WriteLine(SocketReceiveString(socket));
         }
