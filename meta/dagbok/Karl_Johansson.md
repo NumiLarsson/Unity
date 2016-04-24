@@ -54,6 +54,9 @@ det enklare för senare i projektet
 #### Lördag
 **11:00-16:00**
 Bryta ner och försöka strukturera vad som ska göras i session.go ,server.go
+### Söndag
+**13:00-18:00**
+Grundläggande struktur hur kommunikationen ska hanteras i server.go och session.go
 
 ## Vecka 17
 
