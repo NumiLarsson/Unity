@@ -15,9 +15,7 @@ func Session(cServer *Connection) {
 
 	cManager, cManagerExt := makeConnection()
 
-	// TODO!
-	// Swap the write/read before sending
-	go Manager(cManagerExt)
+	go createListenerManager(cManagerExt)
 
 	i := 0
 	for i < 100 {
@@ -27,7 +25,7 @@ func Session(cServer *Connection) {
 
 			// Receive info to spawn new listener
 			// Should this be a go-routine?
-			//
+			// data.action should contain the port that the new listener should use
 			fmt.Println("Session Read from server: ", data.action)
 			cManager.write <- data
 
