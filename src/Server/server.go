@@ -51,7 +51,7 @@ func main() {
 		fakeUser <- 1
 
 		time.Sleep(1 * time.Second)
-		fakeUser <- 1
+		//fakeUser <- 1
 
 	}()
 
