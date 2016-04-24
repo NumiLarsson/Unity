@@ -7,12 +7,7 @@ import (
 
 func Session(cServer *Connection) {
 
-	//fromListener := make(chan int)
-	//toListener := make(chan int
-	//cManager := new(Connection)
-	//cManager.write = make(chan Data)
-	//cManager.read = make(chan Data)
-
+	// Create channels between session and listenermanager
 	cManager, cManagerExt := makeConnection()
 
 	go createListenerManager(cManagerExt)
@@ -26,16 +21,21 @@ func Session(cServer *Connection) {
 			// Receive info to spawn new listener
 			// Should this be a go-routine?
 			// data.action should contain the port that the new listener should use
-			fmt.Println("Session Read from server: ", data.action)
+			fmt.Println("Session: Read from server: ", data.action)
 			cManager.write <- data
 
 		case userdata := <-cManager.read:
-			fmt.Printf("Session New data from user %d\n", userdata.result)
-			//toListener <- 1
+			fmt.Printf("Session: New data from manager %d\n", userdata.action)
+			fmt.Printf("session: cServer write %d\n", cServer.write)
+
+			// TO FIX: Currently only working when sending through both channels?
 			cServer.write <- userdata
+			cServer.read <- userdata
+			fmt.Println("session: Sent!!!!")
 
 		default:
-			fmt.Println("Session Nothing to do")
+			fmt.Println("Session: Nothing to do")
+
 		}
 
 		i++

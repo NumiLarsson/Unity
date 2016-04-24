@@ -1,6 +1,7 @@
 package main
 
 import (
+	//"container/list"
 	"fmt"
 	"net"
 	"os"
@@ -17,7 +18,7 @@ type Listener struct {
 
 type ListenerManager struct {
 	currentPort    int
-	listenerAmount []Listener
+	listenerAmount []*Listener
 	*Connection
 }
 
@@ -29,30 +30,25 @@ func createListenerManager(cSession *Connection) {
 	Manager(listenerManager)
 }
 
-func createListener(lManager *ListenerManager, port int) net.Listener {
+func createListener(lManager *ListenerManager, port int) /*net.Listener*/ {
+
+	fmt.Println("Creating listener...")
 
 	listener := new(Listener)
 	cListener, cListenerExt := makeConnection()
 	listener.port = port
-	listener.Connection = cListenerExt
 
 	// Set channels to new listener
 	// Add to array/linked list
-	// TODO: find a smart way to store the listener in the listenermanager array
-	// but with the correct channels( *listener has the reversed channels)
-
-	go Listenerfunc(listener)
-
-	time.Sleep(500 * time.Millisecond)
-
+	listener.Connection = cListenerExt
 	listener.cManager.write = cListener.write
 	listener.cManager.read = cListener.read
 
-	fmt.Println("createListener created!")
-	fmt.Println("createListener channels", listener.cManager.write, listener.cManager.read)
+	// TODO set up next available arrayindex
+	// Should we use slices?
+	lManager.listenerAmount = append(lManager.listenerAmount, listener)
 
-	fmt.Println("Creating listener...")
-	connection, err := net.Listen("tcp", ":"+strconv.Itoa(port))
+	userConnection, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -60,32 +56,43 @@ func createListener(lManager *ListenerManager, port int) net.Listener {
 		fmt.Println("Listener created!")
 	}
 
-	return connection
+	Listenerfunc(listener, userConnection)
+
+	//return connection
 }
 
-func Listenerfunc(l *Listener) {
-	fmt.Println("Listener created!")
-	fmt.Println("Listener channels", l.write, l.read)
-	time.Sleep(1000 * time.Millisecond)
-	fmt.Println("Listener created!")
-	fmt.Println("Listener channels", l.write, l.read)
+func Listenerfunc(l *Listener, userConnection net.Listener) {
+	fmt.Println("Now in listener function!")
 
+	// Send response to listenermanager
+	l.write <- Data{"Listener set up", 1}
 }
 
 func Manager(lManager *ListenerManager) {
-	//manager := createManager()
 
 	for {
+
 		select {
-		case <-lManager.read:
-			//
+		case data := <-lManager.read:
+			// Read from session, meaning create new listener
 			fmt.Println("Manager: Read from session")
-			tempShit := Data{"port", lManager.currentPort}
+			fmt.Println("Manager: rcvd", data.action)
 			go createListener(lManager, lManager.currentPort)
-			lManager.write <- tempShit
-			lManager.currentPort++
 		}
 
-	}
+		// TODO: Set up how to listen to all listeners?
 
+		//Needed to set sleep so listener would have time to be created
+		time.Sleep(1 * time.Second)
+		if lManager.listenerAmount[0].cManager.read != nil {
+			for {
+				select {
+				case response := <-lManager.listenerAmount[0].cManager.read:
+					fmt.Println("Manager: Read from listener")
+					fmt.Println("Manager: sending response back to session")
+					lManager.write <- response
+				}
+			}
+		}
+	}
 }
