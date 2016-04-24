@@ -52,7 +52,8 @@ Ingen bra dag då det dubbeljobbas för att delar av gruppen inte håller sig ti
 Interna kommunikation klar för milstolpe 1. Påbörjar att bryta ner interna komm. ytterligare får att göra <br>
 det enklare för senare i projektet
 #### Lördag
-
+**11:00-16:00**
+Bryta ner och försöka strukturera vad som ska göras i session.go ,server.go
 
 ## Vecka 17
 
