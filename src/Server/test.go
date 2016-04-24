@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"time"
+	"encoding/binary"
+	"strconv"
+	"bufio"
 )
 
 type Data struct {
@@ -24,6 +26,13 @@ type Listener struct {
 	Connection
 }
 
+/*
+func sendUInt16(intString int) {
+	portUInt := *(*uint16)(unsafe.Pointer(&intString))
+	fmt.Println("portUInt is of type %T\n", portUInt)
+}
+*/
+
 func main() {
 
 	conn := new(Connection)
@@ -37,13 +46,36 @@ func main() {
 
 	fmt.Printf("Port %d\n", port)
 
-	listen()
-
+	listenConn := new(Connection)
+	listenConn.write = make(chan Data)
+	listenConn.read = make(chan Data)
+	
+	go listen(listenConn)
+	
+	portData := <- conn.read
+	listenConn.write <- portData
+	
 }
 
-func listen() {
-
+func listen(conn *Connection) {
+	socket := createListener("9000")
+	fmt.Println("Waiting for client to connect")
+	connection, err := socket.Accept()
+	if err != nil {
+		panic(err)
+	}
+	//portData := <- conn.write
+	//Rewrite this to use portData.result
+	//Convert portData.result in to a uint16
+	var portUInt uint16 = 9001
+	
+	//This is production code again
+	port := make([]byte, 2)
+	binary.LittleEndian.PutUint16(port, portUInt)
+	connection.Write(port)
+	connection.Close()
 }
+
 
 func createSession(conn *Connection) {
 
@@ -86,22 +118,11 @@ func Session(conn *Connection) {
 			conn.write <- userdata
 
 		default:
-			fmt.Println("Nothing to do")
 		}
 
 		i++
 
 	}
-
-}
-
-func CreateListener(conn *Connection) *Listener {
-
-	listener := new(Listener)
-	listener.write = conn.read
-	listener.read = conn.write
-
-	return listener
 
 }
 
@@ -118,13 +139,13 @@ func ListenerFunc(listener *Listener) {
 
 type ListenerManager struct {
 	currentPort    int
-	listenerAmount []Listener
-	connection     Connection
+	listenerList []Listener
+	Connection
 }
 
 func createManager() *ListenerManager {
 	manager := new(ListenerManager)
-	manager.currentPort = 9000
+	manager.currentPort = 9001
 
 	return manager
 }
@@ -143,17 +164,56 @@ func createListener(port string) net.Listener {
 	return connection
 }
 
+func listener(conn *Connection, port string) {
+	listenerConn := new(Listener)
+	listenerConn.write = conn.read
+	listenerConn.read = conn.write
+	
+	listener := createListener(port)
+	fmt.Println("New Listener created", port)
+	if listener == nil {
+		panic("Listener creation failed")
+	}
+	portInt, _ := strconv.Atoi(port)
+	portData := Data{"port", portInt}
+	conn.write <- portData
+	
+	connection, err := listener.Accept()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Client connected to the new listener!")
+	
+	for {
+		message, err := bufio.NewReader(connection).ReadString('\n')
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Print("Received: ", string(message))
+
+		bytes := make([]byte, 1024)
+		bytes = []byte(message)
+		connection.Write(bytes)
+		
+	}
+		
+}
+
 func manager(conn *Connection) {
 	manager := createManager()
-	go createListener(strconv.Itoa(manager.currentPort))
+	
+	listenerConn := new(Connection)
+	listenerConn.write = make(chan Data)
+	listenerConn.read = make(chan Data)
+	go listener(listenerConn, strconv.Itoa(manager.currentPort))
 
 	//New connection
 	//NewCOnnection read = old.write
 	//Newcon write = old.read
+	readMessage := <- listenerConn.write
 
-	tempShit := Data{"port", manager.currentPort}
-
-	conn.write <- tempShit
+	conn.write <- readMessage
 
 	manager.currentPort++
 }
