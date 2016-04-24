@@ -39,6 +39,9 @@ Mer specifika uppdelningar av arbetet har gjorts och arbete har påbörjats med 
 ##### Fredag
 Träff med grupp för fortsatt arbete med den uppdelning som skapades under torsdagen. Ny struktur av systemet skapades och version 1 av listenerManager skapades, 10:00-13:00. Generellt påläsning om diverse API:er i Golang ca 1h
 
+##### Lördag
+Påläsning om generella ting som kommer att förekomma i projektet ca 3h
+
 ## Vecka 17
 
 ##### Måndag
