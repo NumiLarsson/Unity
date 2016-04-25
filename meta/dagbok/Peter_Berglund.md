@@ -2,7 +2,7 @@
 
 OSPP (1DT096) 2016 - Grupp 08
 
-<img src="../images/user.png" width="200">
+<img src="../images/peter.png" width="200">
 
 ## Vecka 15
 
@@ -11,24 +11,24 @@ OSPP (1DT096) 2016 - Grupp 08
 ##### Tisdag
 
 ##### Onsdag
-
+Arbetstid: 7h Arbete med projektförslag
 ##### Torsdag
-
+Arbetstid: 3h Reptition av projektförslag + redovisning as projektförslag 
 ##### Fredag
-
+Arbetstid: 3h Rapportskrivning projektförslag
 
 ## Vecka 16
 
 ##### Måndag
-
+Arbetstid: 4h Meta administration och gihubstrul. Fått allt och funka tillslut!!!
 ##### Tisdag
-
+Arbetstid:: 4h Skrivit projektspec, peer-review samt personlig reflektion 
 ##### Onsdag
-
+Arbetstid: 5h fortsatt peer-review, påbörjat strukturering av arbetet och delat upp arbetet inom gruppen. möte med handledare. Ha en fungerande kommunication är satt som milstolpe 1.
 ##### Torsdag
-
+Arbetstid: 4h Jobbat med intern kommunication.
 ##### Fredag
-
+Arbetstid: 5h Fortsatt arbete med kommunication.  
 
 ## Vecka 17
 
