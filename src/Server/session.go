@@ -24,6 +24,7 @@ func Session(cServer *Connection) {
 			fmt.Println("Session: Read from server: ", data.action)
 			cManager.write <- data
 
+		// Send response back to server
 		case userdata := <-cManager.read:
 			fmt.Printf("Session: New data from manager %d\n", userdata.action)
 			cServer.write <- userdata
