@@ -26,12 +26,7 @@ func Session(cServer *Connection) {
 
 		case userdata := <-cManager.read:
 			fmt.Printf("Session: New data from manager %d\n", userdata.action)
-			fmt.Printf("session: cServer write %d\n", cServer.write)
-
-			// TO FIX: Currently only working when sending through both channels?
 			cServer.write <- userdata
-			cServer.read <- userdata
-			fmt.Println("session: Sent!!!!")
 
 		default:
 			fmt.Println("Session: Nothing to do")

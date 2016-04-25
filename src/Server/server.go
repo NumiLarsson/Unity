@@ -62,38 +62,26 @@ func listen(external chan Data) {
 	cInternal, cExternal := makeConnection()
 
 	createSession(cExternal)
-	//fmt.Printf("server: cInternal write %d\n", cInternal.write)
-	fmt.Printf("server: cInternal read  %d\n", cInternal.read)
-	fmt.Printf("server: cExternal write %d\n", cExternal.write)
-	//fmt.Printf("server: cExternal read %d\n", cExternal.read)
+
 	for {
 
 		select {
 		case message := <-external:
 			//TODO Should store new user to be able to send back Port once
 			//the listener is created for specific user
-			fmt.Printf("server: message from new user \n", message.action)
+			fmt.Println("server: message from new user \n", message.action)
 			// Probably a go-routine in the future to prevent blocking
 			// cInternal should be changed to
-			port := connectToSession(cInternal, server.nextPort)
-			fmt.Printf("Port %d\n", port)
+			go connectToSession(cInternal, server.nextPort)
+			//fmt.Printf("Port %d\n", port)
 
 			server.totalPlayers++
 			server.nextPort++
 
 		// Receive confirmation that listener is created
-		// TO FIX: Currently only working when sending through both channels?
 		case message := <-cInternal.read:
 			fmt.Printf("Server: message from session %d\n", message.action)
 
-		case message := <-cInternal.write:
-			fmt.Printf("Server: message from session write!! %d\n", message.action)
-
-			//TODO: Send response back to user
-			/*default:
-			time.Sleep(500 * time.Millisecond)
-			fmt.Println("Server: ")
-			*/
 		}
 	}
 
@@ -107,27 +95,15 @@ func listen(external chan Data) {
 }
 
 func createSession(conn *Connection) {
-
-	// Swap read and write
-	// connSwap := new(Connection)
-	//connSwap.write = conn.read
-	// connSwap.read = conn.write
-
 	go Session(conn)
 
 }
 
 //Used to create a new listener for a new user
-func connectToSession(conn *Connection, port int) int {
+func connectToSession(cSession *Connection, port int) {
 
 	//Should send request to a session below used only for testing
-	fmt.Printf("connect to session %d\n", port)
-	conn.write <- Data{"connect", port}
-	response := <-conn.read
-
-	//If go-routine should it loop and wait for response that listener created
-	//and then send response/port back to user
-
-	return response.result
+	fmt.Printf("Connect to session %d\n", port)
+	cSession.write <- Data{"connect", port}
 
 }
