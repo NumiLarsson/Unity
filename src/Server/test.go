@@ -205,42 +205,7 @@ func (manager ListenerManager) IncrementPort() {
 	manager.currentPort = strconv.Itoa((portInt + 1))
 	fmt.Println(manager.currentPort)
 }
-/*
-func CreateListener(conn *Connection, port string) Listener {
-	listenerConn := new(Listener)
-	listenerConn.write = conn.read
-	listenerConn.read = conn.write
-	
-	socket := createSocket(port)
-	if socket == nil {
-		panic("Listener creation failed")
-	}
-	
-	portData := Data{"port", port}
-	conn.write <- portData
-	
-	connection, err := socket.Accept()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Client connected to listener: ", port)
-	
-	for {
-		message, err := bufio.NewReader(connection).ReadString('\n')
-		if err != nil {
-			panic(err)
-		}
 
-		fmt.Print("Received: ", string(message))
-
-		bytes := make([]byte, 1024)
-		bytes = []byte(message)
-		connection.Write(bytes)
-		
-	}
-			
-}
-*/
 func newManager(conn *Connection) ListenerManager {
 	manager := createManager()
 	
