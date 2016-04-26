@@ -5,14 +5,13 @@ import (
 	"net"
 	"os"
 	"time"
-	"encoding/binary"
 	"strconv"
 	"bufio"
 )
 
 type Data struct {
 	action string
-	result int
+	result string
 }
 
 type Connection struct {
@@ -21,17 +20,11 @@ type Connection struct {
 }
 
 type Listener struct {
-	id   string
-	port int
+	id   	string
+	port 	string
+	socket 	net.Listener
 	Connection
-}
-
-/*
-func sendUInt16(intString int) {
-	portUInt := *(*uint16)(unsafe.Pointer(&intString))
-	fmt.Println("portUInt is of type %T\n", portUInt)
-}
-*/
+} 
 
 func main() {
 
@@ -40,11 +33,6 @@ func main() {
 	conn.read = make(chan Data)
 
 	createSession(conn)
-	port := connectToSession(conn)
-
-	//Send Port to client?
-
-	fmt.Printf("Port %d\n", port)
 
 	listenConn := new(Connection)
 	listenConn.write = make(chan Data)
@@ -52,28 +40,36 @@ func main() {
 	
 	go listen(listenConn)
 	
-	portData := <- conn.read
-	listenConn.write <- portData
-	
+	for {
+		select {
+			case portData := <- conn.read:
+				fmt.Println("Port has been read in main")
+				listenConn.write <- portData
+			case <- listenConn.write:
+				conn.write <- Data{"NewUser", "NewUser"}
+			default:
+		}	
+	}	
 }
 
 func listen(conn *Connection) {
-	socket := createListener("9000")
+	socket := createSocket("9000")
+	
 	fmt.Println("Waiting for client to connect")
 	connection, err := socket.Accept()
-	if err != nil {
+	defer connection.Close()
+	if err != nil {	
 		panic(err)
 	}
-	//portData := <- conn.write
-	//Rewrite this to use portData.result
-	//Convert portData.result in to a uint16
-	var portUInt uint16 = 9001
+	conn.write <- Data{"NewUser", "NewUser"} //Tell Session that there's a new client
 	
-	//This is production code again
-	port := make([]byte, 2)
-	binary.LittleEndian.PutUint16(port, portUInt)
+	fmt.Println("Conn.write is through")
+	
+	port := make([]byte, 1024)
+	portData := <- conn.write
+	port = []byte(portData.result)
 	connection.Write(port)
-	connection.Close()
+	fmt.Println("Port has been sent to client")
 }
 
 
@@ -88,101 +84,146 @@ func createSession(conn *Connection) {
 
 }
 
-func connectToSession(conn *Connection) int {
-
-	conn.write <- Data{"new", 0}
-
-	response := <-conn.read
-	return response.result
-
-}
-
 func Session(conn *Connection) {
 
-	//fromListener := make(chan int)
-	//toListener := make(chan int
 	connList := new(Connection)
 	connList.write = make(chan Data)
 	connList.read = make(chan Data)
 
-	i := 0
-	for i < 100 {
-		time.Sleep(time.Second)
-		select {
-		case <-conn.read:
-			go manager(connList)
-
-		case userdata := <-connList.write:
-			fmt.Printf("New data from user %d\n", userdata.result)
-			//toListener <- 1
-			conn.write <- userdata
-
-		default:
-		}
-
-		i++
-
-	}
-
-}
-
-/*
-func ListenerFunc(listener *Listener) {
+	listenerManager := newManager(connList)
 
 	for {
-		message := Data{action: "listenToMe", result: 123}
-		listener.write <- message
+		select {
+		case managerData := <- connList.write:
+			fmt.Println("New data from manager:", managerData.result)
+		case <- conn.read:
+			fmt.Println("Creating new listener")
+			port := listenerManager.NewObject()
+			fmt.Println("Listener created with port:", port)
+			conn.write <- Data{"port", port}
+			fmt.Println("Listener port sent to server")
+			
+		}
 	}
 
 }
-*/
+
+//Listener and managers
+
+type manager interface {
+	NewObject ()
+}
 
 type ListenerManager struct {
-	currentPort    int
+	currentPort    string
 	listenerList []Listener
+	ListenerConnection Connection
 	Connection
 }
 
 func createManager() *ListenerManager {
 	manager := new(ListenerManager)
-	manager.currentPort = 9001
+	manager.currentPort = "9001"
 
 	return manager
 }
 
-func createListener(port string) net.Listener {
 
-	fmt.Println("Creating listener...")
+func (manager ListenerManager) NewObject() string {
+	
+	listenerConn := new(Connection)
+	listenerConn.read = make(chan Data)
+	listenerConn.write = make(chan Data)
+	
+	fmt.Println("Current port: ", manager.currentPort)
+	
+	listener := new(Listener)
+	listener.write = manager.ListenerConnection.read
+	listener.read = manager.ListenerConnection.write
+	listener.port = manager.currentPort
+	
+	defer manager.IncrementPort()
+	
+	go listener.StartUpListener(manager)
+	
+	return manager.currentPort
+}
+
+func (listener *Listener) StartUpListener(manager ListenerManager) {
+	listener.socket = createSocket(manager.currentPort)
+	
+	connection, err := listener.socket.Accept()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Client connected to listener: ", manager.currentPort)
+	
+	message, err := bufio.NewReader(connection).ReadString('\n')
+	if err != nil {
+		panic(err)
+	}
+	listener.id = string(message)
+	
+	go listener.IdleListener(connection)
+	
+	fmt.Println(listener.id, "has joined and its listener is now in echo mode")
+}
+
+func (listener *Listener) IdleListener(connection net.Conn) {
+	for {
+		defer connection.Close()
+		defer listener.socket.Close()
+		message, err := bufio.NewReader(connection).ReadString('\n')
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Print("Received: ", string(message))
+
+		bytes := make([]byte, 1024)
+		bytes = []byte(message)
+		connection.Write(bytes)
+	}
+}
+
+func createSocket(port string) net.Listener {
+
+	fmt.Println("Creating listener: ", port)
 	connection, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	} else {
-		fmt.Println("Listener created!")
+		fmt.Printf("Listener %s created!\n", port)
 	}
 
 	return connection
 }
 
-func listener(conn *Connection, port string) {
+func (manager ListenerManager) IncrementPort() {
+	portInt, _ := strconv.Atoi(manager.currentPort)
+	manager.currentPort = strconv.Itoa((portInt + 1))
+	fmt.Println(manager.currentPort)
+}
+/*
+func CreateListener(conn *Connection, port string) Listener {
 	listenerConn := new(Listener)
 	listenerConn.write = conn.read
 	listenerConn.read = conn.write
 	
-	listener := createListener(port)
-	fmt.Println("New Listener created", port)
-	if listener == nil {
+	socket := createSocket(port)
+	if socket == nil {
 		panic("Listener creation failed")
 	}
-	portInt, _ := strconv.Atoi(port)
-	portData := Data{"port", portInt}
+	
+	portData := Data{"port", port}
 	conn.write <- portData
 	
-	connection, err := listener.Accept()
+	connection, err := socket.Accept()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Client connected to the new listener!")
+	fmt.Println("Client connected to listener: ", port)
 	
 	for {
 		message, err := bufio.NewReader(connection).ReadString('\n')
@@ -197,23 +238,22 @@ func listener(conn *Connection, port string) {
 		connection.Write(bytes)
 		
 	}
-		
+			
 }
-
-func manager(conn *Connection) {
+*/
+func newManager(conn *Connection) ListenerManager {
 	manager := createManager()
 	
-	listenerConn := new(Connection)
-	listenerConn.write = make(chan Data)
-	listenerConn.read = make(chan Data)
-	go listener(listenerConn, strconv.Itoa(manager.currentPort))
+	return *manager
+}	
 
-	//New connection
-	//NewCOnnection read = old.write
-	//Newcon write = old.read
-	readMessage := <- listenerConn.write
-
-	conn.write <- readMessage
-
-	manager.currentPort++
+func (manager ListenerManager) IdleManager (conn *Connection) {
+	for {
+		select {
+			case readMessage := <- manager.ListenerConnection.read:
+				conn.write <- readMessage
+			default: 
+				time.Sleep(time.Second)
+		}
+	}
 }

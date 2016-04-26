@@ -45,9 +45,9 @@ public class SynchronousSocketClient
 
     public static UInt16 ReceivePort(Socket socket)
     {
-        byte[] portBytes = new byte[2];
-        int bytesReceived = socket.Receive(portBytes);
-        UInt16 portInt = BitConverter.ToUInt16(portBytes, 0);
+        byte[] portBytes = new byte[1024];
+        string portString = SocketReceiveString(socket);
+        UInt16 portInt = Convert.ToUInt16(portString);
         return portInt;
     }
 
@@ -117,8 +117,7 @@ public class SynchronousSocketClient
 
                 String name = "Anton\n";
 
-                SendStringTo(name, socket);
-                Console.WriteLine("Message received from server: {0}", SocketReceiveString(socket));
+                SendStringTo( name, socket );
                 return socket;
             }
             catch (ArgumentNullException ane)
@@ -144,7 +143,8 @@ public class SynchronousSocketClient
     public static int Main(String[] args)
     {
         UInt16 port = RequestPort("127.0.0.1", 9000);
-        Console.WriteLine(port);
+        Console.Write(port);
+        Console.WriteLine( " press enter to accept" );
         Console.ReadLine();
         Socket socket = ConnectToListener("127.0.0.1", port);
 
