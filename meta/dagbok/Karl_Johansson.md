@@ -61,6 +61,10 @@ Grundläggande struktur hur kommunikationen ska hanteras i server.go och session
 ## Vecka 17
 
 ##### Måndag
+**12:00-15:00**
+Möte med grupp, förberedelse inför milstolpe 1, göra iordning slides<br>
+**20:00-21:00**
+Gjort klart att interna kommunikationen fungerar
 
 ##### Tisdag
 
