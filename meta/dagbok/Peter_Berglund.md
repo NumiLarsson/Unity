@@ -33,7 +33,7 @@ Arbetstid: 5h Fortsatt arbete med kommunication.
 ## Vecka 17
 
 ##### Måndag
-
+Arbetstid: 5h Workshop med aletta. Förberedelelse och annan admintjänst inför progress meeting 1
 ##### Tisdag
 
 ##### Onsdag
