@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ConsoleApplication1</name>
+    </assembly>
+    <members>
+        <member name="T:SynchronousSocketClient">
+            <summary>
+            Testing for the client implementation of the server connection, this code is probably not production quality.   
+            </summary>
+        </member>
+        <member name="M:SynchronousSocketClient.GetIPEndPoint(System.String,System.Int32)">
+            <summary>
+            Creates a new IPEndPoint from an ipv4 and a port.
+            </summary>
+            <param name="Address">An IPv4 address in a string, example: "127.0.0.1"</param>
+            <param name="port">The port to create the endpoint with, example: 9000</param>
+            <returns>IPEndPoint containing the correct address and port</returns>
+        </member>
+        <member name="M:SynchronousSocketClient.NewStreamingIPTCPSocket">
+            <summary>
+            Creates a new socket for TCP.
+            </summary>
+            <returns>A TCP socket</returns>
+        </member>
+        <member name="M:SynchronousSocketClient.SendStringTo(System.String,System.Net.Sockets.Socket)">
+            <summary>
+            Converts a string to UTF8 and then sends it through the socket.
+            </summary>
+            <param name="message">Standard string, example: "Hello World"</param>
+            <param name="socket">A standard socket</param>
+        </member>
+        <member name="M:SynchronousSocketClient.SocketReceiveString(System.Net.Sockets.Socket)">
+            <summary>
+            Accepts an utf8 formated string in a byte array from the socket and converts it in to a standard string.
+            Max 1024 bytes in one message.
+            </summary>
+            <param name="socket">A standard socket.</param>
+            <returns>A String containing the message received from the socket.</returns>
+        </member>
+        <member name="M:SynchronousSocketClient.ReceivePort(System.Net.Sockets.Socket)">
+            <summary>
+            Specific function to receive an uint16 formatted int to be used as a port.
+            </summary>
+            <param name="socket">Standard socket</param>
+            <returns>A uint16 primarily used as a port.</returns>
+        </member>
+        <member name="M:SynchronousSocketClient.RequestPort(System.String,System.Int32)">
+            <summary>
+            Request a port from the specified server, then closes that connection and returns the port.
+            </summary>
+            <param name="ipAddress">The address of the server</param>
+            <param name="port">The port of the server</param>
+            <returns>A standard uint16 meant to be used as a port.</returns>
+        </member>
+        <member name="M:SynchronousSocketClient.ConnectToListener(System.String,System.Int32)">
+            <summary>
+            Connects and sends the playername to the listener, then returns the open socket.
+            </summary>
+            <param name="ipAddress">Standard IP address, same as the one used to connect to the server in the first place.</param>
+            <param name="port">Standard port, uint16</param>
+            <returns>An open socket connected to the listener on the server</returns>
+        </member>
+        <member name="M:SynchronousSocketClient.Main(System.String[])">
+            <summary>
+            Temporary main used to start the connection to the server, then reconnect to the listener and eventually echo 10 times.
+            </summary>
+            <param name="args"> Not used</param>
+            <returns>Successfull exit returns 1 IIRC</returns>
+        </member>
+    </members>
+</doc>
