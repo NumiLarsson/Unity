@@ -5,25 +5,42 @@ using System.Text;
 
 public class SynchronousSocketClient
 {
+    /// <summary>
+    ///  Creates an IPEndPoint (What you connect sockets to etc) using an ip address formateted as a string and a port formatted as an int
+    /// </summary>
+    /// <param name="Address">IP Address in standard string format</param>
+    /// <param name="port">Port to use with the IP address</param>
+    /// <returns>THe created IPEndPoint</returns>
     public static IPEndPoint GetIPEndPoint(String Address, int port) {
         IPAddress ipAddress = IPAddress.Parse(Address); //Parse Address string to an IPaddress
         return new IPEndPoint(ipAddress, port);
     }
 
+    /// <summary>
+    ///  Creates a new two-way TCP socket.
+    /// </summary>
+    /// <returns>A standard TCP socket</returns>
     public static Socket New_Streaming_IP_TCP_Socket()
     {
         return new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     }
 
-    //REturns the number of bytes sent, Automatically converts everything to UTF-8 standard (that GO uses).
+    /// <summary>
+    /// Sends a string through a tcp socket.
+    /// </summary>
+    /// <param name="message">standard string containing the message to be sent</param>
+    /// <param name="socket">standard TCP socket.</param>
     public static void SendStringTo(String message, Socket socket)
     {
         byte[] msg = Encoding.UTF8.GetBytes(message);
         socket.Send(msg);
     }
 
-    //Returns an UTF8 string, passed to it through the Socket. The message is also kept in an array, if the 
-    //caller of the function wants to access it again. Buffersize is max 1024 bytes.
+    /// <summary>
+    /// Reads up to 1024 bytes from sockets then formats those to an UTF8 string.
+    /// </summary>
+    /// <param name="socket">Standard TCP socket</param>
+    /// <returns>UTF8 formatted standard string</returns>
     public static String SocketReceiveString(Socket socket)
     {
         byte[] message = new byte[1024];
@@ -31,18 +48,15 @@ public class SynchronousSocketClient
         return Encoding.UTF8.GetString(message, 0, bytesReceived);
     }
 
-    //Receives a message from socket and place it in message before returning the amount of bytes received.
-    public static int SocketReceiveBytes(byte[] message, Socket socket)
-    {
-        int bytesReceived = socket.Receive(message);
-        return bytesReceived;
-    }
-
    
 
 
-    //Connect to server, receive and return uint16
-
+    
+    /// <summary>
+    /// Reads socket for a string, then converts it in to a uint16 to be used as a port.
+    /// </summary>
+    /// <param name="socket">Standard TCP socket</param>
+    /// <returns>A UInt16 meant to be used as a port to connect to the server with</returns>
     public static UInt16 ReceivePort(Socket socket)
     {
         byte[] portBytes = new byte[1024];
@@ -51,6 +65,12 @@ public class SynchronousSocketClient
         return portInt;
     }
 
+    /// <summary>
+    /// Requests a port from the server, then returns that specified port as an UInt16
+    /// </summary>
+    /// <param name="ipAddress">standard IP address in a string</param>
+    /// <param name="port">port in an int</param>
+    /// <returns></returns>
     public static UInt16 RequestPort (String ipAddress, int port)
     {
         IPEndPoint remoteEP = GetIPEndPoint(ipAddress, port);
@@ -97,6 +117,12 @@ public class SynchronousSocketClient
         return UIntPort;
     }
 
+    /// <summary>
+    ///     Connects to a listener on the server using the specified port, then returns the active socket.
+    /// </summary>
+    /// <param name="ipAddress">Standard IPv4 Address in a string</param>
+    /// <param name="port">Standard networkport</param>
+    /// <returns></returns>
     public static Socket ConnectToListener(String ipAddress, UInt16 port)
     {
         IPEndPoint remoteEP = GetIPEndPoint(ipAddress, port);
