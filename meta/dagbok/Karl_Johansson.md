@@ -1,4 +1,4 @@
-# Dagbok för Förnamn Efternamn
+# Dagbok för Karl Johansson
 
 OSPP (1DT096) 2016 - Grupp 08
 
@@ -61,14 +61,20 @@ Grundläggande struktur hur kommunikationen ska hanteras i server.go och session
 ## Vecka 17
 
 ##### Måndag
+**10:00-12:00** 
+Workshop med Aletta<br>
 **12:00-15:00**
 Möte med grupp, förberedelse inför milstolpe 1, göra iordning slides<br>
 **20:00-21:00**
 Gjort klart att interna kommunikationen fungerar
 
 ##### Tisdag
+**09:00-12:00**
+Påbörja ändringar av projektföslaget. Genom av slides inför milstolpe 1
 
 ##### Onsdag
+**13:00-16:00**
+Slutliga förberedelsen inför milstolpe 1, genomgån av kod, slutförande av projektförslag
 
 ##### Torsdag
 
