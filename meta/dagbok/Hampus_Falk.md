@@ -42,15 +42,22 @@ Träff med grupp för fortsatt arbete med den uppdelning som skapades under tors
 ##### Lördag
 Påläsning om generella ting som kommer att förekomma i projektet ca 3h
 
+##### Söndag
+Påläsning om skriven kod för ökad förståelse samt informations inhämtning om generella ting ca 3h
+
 ## Vecka 17
 
 ##### Måndag
+Missade träff med gruppen, deras arbete relaterade till planering inför milstolpe 1. Egenläsning om de saker som togs upp och inlärning av information till milstolpe 1 ca 2h
 
 ##### Tisdag
+Träff med gruppen för fortsatt föreberedelse inför milstolpe 1, ca 3h
 
 ##### Onsdag
+Träff med gruppen för fortsatt föreberedelse samt presentation av milstolpe 1 ca 4h
 
 ##### Torsdag
+Påläsning av kommande ting såsom JSON, kommunikation mellan client -> Sever m.m. ca 3h
 
 ##### Fredag
 
