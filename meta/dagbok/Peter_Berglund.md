@@ -28,16 +28,16 @@ Arbetstid: 5h fortsatt peer-review, påbörjat strukturering av arbetet och dela
 ##### Torsdag
 Arbetstid: 4h Jobbat med intern kommunication.
 ##### Fredag
-Arbetstid: 5h Fortsatt arbete med kommunication.  
+Arbetstid: 5h. Fortsatt arbete med kommunication.  
 
 ## Vecka 17
 
 ##### Måndag
-Arbetstid: 5h Workshop med aletta. Förberedelelse och annan admintjänst inför progress meeting 1
+Arbetstid: 5h. Workshop med Aletta. Förberedelelse och annan admintjänst inför progress meeting 1
 ##### Tisdag
-
+Arbetstid: 3h. Förberedelse för progress meeting 1 
 ##### Onsdag
-
+Arbetstid: 3h. Förberedelse för progress meeting 1 / genomfört progress meeting 1 / sista touch på projektförslagsrapporten
 ##### Torsdag
 
 ##### Fredag
