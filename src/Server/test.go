@@ -58,23 +58,28 @@ func main() {
 	}	
 }
 
+//Specific listener function for the server, to allow new users to connect.
 func listen(conn *Connection) {
-	socket := createSocket("9000")
 	
-	fmt.Println("Waiting for client to connect")
-	connection, err := socket.Accept()
-	defer connection.Close()
-	if err != nil {	
-		panic(err)
+	for {
+		socket := createSocket("9000")
+		fmt.Println("Waiting for new client to connect")
+		connection, err := socket.Accept()
+		if err != nil {	
+			panic(err)
+		}
+		conn.write <- Data{"NewUser", ""} //Tell Session that there's a new client
+		
+		port := make([]byte, 1024) 
+		portData := <- conn.write
+		fmt.Println("Sending port:", portData.result)
+		port = []byte(portData.result) //connection.Write has to be in bytes, as it's pure network.
+		connection.Write(port)
+		fmt.Println("Port has been sent to client")
+		
+		connection.Close()
+		socket.Close()
 	}
-	conn.write <- Data{"NewUser", ""} //Tell Session that there's a new client
-	
-	port := make([]byte, 1024) 
-	portData := <- conn.write
-	
-	port = []byte(portData.result) //connection.Write has to be in bytes, as it's pure network.
-	connection.Write(port)
-	fmt.Println("Port has been sent to client")
 }
 
 
@@ -95,18 +100,19 @@ func Session(conn *Connection) {
 	connList.write = make(chan Data)
 	connList.read = make(chan Data)
 
-	listenerManager := newManager(connList)
+	//Create a new manager with startingPort set to 9001 (as server uses 9000 to talk to clients)
+	startingPort := "9001"
+	listenerManager := createManager(connList, startingPort)
 
 	for {
 		select {
 		case managerData := <- connList.write:
 			fmt.Println("New data from manager:", managerData.result)
 		case <- conn.read:
-			fmt.Println("Creating new listener")
+			//Create new listener, which returns the port as a string
 			port := listenerManager.NewObject()
-			fmt.Println("Listener created with port:", port)
+			//Tell the server about the port.
 			conn.write <- Data{"port", port}
-			fmt.Println("Listener port sent to server")
 			
 		}
 	}
@@ -119,7 +125,7 @@ type manager interface {
 	NewObject ()
 }
 
-//Listenermanager is the specific manager for listeners
+//ListenerManager is the specific manager for listeners
 type ListenerManager struct {
 	currentPort    string
 	listenerList []Listener
@@ -127,17 +133,19 @@ type ListenerManager struct {
 	Connection
 }
 
-//Create a new manager, doesn't do much more than that.
-func createManager() *ListenerManager {
+//createManager, does what it says, incrementing users from startingPort.
+func createManager(conn *Connection, startingPort string) *ListenerManager {
 	manager := new(ListenerManager)
-	manager.currentPort = "9001"
+	manager.currentPort = startingPort
+	manager.read = conn.write
+	manager.write = conn.read
 
 	return manager
 }
 
 //NewObject creates a new listener to the listenermanager, it returns the port for the new listener
 //and creates a new goroutine for the listener, to allow the user to connect.
-func (manager ListenerManager) NewObject() string {
+func (manager *ListenerManager) NewObject() string {
 	
 	listenerConn := new(Connection)
 	listenerConn.read = make(chan Data)
@@ -150,17 +158,15 @@ func (manager ListenerManager) NewObject() string {
 	listener.read = manager.ListenerConnection.write
 	listener.port = manager.currentPort
 	
-	defer manager.IncrementPort()
-	
 	go listener.StartUpListener(manager)
 	
 	return manager.currentPort
 }
 
 //StartUpListener is the function that actually creates the socket, it waits for an ID from the client, then enters echo mode.
-func (listener *Listener) StartUpListener(manager ListenerManager) {
+func (listener *Listener) StartUpListener(manager *ListenerManager) {
 	listener.socket = createSocket(manager.currentPort)
-	
+	manager.IncrementPort()
 	connection, err := listener.socket.Accept()
 	if err != nil {
 		panic(err)
@@ -174,8 +180,6 @@ func (listener *Listener) StartUpListener(manager ListenerManager) {
 	listener.id = string(message)
 	
 	go listener.IdleListener(connection)
-	
-	fmt.Println(listener.id, "has joined and its listener is now in echo mode")
 }
 
 //IdleListener is the "standard state" for listener, while it's not actively doing anything.
@@ -199,30 +203,20 @@ func (listener *Listener) IdleListener(connection net.Conn) {
 //createSocket accepts a new tcp connection using the supplied port.
 func createSocket(port string) net.Listener {
 
-	fmt.Println("Creating listener: ", port)
 	connection, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
-	} else {
-		fmt.Printf("Listener %s created!\n", port)
 	}
 
 	return connection
 }
 
 //IncrementPort is only used to update the port for the manager, it's a seperate function so that we can use go IncrementPort()
-func (manager ListenerManager) IncrementPort() {
+func (manager *ListenerManager) IncrementPort() {
 	portInt, _ := strconv.Atoi(manager.currentPort)
 	manager.currentPort = strconv.Itoa((portInt + 1))
-	fmt.Println(manager.currentPort)
-}
-
-//newManager creates a new listener manager
-func newManager(conn *Connection) ListenerManager {
-	manager := createManager()
-	
-	return *manager
+	fmt.Println("Manager port is now:", manager.currentPort)
 }	
 
 //IdleManager is the idle state for the manager function, it's the resting state of the function.
