@@ -90,6 +90,7 @@ public class SynchronousSocketClient
                 UIntPort = ReceivePort(sender);
 
                 sender.Shutdown(SocketShutdown.Both);
+                sender.Disconnect( false );
                 sender.Close();
 
                 return UIntPort;
