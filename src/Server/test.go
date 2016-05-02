@@ -53,7 +53,6 @@ func main() {
 				//Listen() wrote to me
 				conn.write <- Data{"NewUser", "NewUser"}
 				//Write to session to tell it to spawn a new listener
-			default:
 		}	
 	}	
 }
@@ -128,7 +127,7 @@ type manager interface {
 //ListenerManager is the specific manager for listeners
 type ListenerManager struct {
 	currentPort    string
-	listenerList []Listener
+	listenerList []*Listener
 	ListenerConnection Connection
 	Connection
 }
