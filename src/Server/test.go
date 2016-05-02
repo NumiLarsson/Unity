@@ -113,6 +113,13 @@ func Session(conn *Connection) {
 			//Tell the server about the port.
 			conn.write <- Data{"port", port}
 			
+			//Temp code, NYI.
+			for i, listener := range listenerManager.listenerList {
+				if listener != nil {
+					fmt.Println(i, listener.id)
+				}
+			} //Not yet fully implemented, should preferably be a linked list or something like that.
+			
 		}
 	}
 
@@ -127,7 +134,9 @@ type manager interface {
 //ListenerManager is the specific manager for listeners
 type ListenerManager struct {
 	currentPort    string
-	listenerList []*Listener
+	//Temp code, NYI.
+	listenerList []*Listener //NYI.
+	//Temp code, NYI.
 	ListenerConnection Connection
 	Connection
 }
@@ -135,6 +144,9 @@ type ListenerManager struct {
 //createManager, does what it says, incrementing users from startingPort.
 func createManager(conn *Connection, startingPort string) *ListenerManager {
 	manager := new(ListenerManager)
+	//Temp code, NYI.
+	manager.listenerList = make([]*Listener, 500) //Magic number because this is NYI.
+	//Temp code, NYI.
 	manager.currentPort = startingPort
 	manager.read = conn.write
 	manager.write = conn.read
@@ -156,6 +168,14 @@ func (manager *ListenerManager) NewObject() string {
 	listener.write = manager.ListenerConnection.read
 	listener.read = manager.ListenerConnection.write
 	listener.port = manager.currentPort
+	
+	//Temp code, NYI. Proof of concept
+	for x, value := range manager.listenerList {
+		if value == nil {
+			manager.listenerList[x] = listener
+			break
+		}
+	} //Temp code, NYI.
 	
 	go listener.StartUpListener(manager)
 	
