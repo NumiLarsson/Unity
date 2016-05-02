@@ -49,15 +49,24 @@ Undersökte tidsbegränsad synkronisering av olika kanaler i Go.
 Första implementation av den interna kommunikationen i servern.
 
 ##### Fredag
-
+**10:00-14:30**
+Initierade arbetet med att bygga upp den interna kommunikationen på ett strukturerat och skalbart sett. Lite dubbelarbete i gruppen som ledde till irritation.
 
 ## Vecka 17
 
 ##### Måndag
+**10:00-12:00**
+Workshop med Aletta<br>
+**12:00-15:00**
+Möte med gruppen och påbörjande av keynote/stöd till milstolpe 1.
 
 ##### Tisdag
+**09:00-12:00**
+Omskrivning och bearbetning av projektförslaget.
 
 ##### Onsdag
+**13:00-16:00**
+Slutförande av projektförslag v.2. Förberedelse och gemensam genomgång av milstolpe 1.
 
 ##### Torsdag
 

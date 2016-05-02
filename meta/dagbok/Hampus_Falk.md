@@ -37,17 +37,27 @@ Fortsatt arbete med peer review-frågor samt mindre genomgång av projektspecifi
 Mer specifika uppdelningar av arbetet har gjorts och arbete har påbörjats med dessa 13:00-16:30. Generellt kodskrivande med syftet att lära mig nätverksprogrammering i Go ca 2h.
 
 ##### Fredag
+Träff med grupp för fortsatt arbete med den uppdelning som skapades under torsdagen. Ny struktur av systemet skapades och version 1 av listenerManager skapades, 10:00-13:00. Generellt påläsning om diverse API:er i Golang ca 1h
 
+##### Lördag
+Påläsning om generella ting som kommer att förekomma i projektet ca 3h
+
+##### Söndag
+Påläsning om skriven kod för ökad förståelse samt informations inhämtning om generella ting ca 3h
 
 ## Vecka 17
 
 ##### Måndag
+Missade träff med gruppen, deras arbete relaterade till planering inför milstolpe 1. Egenläsning om de saker som togs upp och inlärning av information till milstolpe 1 ca 2h
 
 ##### Tisdag
+Träff med gruppen för fortsatt föreberedelse inför milstolpe 1, ca 3h
 
 ##### Onsdag
+Träff med gruppen för fortsatt föreberedelse samt presentation av milstolpe 1 ca 4h
 
 ##### Torsdag
+Påläsning av kommande ting såsom JSON, kommunikation mellan client -> Sever m.m. ca 3h
 
 ##### Fredag
 
