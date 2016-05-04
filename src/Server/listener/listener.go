@@ -1,4 +1,4 @@
-package server
+package listener
 
 import (
     "net"
@@ -8,16 +8,10 @@ import (
 //Contains a tcp socket, with the specified port at creation
 type Listener struct {
     socket  net.Listener
-    id      string
-    port    string
+    ID      string
+    Port    string
     //Connection
 }
-/*Connection is temp until we establish the proper interface.
-type Connection struct {
-    read    chan string
-    write   chan string
-}
-*/
 
 func createSocket(port string) (net.Listener, error) {
     connection, err := net.Listen("tcp", ":" + port)
@@ -28,7 +22,8 @@ func createSocket(port string) (net.Listener, error) {
     return connection, nil
 }
 
-func newListener(port string/*, conn *Connection*/) *Listener {
+//NewListener creates a new socket then runs this socket as a go routine
+func NewListener(port string/*, conn *Connection*/) *Listener {
     listener := new(Listener)
     
     var err error
@@ -38,7 +33,7 @@ func newListener(port string/*, conn *Connection*/) *Listener {
     }
     
     
-    listener.port = port
+    listener.Port = port
     
     //listener.write = conn.read //Fan in to manager
     //listener.read = conn.write //Fan out from manager
