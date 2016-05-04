@@ -83,6 +83,8 @@ Slutliga förberedelsen inför milstolpe 1, genomgån av kod, slutförande av pr
 ## Vecka 18
 
 ##### Måndag
+**13:00-16:00**
+Försökte grundligt strukturera systemarkitekturen så att vi kan bryta ner i mindre uppgifter till trello/scrum
 
 ##### Tisdag
 
