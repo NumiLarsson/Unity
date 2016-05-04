@@ -4,11 +4,11 @@ OSPP (1DT096) 2016 - Grupp 08
 
 
 ## Rutiner
-Vi har tänkt att i huvudsak arbeta tillsammans. Speciellt i början när grunderna är oklara och det är extra viktigt att alla är med på noterna. Mötena bör ske minst tre gånger i veckan med efterföljande gemensamt arbete. Dess möten planeras en vecka i förtid med hänsyn av schemat. Möteslängden beror på innehållet men vår ambition är att dessa börjar senast 10:00. Frånvaro ifrån dessa är endast tillåten i samband med dödsfall, sjukdom, skolrelaterade skäl (lektioner, tentor osv) och andra händelser som gruppen anser godtagbara.
+Vi har tänkt att i huvudsak arbeta tillsammans. Speciellt i början när grunderna är oklara och det är extra viktigt att alla är med på noterna. Mötena bör ske minst tre gånger i veckan med efterföljande gemensamt arbete. Dessa möten planeras en vecka i förtid med hänsyn av schemat. Möteslängden beror på innehållet men vår ambition är att dessa börjar senast 10:00. Frånvaro ifrån dessa är endast tillåten i samband med dödsfall, sjukdom, skolrelaterade skäl (lektioner, tentor osv) och andra händelser som gruppen anser godtagbara.
 
 
 ## Kommunikationen i gruppen
-Kommunikationen sker framförallt via Slack, framförallt den formella informationen. Mer informell info kan skötas via Facebook. Frånvaro från ett möte får diskuteras i gruppen och gemensamt bedöma om anledning till frånvaron är godtagbar inklusive eventuella påföljder. Samordning och planering sker primärt med hjälp av Trello, men också i Slack och Facebook.
+Kommunikationen sker framförallt via Slack, speciellt mer formell information. Informell info kan däremot skötas via Facebook. Frånvaro från ett möte får diskuteras i gruppen som gemensamt bedömer om anledning till frånvaron är godtagbar, inklusive eventuella påföljder. Samordning och planering sker primärt med hjälp av Trello, men också i Slack och Facebook.
 
 
 ## Frånvaro
