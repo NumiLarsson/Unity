@@ -3,6 +3,7 @@
     <option name="urls">
       <list>
         <option value="file://$USER_HOME$/go/bin" />
+        <option value="file://$USER_HOME$/ospp-2016-group-08" />
       </list>
     </option>
   </component>
