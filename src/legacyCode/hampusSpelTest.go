@@ -1,4 +1,4 @@
-package main
+package hampusSpel
 
 import (
 	"fmt"
@@ -93,7 +93,7 @@ func clearScreen(){
 	}
 }
 
-func main() {
+func gameMain() {
 	var world *World = new(World)
 	var position *World = new(World)
 
