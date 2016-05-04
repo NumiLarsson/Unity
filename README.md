@@ -1,8 +1,6 @@
-# Namn på projektet
+# Chaos with a chance of asteroids
 
-OSPP (1DT096) 2016 - Grupp XX
-
-> Lägg till namnet på projektet och ändra XX till numret på din grupp.
+OSPP (1DT096) 2016 - Grupp 08
 
 Projektarbete på kursen Operativsystem och processorienterad
 programmering (1DT096) våren 2016, Uppsala universitet.

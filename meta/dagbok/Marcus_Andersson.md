@@ -1,14 +1,8 @@
-# Dagbok för Förnamn Efternamn
+# Dagbok för Marcus Andersson
 
-OSPP (1DT096) 2016 - Grupp XX
+OSPP (1DT096) 2016 - Grupp 08
 
-> Ändra XX till numret på din grupp.
-
-<img src="../images/user.png" width="200">
-> Ändra så att bilden länkar till bilden på dig.
-
-Gör en kort anteckning i dagboken under aktuell vecka och dag nedan
-varje gång du arbetat på projektet.
+<img src="../images/marcus.png" width="200">
 
 ## Vecka 15
 
@@ -17,32 +11,62 @@ varje gång du arbetat på projektet.
 ##### Tisdag
 
 ##### Onsdag
+**08:00-15:00**
+Muntlig projektpresentation
 
 ##### Torsdag
+**10:00-12:00**
+Förberedelse och genrep av presentation.<br>
+**13:00-16:00**
+Presentationer av projektförslag.<br>
+**22:00-00:00**
+Skriftlig projektpresentation.
 
 ##### Fredag
-
+**10:00-12:00**
+Skriftlig projektpresentation.
 
 ## Vecka 16
 
 ##### Måndag
+**12:00-15:30**
+Diskuterade gruppkontrakt och skrev om detta från punktform till löpande text. Kollade även lite på servers i Go.
 
 ##### Tisdag
+**09:00-12:45**
+Skapade en initial projektspec samt skrev feedback på andra gruppers projektförslag.
 
 ##### Onsdag
+**10:15-15:00**
+Peer reviews samt reflektion. Utvecklad projektspec och initial uppdelning av arbetet.<br>
+**15:00-15:15**
+Möte med Karl Marklund.<br>
+**20:30-22:30**
+Undersökte tidsbegränsad synkronisering av olika kanaler i Go.
 
 ##### Torsdag
+**13:15-16:00**
+Första implementation av den interna kommunikationen i servern.
 
 ##### Fredag
-
+**10:00-14:30**
+Initierade arbetet med att bygga upp den interna kommunikationen på ett strukturerat och skalbart sett. Lite dubbelarbete i gruppen som ledde till irritation.
 
 ## Vecka 17
 
 ##### Måndag
+**10:00-12:00**
+Workshop med Aletta<br>
+**12:00-15:00**
+Möte med gruppen och påbörjande av keynote/stöd till milstolpe 1.
 
 ##### Tisdag
+**09:00-12:00**
+Omskrivning och bearbetning av projektförslaget.
 
 ##### Onsdag
+**13:00-16:00**
+Slutförande av projektförslag v.2. Förberedelse och gemensam genomgång av milstolpe 1.
 
 ##### Torsdag
 
