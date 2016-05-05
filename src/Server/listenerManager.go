@@ -37,6 +37,7 @@ func (lisManager *ListenerManager) NewObject() int {
     tempListener := listener.NewListener(lisManager.CurrentPort)
     fmt.Println(tempListener.Port)
     //Insert this listener in lisManager.listenerList   
+
     return lisManager.CurrentPort
 }
 
@@ -53,6 +54,5 @@ func (lisManager *ListenerManager) Write(world *listener.World) {
 func main() {
     listener := listener.NewListener(9000)
     fmt.Println(listener.Port)
-    fmt.Println("Listener created")
-    
+    fmt.Println("Listener created")   
 }
