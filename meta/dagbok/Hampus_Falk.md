@@ -66,7 +66,7 @@ Påläsning av kommande ting såsom JSON, kommunikation mellan client -> Sever m
 ##### Måndag
 
 ##### Tisdag
-
+Träff med gruppen för fortsatt arbete på den nya uppdelningen av projektet, mycket tid gick till att få emacs att fungera med golang. Arbetet fortsatte hemma med listenerManager. Ca 6h totalt arbete
 ##### Onsdag
 
 ##### Torsdag
