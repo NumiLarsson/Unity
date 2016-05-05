@@ -5,6 +5,10 @@ import (
     "strconv"
 )
 
+type World struct {
+    
+}
+
 //Listener is responsible for a client each
 //Contains a tcp socket, with the specified port at creation
 type Listener struct {
@@ -40,4 +44,8 @@ func NewListener(port int/*, conn *Connection*/) *Listener {
     //listener.read = conn.write //Fan out from manager
     
     return listener
+}
+
+func (listen *Listener) Write(world *World) {
+    
 }
