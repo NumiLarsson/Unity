@@ -1,7 +1,6 @@
 package main
 
 import (
-    "fmt"
     "github.com/numilarsson/ospp-2016-group-08/src/Server/listener"
 )
 
@@ -35,24 +34,29 @@ func (lisManager *ListenerManager) NewObject() int {
     defer lisManager.IncrementPort()
     
     tempListener := listener.NewListener(lisManager.CurrentPort)
-    fmt.Println(tempListener.Port)
-    //Insert this listener in lisManager.listenerList   
-
+    //fmt.Println(tempListener.Port)
+    //used only to be able to compile
+    
+    //Fix this
+    lisManager.listenerList[0] = *tempListener 
+    //Need to be proper later
     return lisManager.CurrentPort
 }
 
 //Write is the function that fans out all the data to be sent to clients
 //to the listeners that are responsible for doing so!
-func (lisManager *ListenerManager) Write(world *listener.World) {
+func (lisManager *ListenerManager) Write(/*world *listener.World*/) {
     for _, value := range lisManager.listenerList {
         //Must check if value exists before we do this function call
         //but if value != nil doesn't work!
-        go value.Write(world)
+        go value.Write(/*world*/)
     }
 }
 
 func main() {
-    listener := listener.NewListener(9000)
-    fmt.Println(listener.Port)
-    fmt.Println("Listener created")   
+    ok := make(chan bool)
+    lisManager := NewListenerManager(1, 9000)
+    lisManager.NewObject()
+    lisManager.Write()
+    <- ok
 }
