@@ -2,7 +2,7 @@ package main
 
 import (
     "fmt"
-    "github.com/numilarsson/ospp-2016-group-08/src/server/listener"
+    "github.com/numilarsson/ospp-2016-group-08/src/Server/listener"
 )
 
 //ListenerManager is used as a struct to basically emulate an object
@@ -12,6 +12,9 @@ type ListenerManager struct {
     currentPort     int
     listeners       []listener.Listener
     World           [][]int
+}
+
+type World struct {
 }
 
 //NewListenerManager does exactly what it says, with a cap on maxPlayers 
@@ -34,13 +37,23 @@ func (lisManager *ListenerManager) IncrementPort() {
 func (lisManager *ListenerManager) NewObject() int {
     defer lisManager.IncrementPort()
     
-    listener := new(listener.Listener)
-            
+    tempListener := listener.NewListener(lisManager.currentPort)
+    fmt.Println(tempListener.Port)
     return lisManager.currentPort
 }
 
+//Write is the function that fans out all the data to be sent to clients
+//to the listeners that are responsible for doing so!
+func (lisManager *ListenerManager) Write(world *World) {
+    for key, value := range lisManager.listeners {
+        if key != nil {
+            go key.Write(world)
+        }
+    }
+}
+
 func main() {
-    listener := listener.NewListener("9000")
+    listener := listener.NewListener(9000)
     fmt.Println(listener.Port)
     fmt.Println("Listener created")
     

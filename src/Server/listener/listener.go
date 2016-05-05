@@ -2,6 +2,7 @@ package listener
 
 import (
     "net"
+    "strconv"
 )
 
 //Listener is responsible for a client each
@@ -9,12 +10,12 @@ import (
 type Listener struct {
     socket  net.Listener
     ID      string
-    Port    string
+    Port    int
     //Connection
 }
 
-func createSocket(port string) (net.Listener, error) {
-    connection, err := net.Listen("tcp", ":" + port)
+func createSocket(port int) (net.Listener, error) {
+    connection, err := net.Listen("tcp", ":" + strconv.Itoa(port))
     if err != nil {
         return nil, err
     }
@@ -23,7 +24,7 @@ func createSocket(port string) (net.Listener, error) {
 }
 
 //NewListener creates a new socket then runs this socket as a go routine
-func NewListener(port string/*, conn *Connection*/) *Listener {
+func NewListener(port int/*, conn *Connection*/) *Listener {
     listener := new(Listener)
     
     var err error
