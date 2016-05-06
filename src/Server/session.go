@@ -9,7 +9,7 @@ type session struct {
 	nextPort   int
 	endPort    int
 	maxPlayers int
-	//conn
+	servConn   Connection
 }
 
 func Session(cServer *Connection, nextPort int, players int) {
