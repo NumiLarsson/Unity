@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Session struct {
+type session struct {
 	nextPort   int
 	endPort    int
 	maxPlayers int
