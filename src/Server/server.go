@@ -11,6 +11,8 @@ type Data struct {
 	result int
 }
 
+type portRequest int
+
 // Connection struct, containing one write and one read channel
 type Connection struct {
 	write chan Data
@@ -101,7 +103,11 @@ func listen(external chan Data) {
 func addPlayer() int {
 
 	for _, s := range server.sessions {
+		s.write <- Data{"Connect", 1}
+		port <- s.read
+		if port.result > -1 {
 
+		}
 		if s.players < server.maxPlayers {
 			return createPlayer(s)
 		} else {
