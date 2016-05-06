@@ -19,7 +19,6 @@ type gameSession struct {
 	id      int
 	players int
 	*Connection
-	active bool
 }
 
 var server struct {
@@ -27,7 +26,7 @@ var server struct {
 	nextPort     int
 	maxPlayers   int
 	nextSession  int
-	sessions     [8]gameSession
+	sessions     []*gameSession
 }
 
 func makeConnection() (c1, c2 *Connection) {
@@ -61,8 +60,6 @@ func main() {
 		time.Sleep(1 * time.Second)
 		fakeUser <- Data{"New user wants to connect", server.nextPort}
 
-
-
 	}()
 
 	listen(fakeUser)
@@ -71,14 +68,14 @@ func main() {
 
 func listen(external chan Data) {
 
-//x	createSession()
-
 	for {
 		select {
+		// TODO change external to correct input channel/port used by external comm.
 		case message := <-external:
 			fmt.Println("server: message from new user \n", message.action)
 			var port = addPlayer()
-			fmt.Println(port)
+			// Port to use should be sent to the user
+			fmt.Println("Set up new port", port)
 		}
 	}
 
@@ -86,42 +83,44 @@ func listen(external chan Data) {
 
 func addPlayer() int {
 
-	for _, s := range server.sessions {
-		if s.active && s.players <= server.maxPlayers {
-			return createPlayer(s)
-
-		} else {
-
-			return createSession()
-
-		}
-
+	if server.sessions == nil {
+		return createSession()
 	}
 
+	for _, s := range server.sessions {
+
+		if s.players <= server.maxPlayers {
+			return createPlayer(s)
+		} else {
+			return createSession()
+		}
+	}
 	return -1
 }
 
+// Used to create a local copy of the session in the server
 func createSession() int {
 
 	cInternal, cExternal := makeConnection()
-	var session = server.sessions[server.nextSession]
+	session := new(gameSession)
 
-	session.active = true
 	session.Connection = cInternal
-
 	session.id = server.nextSession
 	server.nextSession++
+	server.sessions = append(server.sessions, session)
 
-	go Session(cExternal,nextPort(),server.maxPlayers)
+	go Session(cExternal, nextPort(), server.maxPlayers)
 	<-cInternal.read
 
 	return createPlayer(session)
 }
 
-func createPlayer(session gameSession) int {
+func createPlayer(session *gameSession) int {
+
 	session.write <- Data{"connect", 0}
 	data := <-session.read
 	fmt.Println("Player connected")
+	server.totalPlayers++
 	return data.result
 }
 
@@ -130,4 +129,3 @@ func nextPort() int {
 	server.nextPort += server.maxPlayers
 	return port
 }
-
