@@ -5,7 +5,16 @@ import (
 	"time"
 )
 
-func Session(cServer *Connection,startPort int,players int) {
+type Session struct {
+	nextPort   int
+	endPort    int
+	maxPlayers int
+	//conn
+}
+
+func Session(cServer *Connection, nextPort int, players int) {
+
+	var endPort = nextPort + players
 
 	// Create channels between session and listenermanager
 	cManager, cManagerExt := makeConnection()
@@ -13,30 +22,28 @@ func Session(cServer *Connection,startPort int,players int) {
 	go createListenerManager(cManagerExt)
 	cServer.write <- Data{"Session created", 0}
 
-	i := 0
-	for i < 100 {
+	for {
 		time.Sleep(500 * time.Millisecond)
 		select {
 		case data := <-cServer.read:
 
 			// Receive info to spawn new listener
-			// Should this be a go-routine?
-			// data.action should contain the port that the new listener should use
 			fmt.Println("Session: Read from server: ", data.action)
-			cManager.write <- data
+
+			// Should we double check if maxplayer reached?
+			if nextPort < endPort {
+				cManager.write <- Data{"Create new player", nextPort}
+				nextPort++
+			} else {
+				cServer.write <- Data{"Session full", -1}
+			}
 
 		// Send response back to server
 		case userdata := <-cManager.read:
-			fmt.Printf("Session: New data from manager %d\n", userdata.action)
+			fmt.Printf("Session: Read from manager %d\n", userdata.action)
 			cServer.write <- userdata
 
-		default:
-		//	fmt.Println("Session: Nothing to do")
-
 		}
-
-		i++
-
 	}
 
 }
