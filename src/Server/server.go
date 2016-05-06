@@ -11,8 +11,6 @@ type Data struct {
 	result int
 }
 
-type portRequest int
-
 // Connection struct, containing one write and one read channel
 type Connection struct {
 	write chan Data
@@ -21,8 +19,7 @@ type Connection struct {
 
 // Local copy of a session, to be used for handling where to connect new players
 type gameSession struct {
-	id      int
-	players int
+	id int
 	*Connection
 }
 
@@ -69,10 +66,10 @@ func createFakeUser() chan Data {
 
 	go func() {
 
-		time.Sleep(2 * time.Second)
+		time.Sleep(250 * time.Millisecond)
 		fakeUser <- Data{"New user wants to connect", server.nextPort}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(500 * time.Millisecond)
 		fakeUser <- Data{"New user wants to connect", server.nextPort}
 
 	}()
@@ -84,15 +81,24 @@ func createFakeUser() chan Data {
 // Sends correct port to use in return
 func listen(external chan Data) {
 
+	// TEMPORARY
+	// ===
+	// Kill the server after 5 seconds of inactivity
+	timeout := time.After(5 * time.Second)
+
 	for {
 		select {
 		// TODO change external to correct input channel/port used by external comm.
 		case message := <-external:
 			fmt.Println("Server: New user wants to connect \n", message.action)
+			// TODO: Possibly in a go-routine based on performance
 			var port = addPlayer()
 
 			// Port to use should be sent to the user
 			fmt.Println("Server: Port set up for new user", port)
+
+		case <-timeout:
+			return
 		}
 	}
 
@@ -103,15 +109,13 @@ func listen(external chan Data) {
 func addPlayer() int {
 
 	for _, s := range server.sessions {
-		s.write <- Data{"Connect", 1}
-		port <- s.read
-		if port.result > -1 {
 
-		}
-		if s.players < server.maxPlayers {
+		// Ask a session whether there is enough room for a new player
+		s.write <- Data{"Connect", 1}
+		port := <-s.read
+
+		if port.result > -1 {
 			return createPlayer(s)
-		} else {
-			return createSession()
 		}
 	}
 
@@ -132,6 +136,8 @@ func createSession() int {
 	// Start a session and wait for it to send confirmation
 	go Session(cExternal, nextPort(), server.maxPlayers)
 	<-cInternal.read
+
+	fmt.Println("Session created")
 
 	return createPlayer(session)
 }
