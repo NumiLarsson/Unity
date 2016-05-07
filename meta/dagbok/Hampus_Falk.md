@@ -71,7 +71,7 @@ Träff med gruppen för fortsatt arbete på den nya uppdelningen av projektet, m
 Arbete med listenerManager samt påläsning om vad som komma skall, ca 4h
 
 ##### Torsdag
-
+Fortsatt kodning med listenerManager, uppnått den nivå som är aktuell i detta skede. Resterande arbetet involverar den abstrakta datan som skall skickas genom processhierarkin. ca 5h
 ##### Fredag
 
 ## Vecka 19
