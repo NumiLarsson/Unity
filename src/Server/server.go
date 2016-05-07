@@ -5,31 +5,36 @@ import (
 	"time"
 )
 
+// Data struct to be sent in channels
 type Data struct {
 	action string
 	result int
 }
 
+// Connection struct, containing one write and one read channel
 type Connection struct {
 	write chan Data
 	read  chan Data
 }
 
+// Local copy of a session, to be used for handling where to connect new players
 type gameSession struct {
-	id      int
-	players int
+	id int
 	*Connection
-	active bool
 }
 
+// TODO: type struct?
+// Used to store information about sessions, players etc.
 var server struct {
 	totalPlayers int
 	nextPort     int
 	maxPlayers   int
 	nextSession  int
-	sessions     [8]gameSession
+	sessions     []*gameSession
 }
 
+// Creates two mirrored connections
+// TODO: Currently using Data channels, implement generic channels?
 func makeConnection() (c1, c2 *Connection) {
 
 	c1 = new(Connection)
@@ -50,84 +55,106 @@ func main() {
 	server.nextPort = 9000
 	server.maxPlayers = 8
 
+	listen(createFakeUser())
+
+}
+
+// Only used to get som kind of input from a "user"
+func createFakeUser() chan Data {
+
 	fakeUser := make(chan Data)
 
-	//Only used to get som kind of input from a "user"
 	go func() {
 
-		time.Sleep(2 * time.Second)
+		time.Sleep(250 * time.Millisecond)
 		fakeUser <- Data{"New user wants to connect", server.nextPort}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(500 * time.Millisecond)
 		fakeUser <- Data{"New user wants to connect", server.nextPort}
-
-
 
 	}()
 
-	listen(fakeUser)
-
+	return fakeUser
 }
 
+// Server listen for new user that want to connect
+// Sends correct port to use in return
 func listen(external chan Data) {
 
-//x	createSession()
+	// TEMPORARY
+	// ===
+	// Kill the server after 5 seconds of inactivity
+	timeout := time.After(5 * time.Second)
 
 	for {
 		select {
+		// TODO change external to correct input channel/port used by external comm.
 		case message := <-external:
-			fmt.Println("server: message from new user \n", message.action)
+			fmt.Println("Server: New user wants to connect \n", message.action)
+			// TODO: Possibly in a go-routine based on performance
 			var port = addPlayer()
-			fmt.Println(port)
+
+			// Port to use should be sent to the user
+			fmt.Println("Server: Port set up for new user", port)
+
+		case <-timeout:
+			return
 		}
 	}
 
 }
 
+// Add player to first available session that has capacity for a new player
+// If no session has capacity or available, creates a new session and player
 func addPlayer() int {
 
 	for _, s := range server.sessions {
-		if s.active && s.players <= server.maxPlayers {
+
+		// Ask a session whether there is enough room for a new player
+		s.write <- Data{"Connect", 1}
+		port := <-s.read
+
+		if port.result > -1 {
 			return createPlayer(s)
-
-		} else {
-
-			return createSession()
-
 		}
-
 	}
 
-	return -1
+	return createSession()
 }
 
+// Used to create a local copy of the session in the server
 func createSession() int {
 
 	cInternal, cExternal := makeConnection()
-	var session = server.sessions[server.nextSession]
+	session := new(gameSession)
 
-	session.active = true
 	session.Connection = cInternal
-
 	session.id = server.nextSession
 	server.nextSession++
+	server.sessions = append(server.sessions, session)
 
-	go Session(cExternal,nextPort(),server.maxPlayers)
+	// Start a session and wait for it to send confirmation
+	go Session(cExternal, nextPort(), server.maxPlayers)
 	<-cInternal.read
+
+	fmt.Println("Session created")
 
 	return createPlayer(session)
 }
 
-func createPlayer(session gameSession) int {
-	session.write <- Data{"connect", 0}
-	data := <-session.read
+// Send request to session to create a new player and wait for confirmation
+func createPlayer(gs *gameSession) int {
+
+	gs.write <- Data{"Connect new player", 1}
+	data := <-gs.read
 	fmt.Println("Player connected")
+	server.totalPlayers++
 	return data.result
 }
 
+// Calculate the next start port to be used by a session
 func nextPort() int {
 	var port = server.nextPort
 	server.nextPort += server.maxPlayers
 	return port
 }
-

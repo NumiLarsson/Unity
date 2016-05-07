@@ -2,41 +2,91 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
-func Session(cServer *Connection,startPort int,players int) {
+// Change state by shifting x bits
+type World int
 
-	// Create channels between session and listenermanager
-	cManager, cManagerExt := makeConnection()
+type channels struct {
+	server    chan (Data)
+	players   chan (Data)
+	asteroids chan (Data)
+}
 
-	go createListenerManager(cManagerExt)
-	cServer.write <- Data{"Session created", 0}
+type session struct {
+	nextPort   int
+	endPort    int
+	maxPlayers int
+	servConn   Connection
+	world      World
+	// For external communication
+	write channels
+	read  channels
+}
 
-	i := 0
-	for i < 100 {
-		time.Sleep(500 * time.Millisecond)
+func loop(s *session) {
+
+	for {
+
 		select {
-		case data := <-cServer.read:
+		case data := <-s.read.server:
 
 			// Receive info to spawn new listener
-			// Should this be a go-routine?
-			// data.action should contain the port that the new listener should use
 			fmt.Println("Session: Read from server: ", data.action)
-			cManager.write <- data
+
+			// Should we double check if maxplayer reached?
+			if s.nextPort < s.endPort {
+				s.write.players <- Data{"Create new player", s.nextPort}
+				s.nextPort++
+			} else {
+				s.write.server <- Data{"Session full", -1}
+			}
 
 		// Send response back to server
-		case userdata := <-cManager.read:
-			fmt.Printf("Session: New data from manager %d\n", userdata.action)
-			cServer.write <- userdata
-
-		default:
-		//	fmt.Println("Session: Nothing to do")
-
+		case userdata := <-s.read.players:
+			fmt.Printf("Session: Read from manager %d\n", userdata.action)
+			s.write.server <- userdata
 		}
 
-		i++
-
 	}
+
+}
+
+func Session(server *Connection, nextPort int, players int) {
+
+	s := new(session)
+	s.endPort = nextPort + players
+	s.nextPort = nextPort
+	s.maxPlayers = players
+
+	s.write.server = server.write
+	s.read.server = server.read
+
+	// CREATE MANAGERS
+	// TODO: Loopify
+
+	createManagers(s)
+
+	// RESPOND TO SERVER
+	//
+
+	s.write.server <- Data{"Session created", 0}
+	loop(s)
+
+}
+
+// Setup managers and their respective connections to/from session
+func createManagers(s *session) {
+
+	toPlayers, fromPlayers := makeConnection()
+	s.write.players = toPlayers.write
+	s.read.players = toPlayers.read
+
+	toAsteroids, _ := makeConnection()
+	s.write.asteroids = toAsteroids.write
+	s.read.asteroids = toAsteroids.read
+
+	go createListenerManager(fromPlayers)
+	// go createAsteroidManager(fromAsteroids)
 
 }
