@@ -87,6 +87,6 @@ func createManagers(s *session, startPort int) {
 	s.read.asteroids = toAsteroids.read
 
 	go createListenerManager(fromPlayers, startPort)
-	// go createAsteroidManager(fromAsteroids)
+	go createAsteroidManager(fromAsteroids)
 
 }
