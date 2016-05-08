@@ -135,19 +135,21 @@ func createServer() *server {
 // Used to create a local copy of the session in the server
 func createSession(server *server) int {
 
-	cInternal, cExternal := makeConnection()
-	session := new(gameSession)
-
-	session.Connection = cInternal
-	session.id = server.nextSession
-	server.nextSession++
-	server.sessions = append(server.sessions, session)
+	serverSide, sessionSide := makeConnection()
 
 	// Start a session and wait for it to send confirmation
-	go Session(cExternal, nextPort(server), server.maxPlayers)
+	go Session(sessionSide, nextPort(server), server.maxPlayers)
 	<-cInternal.read
 
 	fmt.Println("Session created")
+
+	// Create a local copy
+	session := new(gameSession)
+
+	session.Connection = serverSide
+	session.id = server.nextSession
+	server.nextSession++
+	server.sessions = append(server.sessions, session)
 
 	return createPlayer(server, session)
 }
