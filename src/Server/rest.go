@@ -18,12 +18,13 @@ type Listener struct {
 
 type ListenerManager struct {
 	currentPort    int
+	startPort      int
 	listenerAmount []*Listener
 	*Connection
 }
 
 // Create ListenerManager and set comm. channels to session
-func createListenerManager(cSession *Connection) {
+func createListenerManager(cSession *Connection, startPort int) {
 	listenerManager := new(ListenerManager)
 	listenerManager.Connection = cSession
 

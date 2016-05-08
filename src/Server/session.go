@@ -14,11 +14,10 @@ type channels struct {
 }
 
 type session struct {
-	nextPort   int
-	endPort    int
+	players    int
 	maxPlayers int
-	servConn   Connection
 	world      World
+
 	// For external communication
 	write channels
 	read  channels
@@ -35,15 +34,17 @@ func loop(s *session) {
 			fmt.Println("Session: Read from server: ", data.action)
 
 			// Should we double check if maxplayer reached?
-			if s.nextPort < s.endPort {
-				s.write.players <- Data{"Create new player", s.nextPort}
-				s.nextPort++
+			if s.players < s.maxPlayers {
+				s.write.players <- Data{"Create new player", 100}
+
+				s.players++
 			} else {
 				s.write.server <- Data{"Session full", -1}
 			}
 
 		// Send response back to server
 		case userdata := <-s.read.players:
+
 			fmt.Printf("Session: Read from manager %d\n", userdata.action)
 			s.write.server <- userdata
 		}
@@ -52,20 +53,19 @@ func loop(s *session) {
 
 }
 
-func Session(server *Connection, nextPort int, players int) {
+//
+func Session(serverConn *Connection, startPort int, players int) {
 
 	s := new(session)
-	s.endPort = nextPort + players
-	s.nextPort = nextPort
 	s.maxPlayers = players
 
-	s.write.server = server.write
-	s.read.server = server.read
+	s.write.server = serverConn.write
+	s.read.server = serverConn.read
 
 	// CREATE MANAGERS
 	// TODO: Loopify
 
-	createManagers(s)
+	createManagers(s, startPort)
 
 	// RESPOND TO SERVER
 	//
@@ -76,7 +76,7 @@ func Session(server *Connection, nextPort int, players int) {
 }
 
 // Setup managers and their respective connections to/from session
-func createManagers(s *session) {
+func createManagers(s *session, startPort int) {
 
 	toPlayers, fromPlayers := makeConnection()
 	s.write.players = toPlayers.write
@@ -86,7 +86,7 @@ func createManagers(s *session) {
 	s.write.asteroids = toAsteroids.write
 	s.read.asteroids = toAsteroids.read
 
-	go createListenerManager(fromPlayers)
-	// go createAsteroidManager(fromAsteroids)
+	go createListenerManager(fromPlayers, startPort)
+	go createAsteroidManager(fromAsteroids)
 
 }
