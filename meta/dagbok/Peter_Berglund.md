@@ -45,15 +45,15 @@ Arbetstid: 3h. Förberedelse för progress meeting 1 / genomfört progress meeti
 ## Vecka 18
 
 ##### Måndag
-
+Arbetstid: 3h jobb med att bryta ner arbetet i mindre delar
 ##### Tisdag
 
 ##### Onsdag
-
+Arbetstid: 4h Började jobba mer på Server och Session 
 ##### Torsdag
 
 ##### Fredag
-
+Arbetstid: 2h Börjat kolla på asteroidmanager 
 ## Vecka 19
 
 ##### Måndag
