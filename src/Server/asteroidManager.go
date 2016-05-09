@@ -5,19 +5,12 @@ import (
 	"math/rand"
 )
 
-type asteroids struct {
-	x     int
-	y     int
-	size  int
-	phase int
-	input chan (Data)
-}
-
 type asteroidManager struct {
 	xMax      int
 	yMax      int
+	currentId int
 	input     chan (Data)
-	asteroids []*asteroids // Accessible from session.go
+	asteroids []*asteroid // Accessible from session.go
 	// spawn frequency
 	// max asteroids
 
@@ -25,45 +18,56 @@ type asteroidManager struct {
 
 func AsteroidLoop(aManager *asteroidManager, sessionConn *Connection) {
 
-	checkBoard(aManager)
+	for {
 
-	//sessionConn.write <- Data{"shared data",1}
+		checkBoard(aManager)
 
-	select {
+		//sessionConn.write <- Data{"shared data",1}
+		select {
 
-	case msg := <-sessionConn.read:
-		fmt.Println("Collision!! \n ", msg.action)
-		// TODO: remove asteroids who has a collision or hit
+		case msg := <-sessionConn.read:
+			fmt.Println("Collision!! \n ", msg.action)
+			// TODO: remove asteroids who has a collision or hit
 
-	default:
-		fmt.Println("default")
-		break
+		default:
+			//fmt.Println("default")
+			break
+		}
+
+		// 1. Iterate over each of the asteroids
+		// 		- Check if it's inside the board, otherwise destroy it [remove from "shared" list]
+		// 2. Session reads shared Data
+		// 3. Session sends back any collisions/hits and whom it affects [possibly useful to store the asteroids in a map?]
+		// 4. asteroidManager broadcasts to those affected and tells them to "die"
+		// 5. asteroidManager removes the affected asteroids from the "shared" list
+		// 6. Depending on the outcome and parameters asteroidManager may spawn additional asteroids
+		// 7. REPEAT
+
+		print(aManager)
+
 	}
-
-	// 1. Iterate over each of the asteroids
-	// 		- Check if it's inside the board, otherwise destroy it [remove from "shared" list]
-	// 2. Session reads shared Data
-	// 3. Session sends back any collisions/hits and whom it affects [possibly useful to store the asteroids in a map?]
-	// 4. asteroidManager broadcasts to those affected and tells them to "die"
-	// 5. asteroidManager removes the affected asteroids from the "shared" list
-	// 6. Depending on the outcome and parameters asteroidManager may spawn additional asteroids
-	// 7. REPEAT
-
-	print(aManager)
 
 }
 
+// Checks if a given asteroid a is inside the bounds
+func inBounds(a *asteroid, aManager *asteroidManager) bool {
+
+	return (a.x >= 0 && a.y >= 0 && a.x <= aManager.xMax && a.y <= aManager.yMax)
+
+}
+
+// Removes any asteroids outside the gameboard
 func checkBoard(aManager *asteroidManager) {
 
-	var i = 0
-	for _, a := range aManager.asteroids {
+	for i, a := range aManager.asteroids {
 
-		if a.x >= 0 && a.y >= 0 && a.x < aManager.xMax && a.y < aManager.yMax {
-
-		} else {
+		if !inBounds(a, aManager) {
+			fmt.Println("Asteroid out of bounds")
 			removeAsteroid(i, aManager)
 		}
-		i++
+
+		a.input <- Data{"ok", 0}
+
 	}
 
 }
@@ -74,14 +78,20 @@ func removeAsteroid(i int, aManager *asteroidManager) {
 
 func createAsteroid(aManager *asteroidManager) {
 
-	asteroid := new(asteroids)
+	asteroid := new(asteroid)
 	asteroid.x = rand.Intn(aManager.xMax)
 	asteroid.y = rand.Intn(aManager.yMax)
+	asteroid.id = aManager.currentId
+	asteroid.input = make(chan Data)
+	aManager.currentId++
 
 	aManager.asteroids = append(aManager.asteroids, asteroid)
+
+	go spawnAsteroid(asteroid)
+
 }
 
-func createAsteroidManager(sessionConn *Connection, asteroids []*asteroids) {
+func createAsteroidManager(sessionConn *Connection, asteroids []*asteroid) {
 
 	// Create relevant structs
 
@@ -89,12 +99,13 @@ func createAsteroidManager(sessionConn *Connection, asteroids []*asteroids) {
 	game := new(asteroidManager)
 	game.xMax = 10
 	game.yMax = 10
+	game.asteroids = asteroids
 
 	// ONLY FOR TEST
 	createAsteroid(game)
-	createAsteroid(game)
-	createAsteroid(game)
-
+	//createAsteroid(game)
+	//createAsteroid(game)
+	fmt.Println("%d", (len(game.asteroids)))
 	// Send confirmation back to Session
 	//sessionConn.write <- Data{"connect new manager",1}
 
@@ -104,7 +115,7 @@ func createAsteroidManager(sessionConn *Connection, asteroids []*asteroids) {
 // ONLY FOR TEST
 func print(aManager *asteroidManager) {
 	for _, a := range aManager.asteroids {
-		fmt.Println("(", a.x, ",", a.y, ")")
+		fmt.Println("(", a.id, ",", a.x, ",", a.y, ")")
 	}
 }
 
