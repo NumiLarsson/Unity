@@ -97,6 +97,7 @@ func listen(server *server, external chan Data) {
 			fmt.Println("Server: Port set up for new user", port)
 
 		case <-timeout:
+			fmt.Println("\n======\nServer terminated due to inactivity")
 			return
 		}
 	}
@@ -124,12 +125,12 @@ func addPlayer(server *server) int {
 // Creates a new server struct
 func createServer() *server {
 
-	s := new(server)
-	s.totalPlayers = 0
-	s.nextPort = 9000
-	s.maxPlayers = 8
+	server := new(server)
+	server.totalPlayers = 0
+	server.nextPort = 9000
+	server.maxPlayers = 8
 
-	return s
+	return server
 }
 
 // Used to create a local copy of the session in the server

@@ -17,14 +17,14 @@ type session struct {
 	players    int
 	maxPlayers int
 	world      World
-	asteroids  []*asteroids
+	asteroids  []*asteroid
 
 	// For external communication
 	write channels
 	read  channels
 }
 
-func loop(session *session) {
+func (session *session) loop() {
 
 	for {
 
@@ -46,48 +46,52 @@ func loop(session *session) {
 		// Send response back to server
 		case userdata := <-session.read.players:
 
-			fmt.Printf("Session: Read from manager %d\n", userdata.action)
+			fmt.Printf("Session: Read from manager %s\n", userdata.action)
 			session.write.server <- userdata
+
+		default:
+			// Nothing
 		}
 
 	}
 
 }
 
-//
+// Session …
 func Session(serverConn *Connection, startPort int, players int) {
 
-	s := new(session)
-	s.maxPlayers = players
+	session := new(session)
+	session.maxPlayers = players
 
-	s.write.server = serverConn.write
-	s.read.server = serverConn.read
+	session.write.server = serverConn.write
+	session.read.server = serverConn.read
+	session.asteroids = make([]*asteroid, 0)
 
 	// CREATE MANAGERS
 	// TODO: Loopify
 
-	createManagers(s, startPort)
+	session.createManagers(startPort)
 
 	// RESPOND TO SERVER
 	//
 
-	s.write.server <- Data{"Session created", 0}
-	loop(s)
+	session.write.server <- Data{"Session created", 0}
+	session.loop()
 
 }
 
 // Setup managers and their respective connections to/from session
-func createManagers(session *session, startPort int) {
+func (session *session) createManagers(startPort int) {
 
-	//toPlayers, fromPlayers := makeConnection()
-	//s.write.players = toPlayers.write
-	//s.read.players = toPlayers.read
+	toPlayers, fromPlayers := makeConnection()
+	session.write.players = toPlayers.write
+	session.read.players = toPlayers.read
 
 	toAsteroids, _ := makeConnection()
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
-	//go createListenerManager(fromPlayers, startPort)
+	go createListenerManager(fromPlayers, startPort)
 	go createAsteroidManager(toAsteroids, session.asteroids)
 
 }
