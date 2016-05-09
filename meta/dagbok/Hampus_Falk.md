@@ -72,6 +72,9 @@ Arbete med listenerManager samt påläsning om vad som komma skall, ca 4h
 
 ##### Torsdag
 Fortsatt kodning med listenerManager, uppnått den nivå som är aktuell i detta skede. Resterande arbetet involverar den abstrakta datan som skall skickas genom processhierarkin. ca 5h
+
+##### Söndag
+Fortsatt kodande, samt inläsning av utmaningar som kommer att komma, ca 2h
 ##### Fredag
 
 ## Vecka 19
