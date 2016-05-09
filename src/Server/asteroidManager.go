@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	"time"
 )
 
 type asteroidManager struct {
 	xMax      int
 	yMax      int
-	currentId int
+	nextID    int
 	input     chan (Data)
 	asteroids []*asteroid // Accessible from session.go
 	// spawn frequency
@@ -16,22 +16,24 @@ type asteroidManager struct {
 
 }
 
-func AsteroidLoop(aManager *asteroidManager, sessionConn *Connection) {
+// asteroidLoop …
+func (manager *asteroidManager) loop(sessionConn *Connection) {
 
 	for {
 
-		checkBoard(aManager)
+		fakeTick := time.After(16 * time.Millisecond)
 
-		//sessionConn.write <- Data{"shared data",1}
 		select {
 
-		case msg := <-sessionConn.read:
+		case <-fakeTick:
+			manager.checkBoard()
+			manager.print()
+			manager.resumeAsteroids()
+
+		case msg := <-manager.input:
 			fmt.Println("Collision!! \n ", msg.action)
 			// TODO: remove asteroids who has a collision or hit
 
-		default:
-			//fmt.Println("default")
-			break
 		}
 
 		// 1. Iterate over each of the asteroids
@@ -43,92 +45,72 @@ func AsteroidLoop(aManager *asteroidManager, sessionConn *Connection) {
 		// 6. Depending on the outcome and parameters asteroidManager may spawn additional asteroids
 		// 7. REPEAT
 
-		print(aManager)
-
 	}
-
-}
-
-// Checks if a given asteroid a is inside the bounds
-func inBounds(a *asteroid, aManager *asteroidManager) bool {
-
-	return (a.x >= 0 && a.y >= 0 && a.x <= aManager.xMax && a.y <= aManager.yMax)
 
 }
 
 // Removes any asteroids outside the gameboard
-func checkBoard(aManager *asteroidManager) {
+func (manager *asteroidManager) resumeAsteroids() {
 
-	for i, a := range aManager.asteroids {
+	for _, asteroid := range manager.asteroids {
+		asteroid.input <- Data{"ok", 0}
+	}
 
-		if !inBounds(a, aManager) {
-			fmt.Println("Asteroid out of bounds")
-			removeAsteroid(i, aManager)
+}
+
+func (manager *asteroidManager) checkBoard() {
+
+	for i, asteroid := range manager.asteroids {
+
+		if !asteroid.inBounds(manager) {
+			fmt.Println("Asteroid out of bounds. Die!")
+			manager.removeAsteroid(i)
 		}
-
-		a.input <- Data{"ok", 0}
 
 	}
 
 }
 
-func removeAsteroid(i int, aManager *asteroidManager) {
-	aManager.asteroids = append(aManager.asteroids[:i], aManager.asteroids[i+1:]...)
+func (manager *asteroidManager) removeAsteroid(i int) {
+	manager.asteroids = append(manager.asteroids[:i], manager.asteroids[i+1:]...)
 }
 
-func createAsteroid(aManager *asteroidManager) {
+func (manager *asteroidManager) newObject() {
 
-	asteroid := new(asteroid)
-	asteroid.x = rand.Intn(aManager.xMax)
-	asteroid.y = rand.Intn(aManager.yMax)
-	asteroid.id = aManager.currentId
-	asteroid.input = make(chan Data)
-	aManager.currentId++
-
-	aManager.asteroids = append(aManager.asteroids, asteroid)
-
-	go spawnAsteroid(asteroid)
+	asteroid := newAsteroid()
+	manager.asteroids = append(manager.asteroids, asteroid)
+	go asteroid.loop(manager.getNextID(), manager.xMax, manager.yMax)
 
 }
 
 func createAsteroidManager(sessionConn *Connection, asteroids []*asteroid) {
 
-	// Create relevant structs
-
 	fmt.Println("AsteroidManager created")
-	game := new(asteroidManager)
-	game.xMax = 10
-	game.yMax = 10
-	game.asteroids = asteroids
+	manager := new(asteroidManager)
+	manager.xMax = 10
+	manager.yMax = 10
+	manager.asteroids = asteroids
+	manager.input = sessionConn.read
 
-	// ONLY FOR TEST
-	createAsteroid(game)
-	//createAsteroid(game)
-	//createAsteroid(game)
-	fmt.Println("%d", (len(game.asteroids)))
+	manager.newObject()
+
+	fmt.Printf("%d\n", (len(manager.asteroids)))
+
 	// Send confirmation back to Session
 	//sessionConn.write <- Data{"connect new manager",1}
 
-	AsteroidLoop(game, sessionConn)
+	manager.loop(sessionConn)
+}
+
+func (manager *asteroidManager) getNextID() int {
+	var id = manager.nextID
+	manager.nextID++
+	return id
 }
 
 // ONLY FOR TEST
-func print(aManager *asteroidManager) {
-	for _, a := range aManager.asteroids {
-		fmt.Println("(", a.id, ",", a.x, ",", a.y, ")")
+func (manager *asteroidManager) print() {
+	for _, asteroid := range manager.asteroids {
+		fmt.Println("(", asteroid.id, ",", asteroid.x, ",", asteroid.y, ")")
 	}
 }
-
-// temp just for test
-/*func main (){
-	fmt.Println("Test MAIN started")
-	ast := new(Connection)
-	ast.read = make (chan Data)
-	ast.write = make (chan Data)
-
-	go createAsteroidManager(ast)
-
-	time.Sleep(5 * time.Second)
-
-
-}*/

@@ -54,12 +54,12 @@ func makeConnection() (c1, c2 *Connection) {
 func main() {
 
 	var server = createServer()
-	listen(server, createFakeUser(server))
+	server.listen(server.createFakeUser())
 
 }
 
 // Only used to get some kind of input from a "user"
-func createFakeUser(server *server) chan Data {
+func (server *server) createFakeUser() chan Data {
 
 	fakeUser := make(chan Data)
 
@@ -78,7 +78,7 @@ func createFakeUser(server *server) chan Data {
 
 // Server listen for new user that want to connect
 // Sends correct port to use in return
-func listen(server *server, external chan Data) {
+func (server *server) listen(external chan Data) {
 
 	// TEMPORARY
 	// ===
@@ -91,7 +91,7 @@ func listen(server *server, external chan Data) {
 		case message := <-external:
 			fmt.Println("Server: New user wants to connect \n", message.action)
 			// TODO: Possibly in a go-routine based on performance
-			var port = addPlayer(server)
+			var port = server.addPlayer()
 
 			// Port to use should be sent to the user
 			fmt.Println("Server: Port set up for new user", port)
@@ -106,20 +106,20 @@ func listen(server *server, external chan Data) {
 
 // Add player to first available session that has capacity for a new player
 // If no session has capacity or available, creates a new session and player
-func addPlayer(server *server) int {
+func (server *server) addPlayer() int {
 
-	for _, s := range server.sessions {
+	for _, session := range server.sessions {
 
 		// Ask a session whether there is enough room for a new player
-		s.write <- Data{"Connect", 1}
-		port := <-s.read
+		session.write <- Data{"Connect", 1}
+		port := <-session.read
 
 		if port.result > -1 {
-			return createPlayer(server, s)
+			return server.createPlayer(session)
 		}
 	}
 
-	return createSession(server)
+	return server.createSession()
 }
 
 // Creates a new server struct
@@ -134,12 +134,12 @@ func createServer() *server {
 }
 
 // Used to create a local copy of the session in the server
-func createSession(server *server) int {
+func (server *server) createSession() int {
 
 	serverSide, sessionSide := makeConnection()
 
 	// Start a session and wait for it to send confirmation
-	go Session(sessionSide, nextPort(server), server.maxPlayers)
+	go Session(sessionSide, server.getNextPort(), server.maxPlayers)
 	<-serverSide.read
 
 	fmt.Println("Session created")
@@ -152,11 +152,11 @@ func createSession(server *server) int {
 	server.nextSession++
 	server.sessions = append(server.sessions, session)
 
-	return createPlayer(server, session)
+	return server.createPlayer(session)
 }
 
 // Send request to session to create a new player and wait for confirmation
-func createPlayer(server *server, gs *gameSession) int {
+func (server *server) createPlayer(gs *gameSession) int {
 
 	gs.write <- Data{"Connect new player", 1}
 	data := <-gs.read
@@ -166,7 +166,7 @@ func createPlayer(server *server, gs *gameSession) int {
 }
 
 // Calculate the next start port to be used by a session
-func nextPort(server *server) int {
+func (server *server) getNextPort() int {
 	var port = server.nextPort
 	server.nextPort += server.maxPlayers
 	return port

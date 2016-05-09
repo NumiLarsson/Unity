@@ -37,8 +37,8 @@ func (session *session) loop() {
 			// Should we double check if maxplayer reached?
 			if session.players < session.maxPlayers {
 				session.write.players <- Data{"Create new player", 100}
-
 				session.players++
+
 			} else {
 				session.write.server <- Data{"Session full", -1}
 			}
