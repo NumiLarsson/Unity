@@ -89,10 +89,20 @@ Försökte grundligt strukturera systemarkitekturen så att vi kan bryta ner i m
 ##### Tisdag
 
 ##### Onsdag
+**13:00-17:00**
+Börja bygga om server & session efter nya grundliggare systemarkitekturen
 
 ##### Torsdag
+**14:00-16:00**
+Dynamisk hantering av sessions i server
 
 ##### Fredag
+**10:00-14:30**
+Refaktorering och kommentera server
+
+##### Söndag
+**10:00-12:30**
+Refaktorera session, påbörja asteroidmanager
 
 ## Vecka 19
 
