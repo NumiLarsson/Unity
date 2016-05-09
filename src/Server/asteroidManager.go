@@ -17,7 +17,9 @@ type asteroidManager struct {
 }
 
 // asteroidLoop …
-func (manager *asteroidManager) loop(sessionConn *Connection) {
+func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*asteroid) {
+
+	manager.init(sessionConn, asteroids)
 
 	for {
 
@@ -83,10 +85,15 @@ func (manager *asteroidManager) newObject() {
 
 }
 
-func createAsteroidManager(sessionConn *Connection, asteroids []*asteroid) {
+func newAsteroidManager() *asteroidManager {
 
 	fmt.Println("AsteroidManager created")
-	manager := new(asteroidManager)
+	return new(asteroidManager)
+
+}
+
+func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*asteroid) {
+
 	manager.xMax = 10
 	manager.yMax = 10
 	manager.asteroids = asteroids
@@ -99,7 +106,7 @@ func createAsteroidManager(sessionConn *Connection, asteroids []*asteroid) {
 	// Send confirmation back to Session
 	//sessionConn.write <- Data{"connect new manager",1}
 
-	manager.loop(sessionConn)
+	//manager.loop(sessionConn)
 }
 
 func (manager *asteroidManager) getNextID() int {

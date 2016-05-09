@@ -14,11 +14,11 @@ type channels struct {
 }
 
 type session struct {
-	players    int
-	maxPlayers int
-	world      World
-	asteroids  []*asteroid
-
+	players         int
+	maxPlayers      int
+	world           World
+	asteroids       []*asteroid
+	asteroidManager *asteroidManager
 	// For external communication
 	write channels
 	read  channels
@@ -91,7 +91,10 @@ func (session *session) createManagers(startPort int) {
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
+	session.asteroidManager = newAsteroidManager()
+
+	go session.asteroidManager.loop(toAsteroids, session.asteroids)
 	go createListenerManager(fromPlayers, startPort)
-	go createAsteroidManager(toAsteroids, session.asteroids)
+	//go createAsteroidManager(toAsteroids, session.asteroids)
 
 }
