@@ -139,7 +139,7 @@ func createSession(server *server) int {
 
 	// Start a session and wait for it to send confirmation
 	go Session(sessionSide, nextPort(server), server.maxPlayers)
-	<-cInternal.read
+	<-serverSide.read
 
 	fmt.Println("Session created")
 
