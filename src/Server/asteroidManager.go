@@ -23,26 +23,22 @@ type asteroidManager struct {
 
 }
 
-func AsteroidLoop(aManager *asteroidManager,sessionConn *Connection) {
+func AsteroidLoop(aManager *asteroidManager, sessionConn *Connection) {
 
-	checkBoard(aManager) 
+	checkBoard(aManager)
 
-	//sessionConn.write <- Data{"shared data",1} 
-	
-	select{
-		
-	case msg := <- sessionConn.read:
-		fmt.Println("Collision!! \n ",msg.action)
+	//sessionConn.write <- Data{"shared data",1}
+
+	select {
+
+	case msg := <-sessionConn.read:
+		fmt.Println("Collision!! \n ", msg.action)
 		// TODO: remove asteroids who has a collision or hit
 
 	default:
 		fmt.Println("default")
 		break
 	}
-
-	
-	
-
 
 	// 1. Iterate over each of the asteroids
 	// 		- Check if it's inside the board, otherwise destroy it [remove from "shared" list]
@@ -57,38 +53,36 @@ func AsteroidLoop(aManager *asteroidManager,sessionConn *Connection) {
 
 }
 
-func checkBoard(aManager *asteroidManager ){
+func checkBoard(aManager *asteroidManager) {
 
 	var i = 0
-	for _, a := range aManager.asteroids{
+	for _, a := range aManager.asteroids {
 
-		if a.x >= 0 && a.y >= 0 && a.x < aManager.xMax && a.y < aManager.yMax{
-			
-		}else{
-			removeAsteroid(i,aManager)
+		if a.x >= 0 && a.y >= 0 && a.x < aManager.xMax && a.y < aManager.yMax {
+
+		} else {
+			removeAsteroid(i, aManager)
 		}
-		i++		
+		i++
 	}
-	
+
 }
 
-func removeAsteroid(i int, aManager  *asteroidManager){
+func removeAsteroid(i int, aManager *asteroidManager) {
 	aManager.asteroids = append(aManager.asteroids[:i], aManager.asteroids[i+1:]...)
 }
 
+func createAsteroid(aManager *asteroidManager) {
 
-func createAsteroid(aManager *asteroidManager){
-
-	asteroid := new (asteroids)
+	asteroid := new(asteroids)
 	asteroid.x = rand.Intn(aManager.xMax)
 	asteroid.y = rand.Intn(aManager.yMax)
-	
-	aManager.asteroids = append(aManager.asteroids,asteroid)
+
+	aManager.asteroids = append(aManager.asteroids, asteroid)
 }
 
+func createAsteroidManager(sessionConn *Connection, asteroids []*asteroids) {
 
-func createAsteroidManager(sessionConn *Connection) {
-	
 	// Create relevant structs
 
 	fmt.Println("AsteroidManager created")
@@ -100,19 +94,17 @@ func createAsteroidManager(sessionConn *Connection) {
 	createAsteroid(game)
 	createAsteroid(game)
 	createAsteroid(game)
-	
+
 	// Send confirmation back to Session
 	//sessionConn.write <- Data{"connect new manager",1}
-	
 
-	AsteroidLoop(game,sessionConn)
+	AsteroidLoop(game, sessionConn)
 }
 
-
 // ONLY FOR TEST
-func print(aManager *asteroidManager){
-	for _, a := range aManager.asteroids{
-		fmt.Println("(",a.x,",",a.y,")")
+func print(aManager *asteroidManager) {
+	for _, a := range aManager.asteroids {
+		fmt.Println("(", a.x, ",", a.y, ")")
 	}
 }
 
@@ -122,10 +114,10 @@ func print(aManager *asteroidManager){
 	ast := new(Connection)
 	ast.read = make (chan Data)
 	ast.write = make (chan Data)
-	
+
 	go createAsteroidManager(ast)
 
 	time.Sleep(5 * time.Second)
-	
-	
+
+
 }*/
