@@ -61,14 +61,15 @@ func main() {
 func (server *server) createFakeUser() chan Data {
 
 	fakeUser := make(chan Data)
+	nextPort := server.nextPort // Prevents data race
 
 	go func() {
 
 		time.Sleep(250 * time.Millisecond)
-		fakeUser <- Data{"New user wants to connect", server.nextPort}
+		fakeUser <- Data{"New user wants to connect", nextPort}
 
 		time.Sleep(500 * time.Millisecond)
-		fakeUser <- Data{"New user wants to connect", server.nextPort}
+		fakeUser <- Data{"New user wants to connect", nextPort}
 
 	}()
 
@@ -138,7 +139,8 @@ func (server *server) createSession() int {
 	serverSide, sessionSide := makeConnection()
 
 	// Start a session and wait for it to send confirmation
-	go Session(sessionSide, server.getNextPort(), server.maxPlayers)
+	nextPort := server.getNextPort() // Prevents data race
+	go Session(sessionSide, nextPort, server.maxPlayers)
 	<-serverSide.read
 
 	fmt.Println("Session created")

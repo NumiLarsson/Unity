@@ -29,6 +29,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 		select {
 
 		case <-fakeTick:
+
 			manager.checkBoard()
 			manager.print()
 			manager.resumeAsteroids()
@@ -86,7 +87,9 @@ func (manager *asteroidManager) newObject() {
 
 	asteroid := newAsteroid()
 	manager.asteroids = append(manager.asteroids, asteroid)
-	go asteroid.loop(manager.getNextID(), manager.xMax, manager.yMax)
+
+	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
+	go asteroid.loop()
 
 }
 
