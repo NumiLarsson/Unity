@@ -1,12 +1,18 @@
 package main
 
 import (
+	"./listener"
 	"fmt"
 	"time"
 )
 
 // World is a placeholder for the gameboard
-type World int
+//type World int
+// TODO: CHANGE THIS
+type World struct {
+	Players   []listener.Player
+	Asteroids []*listener.Asteroid
+}
 
 // channels struct used to implement a structured way to handle multiple
 // write/read channels for session
@@ -40,7 +46,7 @@ func (session *session) loop() {
 		select {
 		case <-fakeTick:
 			session.write.asteroids <- Data{"session.tick", 200}
-			//session.write.players <- Data{"tick", 200}
+			session.write.players <- Data{"session.tick", 200}
 
 		case data := <-session.read.server:
 
@@ -69,6 +75,10 @@ func (session *session) loop() {
 
 		}
 
+		// Collect player and asteroid positions
+		session.world.Players = session.listenerManager.getObjects()
+		// TODO: implement below
+		//session.world.Asteroids = session.asteroidManager.getObjects()
 	}
 
 }
