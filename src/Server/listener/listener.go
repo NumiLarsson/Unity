@@ -117,3 +117,7 @@ func (listen *Listener) Write( /*world *World*/ ) {
 
 	listen.writeBuffer[0] = jsonWorld
 }
+
+func (listen *Listener) GetPlayer() Player {
+	return listen.player
+}

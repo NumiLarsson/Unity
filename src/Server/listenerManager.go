@@ -2,16 +2,12 @@ package main
 
 import (
 	"fmt"
-	"net" //Used for the unimportable Listener
+	//"net" //Used for the unimportable Listener
 
 	"./listener"
 	//"strconv"
-	"time"
+	//"time"
 )
-
-//export GOPATH=$HOME/Golang2
-
-//type World struct{}
 
 //ListenerManager is used as a struct to basically emulate an object
 type ListenerManager struct {
@@ -20,24 +16,33 @@ type ListenerManager struct {
 	CurrentPort    int
 	input          chan (Data)
 	listeners      []*listener.Listener
+	Players        []listener.Player
 	//World           [][]int
 }
 
-//Does not import correctly for some reason
-type Listener struct {
-	socket net.Listener
-	ID     string
-	Port   string
-	//Connection
-}
-
+// loop TODO
 func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, startPort int) {
 	manager.init(sessionConn, maxPlayers, startPort)
 
 	for {
-		time.Sleep(250 * time.Millisecond)
-		//fmt.Println(manager.CurrentPlayers)
-		//manager.ReceiveFromSession()
+
+		select {
+
+		case msg := <-manager.input:
+
+			if msg.action == "session.tick" {
+				// Read current values
+				// TODO: Where should input from user be checked
+				manager.Players = manager.collectPlayerPositions()
+
+				// Send update + world to players
+
+			} else {
+				fmt.Println("Collision!! \n ", msg.action)
+				// TODO: remove asteroids who has a collision or hit
+			}
+		}
+
 	}
 
 }
@@ -53,11 +58,12 @@ func newListenerManager() *ListenerManager {
 //NewListenerManager does exactly what it says, with a cap on maxPlayers
 //connected and maxPlayers numbers of ports in a row from firstPort
 func (manager *ListenerManager) init(sessionConn *Connection, maxPlayers int, firstPort int) {
-	//lisManager := new(ListenerManager)
+
 	manager.MaxPlayers = maxPlayers
 	manager.CurrentPlayers = 0
 	manager.CurrentPort = firstPort
-	//manager.NewObject()
+	manager.input = sessionConn.read
+
 	manager.listeners = make([]*listener.Listener, 0)
 
 }
@@ -69,6 +75,7 @@ func (manager *ListenerManager) getNextPort() int {
 	return port
 }
 
+// incrementCurrentPlayers increments currentPlayers
 func (manager *ListenerManager) incrementCurrentPlayers() {
 	manager.CurrentPlayers++
 }
@@ -85,6 +92,26 @@ func (manager *ListenerManager) NewObject() int {
 	manager.incrementCurrentPlayers()
 
 	return manager.getNextPort()
+}
+
+// collectPlayerPositions collect all player positions and return an array of them
+func (manager *ListenerManager) collectPlayerPositions() []listener.Player {
+	playerList := make([]listener.Player, 0)
+
+	for _, listener := range manager.listeners {
+
+		var player = listener.GetPlayer()
+		playerList = append(playerList, player)
+	}
+
+	return playerList
+}
+
+// getObjects returns an array of playerpositions
+// TODO CHANGE listener.Player....
+func (manager *ListenerManager) getObjects() []listener.Player {
+
+	return manager.Players
 }
 
 // ReceiveFromSession handles data from session
@@ -113,9 +140,9 @@ func (manager *ListenerManager) sendToClient(world *World) {
 	}
 }
 
-func (listener *Listener) sendToClient(world *World) {
+/*func (listener *listener.Listener) sendToClient(world *World) {
 	fmt.Println("Todo" + listener.ID)
-}
+}*/
 
 /*func main() {
 	//Main used for testing, will be removed upon final product
