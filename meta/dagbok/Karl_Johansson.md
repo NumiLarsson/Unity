@@ -107,8 +107,13 @@ Refaktorera session, påbörja asteroidmanager
 ## Vecka 19
 
 ##### Måndag
+**10:00-12:30**
+asteroids.go och lite clean up av kod <br>
+**15:00-17:00**
+Ändra om kod till mer object orienterat, synca över alla "moduler"
 
 ##### Tisdag
+**13:00-
 
 ##### Onsdag
 
