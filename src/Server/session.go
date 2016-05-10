@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Change state by shifting x bits
+// World is a placeholder for the gameboard
 type World int
 
 // channels struct used to implement a structured way to handle multiple
@@ -35,16 +35,22 @@ func (session *session) loop() {
 
 	for {
 
+		fakeTick := time.After(16 * time.Millisecond)
+
 		select {
+		case <-fakeTick:
+			session.write.asteroids <- Data{"session.tick", 200}
+			//session.write.players <- Data{"tick", 200}
+
 		case data := <-session.read.server:
 
-			if data.action == "poke" {
+			if data.action == "server.poke" {
 
 				// Check if theres room inside the session
 				if session.players < session.maxPlayers {
-					session.write.server <- Data{"Session has room", 200}
+					session.write.server <- Data{"session.has_room", 200}
 				} else {
-					session.write.server <- Data{"Session full", -1}
+					session.write.server <- Data{"session.no_room", -1}
 				}
 
 			} else {
@@ -52,7 +58,7 @@ func (session *session) loop() {
 				// Spawn a new player
 				var port = session.listenerManager.NewObject()
 				session.players++
-				session.write.server <- Data{"Session: player created", port}
+				session.write.server <- Data{"session.player_created", port}
 			}
 
 		// Send response back to server
@@ -61,8 +67,6 @@ func (session *session) loop() {
 			fmt.Printf("Session: Read from manager %s\n", userdata.action)
 			session.write.server <- userdata
 
-		default:
-			// Nothing
 		}
 
 	}
@@ -79,13 +83,8 @@ func Session(serverConn *Connection, startPort int, players int) {
 	session.read.server = serverConn.read
 	session.asteroids = make([]*asteroid, 0)
 
-	// CREATE MANAGERS
-	// TODO: Loopify
-	session.write.server <- Data{"Session created", 0}
+	session.write.server <- Data{"session_created", 200}
 	session.createManagers(startPort)
-
-	// RESPOND TO SERVER
-	//
 
 	session.loop()
 
@@ -98,23 +97,14 @@ func (session *session) createManagers(startPort int) {
 	session.write.players = toPlayers.write
 	session.read.players = toPlayers.read
 
-	toAsteroids, _ := makeConnection()
+	toAsteroids, fromAsteroids := makeConnection()
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
 
-	go session.asteroidManager.loop(toAsteroids, session.asteroids)
+	go session.asteroidManager.loop(fromAsteroids, session.asteroids)
 	go session.listenerManager.loop(fromPlayers, session.maxPlayers, startPort)
-
-	time.Sleep(250 * time.Millisecond)
-
-	//var port = session.listenerManager.NewObject()
-	//fmt.Println("create manager Player created", port)
-	//session.players++
-	//session.write.server <- Data{"Session: response to server", port}
-
-	//go createAsteroidManager(toAsteroids, session.asteroids)
 
 }

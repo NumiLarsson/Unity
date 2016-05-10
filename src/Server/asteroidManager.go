@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
 type asteroidManager struct {
@@ -24,20 +21,19 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 
 	for {
 
-		fakeTick := time.After(16 * time.Millisecond)
-
 		select {
 
-		case <-fakeTick:
-
-			manager.checkBoard()
-			manager.print()
-			manager.resumeAsteroids()
-
 		case msg := <-manager.input:
-			fmt.Println("Collision!! \n ", msg.action)
-			// TODO: remove asteroids who has a collision or hit
 
+			if msg.action == "session.tick" {
+				manager.checkBoard()
+				manager.print()
+				manager.resumeAsteroids()
+
+			} else {
+				fmt.Println("Collision!! \n ", msg.action)
+				// TODO: remove asteroids who has a collision or hit
+			}
 		}
 
 		// 1. Iterate over each of the asteroids
@@ -57,7 +53,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 func (manager *asteroidManager) resumeAsteroids() {
 
 	for _, asteroid := range manager.asteroids {
-		asteroid.input <- Data{"ok", 0}
+		asteroid.input <- Data{"a_manager.ok", 0}
 	}
 
 }
@@ -110,7 +106,7 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*aster
 
 	manager.newObject()
 
-	fmt.Printf("%d\n", (len(manager.asteroids)))
+	//fmt.Printf("%d\n", (len(manager.asteroids)))
 
 	// Send confirmation back to Session
 	//sessionConn.write <- Data{"connect new manager",1}
