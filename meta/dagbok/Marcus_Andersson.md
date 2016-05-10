@@ -68,21 +68,23 @@ Omskrivning och bearbetning av projektförslaget.
 **13:00-16:00**
 Slutförande av projektförslag v.2. Förberedelse och gemensam genomgång av milstolpe 1.
 
-##### Torsdag
-
-##### Fredag
-
 ## Vecka 18
 
 ##### Måndag
-
-##### Tisdag
+**13:00-16:00**
+Specade systemarkitekturen på riktigt och bröt ner programmet i mindre beståndsdelar
 
 ##### Onsdag
-
-##### Torsdag
+**13:00-17:00**
+Började att skriva om koden ifrån scratch med hänsyn till den nya arkitekturen
 
 ##### Fredag
+**10:00-14:30**
+Förbättrade, kommenterade och rensade upp Session & Server.
+
+##### Söndag
+**10:00-12:30**
+Refaktorerade Session, påbörjade Asteroids
 
 ## Vecka 19
 
