@@ -9,7 +9,7 @@ type ListenerManager struct {
     MaxPlayers      int
     CurrentPlayers  int
     CurrentPort     int
-    listenerList    []listener.Listener
+    listenerList    []*listener.Listener
     //WorldArray      World
 }
 
@@ -20,7 +20,7 @@ func NewListenerManager(maxPlayers int, firstPort int) *ListenerManager {
     lisManager.MaxPlayers = maxPlayers
     lisManager.CurrentPlayers = 0
     lisManager.CurrentPort = firstPort
-    lisManager.listenerList = make([]listener.Listener, maxPlayers)
+    lisManager.listenerList = make([]*listener.Listener, maxPlayers)
     
     return lisManager
 }
@@ -38,7 +38,7 @@ func (lisManager *ListenerManager) NewObject() int {
     //used only to be able to compile
     
     //Fix this
-    lisManager.listenerList[0] = *tempListener 
+    lisManager.listenerList[0] = tempListener 
     //Need to be proper later
     return lisManager.CurrentPort
 }

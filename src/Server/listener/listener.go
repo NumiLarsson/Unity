@@ -5,6 +5,7 @@ import (
     "strconv"
     "encoding/json"
     "fmt" //TEMP
+    "time" //TEMP
 )
 
 //Player is used to represent the players in the game world
@@ -30,9 +31,11 @@ type World struct {
 //Contains a tcp socket, with the specified port at creation
 type Listener struct {
     socket  net.Listener
-    ID      string
-    Port    int
-    player  Player
+    ID          string
+    Port        int
+    player      Player
+    conn        net.Conn
+    writeBuffer [][]byte
     //Connection
 }
 
@@ -61,11 +64,32 @@ func NewListener(port int/*, conn *Connection*/) *Listener {
     //listener.write = conn.read //Fan in to manager
     //listener.read = conn.write //Fan out from manager
     
+    go listener.startUpListener()
+    
     return listener
+}
+
+func (listen *Listener) startUpListener() {
+    var err error
+    listen.conn, err = listen.socket.Accept()
+    if err != nil {
+        panic(err)
+    }
+    
+    listen.idleListener()
+}
+
+func (listen *Listener) idleListener() {
+    for {
+        time.Sleep(time.Second)
+        listen.conn.Write(listen.writeBuffer[0])
+    }
 }
 
 func (listen *Listener) Write(/*world *World*/) {
     //TEMPCODE
+    listen.writeBuffer = make([][]byte, 10)
+    
     currentWorld := new(World)
     currentWorld.Players = make([]*Player, 1)
     currentWorld.Asteroids = make([]*Asteroid, 1)
@@ -89,4 +113,6 @@ func (listen *Listener) Write(/*world *World*/) {
     }
     
     fmt.Println(string(jsonWorld))
+    
+    listen.writeBuffer[0] = jsonWorld
 }
