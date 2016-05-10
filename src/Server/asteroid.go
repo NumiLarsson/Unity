@@ -13,9 +13,7 @@ type asteroid struct {
 	input chan (Data)
 }
 
-func (asteroid *asteroid) loop(id int, xMax int, yMax int) {
-
-	asteroid.init(id, xMax, yMax)
+func (asteroid *asteroid) loop() { //loop(id int, xMax int, yMax int) {
 
 	for {
 
@@ -26,7 +24,6 @@ func (asteroid *asteroid) loop(id int, xMax int, yMax int) {
 				return
 			}
 
-			//time.Sleep(500 * time.Millisecond)
 			asteroid.move()
 
 		}
