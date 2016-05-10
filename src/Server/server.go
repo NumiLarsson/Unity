@@ -66,10 +66,10 @@ func (server *server) createFakeUser() chan Data {
 	go func() {
 
 		time.Sleep(250 * time.Millisecond)
-		fakeUser <- Data{"New user wants to connect", nextPort}
+		fakeUser <- Data{"new_user", nextPort}
 
 		time.Sleep(500 * time.Millisecond)
-		fakeUser <- Data{"New user wants to connect", nextPort}
+		fakeUser <- Data{"new_user", nextPort}
 
 	}()
 
@@ -111,7 +111,7 @@ func (server *server) addPlayer() int {
 	for _, session := range server.sessions {
 
 		// Ask a session whether there is enough room for a new player
-		session.write <- Data{"Connect", 1}
+		session.write <- Data{"poke", 1}
 		port := <-session.read
 
 		if port.result > -1 {
@@ -160,7 +160,7 @@ func (server *server) createSession() int {
 // createPlayer sends request to session to create a new player and wait for confirmation
 func (server *server) createPlayer(gs *gameSession) int {
 
-	gs.write <- Data{"Connect new player", 1}
+	gs.write <- Data{"connect_player", 1}
 	data := <-gs.read
 	fmt.Println("Player connected")
 	server.totalPlayers++
