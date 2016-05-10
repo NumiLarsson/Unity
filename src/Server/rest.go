@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type Listener struct {
+/*type Listener struct {
 	id   string
 	port int
 	*Connection
@@ -21,7 +21,7 @@ type ListenerManager struct {
 	startPort      int
 	listenerAmount []*Listener
 	*Connection
-}
+}*/
 
 // Create ListenerManager and set comm. channels to session
 func createListenerManager(cSession *Connection, startPort int) {
