@@ -36,7 +36,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 
 	for {
 		time.Sleep(250 * time.Millisecond)
-		fmt.Println(manager.CurrentPlayers)
+		//fmt.Println(manager.CurrentPlayers)
 		//manager.ReceiveFromSession()
 	}
 
@@ -62,43 +62,38 @@ func (manager *ListenerManager) init(sessionConn *Connection, maxPlayers int, fi
 
 }
 
-func (lisManager *ListenerManager) IncrementPort() {
-	lisManager.CurrentPort++
-}
-
 // getNextPort calculates the next start port to be used by a session
-func (lisManager *ListenerManager) getNextPort() int {
-	var port = lisManager.CurrentPort
-	lisManager.CurrentPort++
+func (manager *ListenerManager) getNextPort() int {
+	var port = manager.CurrentPort
+	manager.CurrentPort++
 	return port
 }
 
-func (lisManager *ListenerManager) IncrementCurrentPlayers() {
-	lisManager.CurrentPlayers++
+func (manager *ListenerManager) incrementCurrentPlayers() {
+	manager.CurrentPlayers++
 }
 
 //NewObject creates a new listener for the listener manager, used to connect to a new player.
-func (lisManager *ListenerManager) NewObject() int {
-	//defer lisManager.IncrementPort()
-	//defer lisManager.IncrementCurrentPlayers()
+func (manager *ListenerManager) NewObject() int {
+
 	fmt.Println("Creating new object in listener manager")
 	//Creation of the listener
-	newListener := listener.NewListener(lisManager.CurrentPort)
+	newListener := listener.NewListener(manager.CurrentPort)
 	//Insert the created listener to listenerList
-	lisManager.listeners = append(lisManager.listeners, newListener)
+	manager.listeners = append(manager.listeners, newListener)
 
-	//lisManager.IncrementPort()
-	lisManager.IncrementCurrentPlayers()
+	manager.incrementCurrentPlayers()
 
-	return lisManager.getNextPort()
+	return manager.getNextPort()
 }
 
-func (lisManager *ListenerManager) ReceiveFromSession( /*world *World*/ ) {
+// ReceiveFromSession handles data from session
+func (manager *ListenerManager) ReceiveFromSession( /*world *World*/ ) {
 
 	//Range over the array of listeners, sending the info from session
 	//To each of the listeners via SendToClient-function
 
-	for _, listener := range lisManager.listeners {
+	for _, listener := range manager.listeners {
 		if listener.ID != "" {
 			//			listener.SendToClient(world)
 
@@ -108,9 +103,9 @@ func (lisManager *ListenerManager) ReceiveFromSession( /*world *World*/ ) {
 
 }
 
-//Send world-info to every listener
-func (lisManager *ListenerManager) SendToClient(world *World) {
-	for _, listener := range lisManager.listeners {
+// SendToClient broadcasts world-info to every listener
+func (manager *ListenerManager) sendToClient(world *World) {
+	for _, listener := range manager.listeners {
 		if listener.ID != "" {
 			//Function call where the world-info
 			//Is sent to each listener in the list
@@ -118,7 +113,7 @@ func (lisManager *ListenerManager) SendToClient(world *World) {
 	}
 }
 
-func (listener *Listener) SendToClient(world *World) {
+func (listener *Listener) sendToClient(world *World) {
 	fmt.Println("Todo" + listener.ID)
 }
 
