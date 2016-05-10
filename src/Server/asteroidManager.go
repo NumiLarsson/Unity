@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
 type asteroidManager struct {
 	xMax      int
 	yMax      int
@@ -16,7 +17,7 @@ type asteroidManager struct {
 
 }
 
-// asteroidLoop …
+// loop …
 func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*asteroid) {
 
 	manager.init(sessionConn, asteroids)
@@ -51,7 +52,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 
 }
 
-// Removes any asteroids outside the gameboard
+// resumeAsteroids used to send "tick" to all asteroids
 func (manager *asteroidManager) resumeAsteroids() {
 
 	for _, asteroid := range manager.asteroids {
@@ -60,6 +61,7 @@ func (manager *asteroidManager) resumeAsteroids() {
 
 }
 
+// checkBoard used to check if any asteroid is out of bounds
 func (manager *asteroidManager) checkBoard() {
 
 	for i, asteroid := range manager.asteroids {
@@ -73,10 +75,13 @@ func (manager *asteroidManager) checkBoard() {
 
 }
 
+// removeAsteroid removes specific asteroid from manager asteroid array
 func (manager *asteroidManager) removeAsteroid(i int) {
 	manager.asteroids = append(manager.asteroids[:i], manager.asteroids[i+1:]...)
 }
 
+// newObject creates a new asteroid, appends it to the asteroidmanagers array
+// and creates a new go-routine that ......TODO
 func (manager *asteroidManager) newObject() {
 
 	asteroid := newAsteroid()
@@ -85,6 +90,7 @@ func (manager *asteroidManager) newObject() {
 
 }
 
+// newAsteroidsManager creates a new asteroid manager
 func newAsteroidManager() *asteroidManager {
 
 	fmt.Println("AsteroidManager created")
