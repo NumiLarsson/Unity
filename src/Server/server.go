@@ -19,14 +19,13 @@ type Connection struct {
 	read  chan Data
 }
 
-// Local copy of a session, to be used for handling where to connect new players
+// gameSession is a local copy of a session, to be used for handling where to connect new players
 type gameSession struct {
 	id int
 	*Connection
 }
 
-// TODO: type struct?
-// Used to store information about sessions, players etc.
+// server struct used to store information about sessions, players etc.
 type server struct {
 	totalPlayers int
 	nextPort     int
@@ -76,7 +75,7 @@ func (server *server) createFakeUser() chan Data {
 	return fakeUser
 }
 
-// Server listen for new user that want to connect
+// listen is a loop that server uses to listen for new user that want to connect
 // Sends correct port to use in return
 func (server *server) listen(external chan Data) {
 
@@ -104,7 +103,7 @@ func (server *server) listen(external chan Data) {
 
 }
 
-// Add player to first available session that has capacity for a new player
+// addPlayer adds a player to first available session that has capacity for a new player
 // If no session has capacity or available, creates a new session and player
 func (server *server) addPlayer() int {
 
@@ -122,7 +121,7 @@ func (server *server) addPlayer() int {
 	return server.createSession()
 }
 
-// Creates a new server struct
+// createServer creates a new server struct
 func createServer() *server {
 
 	server := new(server)
@@ -133,7 +132,7 @@ func createServer() *server {
 	return server
 }
 
-// Used to create a local copy of the session in the server
+// createSession creates a local copy of the session in the server
 func (server *server) createSession() int {
 
 	serverSide, sessionSide := makeConnection()
@@ -155,7 +154,7 @@ func (server *server) createSession() int {
 	return server.createPlayer(session)
 }
 
-// Send request to session to create a new player and wait for confirmation
+// createPlayer sends request to session to create a new player and wait for confirmation
 func (server *server) createPlayer(gs *gameSession) int {
 
 	gs.write <- Data{"Connect new player", 1}
@@ -165,7 +164,7 @@ func (server *server) createPlayer(gs *gameSession) int {
 	return data.result
 }
 
-// Calculate the next start port to be used by a session
+// getNextPort calculates the next start port to be used by a session
 func (server *server) getNextPort() int {
 	var port = server.nextPort
 	server.nextPort += server.maxPlayers

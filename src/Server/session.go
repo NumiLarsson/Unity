@@ -7,23 +7,29 @@ import (
 // Change state by shifting x bits
 type World int
 
+// channels struct used to implement a structured way to handle multiple
+// write/read channels for session
 type channels struct {
 	server    chan (Data)
 	players   chan (Data)
 	asteroids chan (Data)
 }
 
+// session struct stores info regarding players,session managers,
+// read/write channels etc.
 type session struct {
 	players         int
 	maxPlayers      int
 	world           World
 	asteroids       []*asteroid
 	asteroidManager *asteroidManager
+	//listernerManager *listernerManager
 	// For external communication
 	write channels
 	read  channels
 }
 
+// loop is the sessions ....TODO
 func (session *session) loop() {
 
 	for {
@@ -80,7 +86,7 @@ func Session(serverConn *Connection, startPort int, players int) {
 
 }
 
-// Setup managers and their respective connections to/from session
+// createManagers sets up managers and their respective connections to/from session
 func (session *session) createManagers(startPort int) {
 
 	toPlayers, fromPlayers := makeConnection()
