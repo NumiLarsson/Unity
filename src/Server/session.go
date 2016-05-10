@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 // Change state by shifting x bits
@@ -23,7 +24,7 @@ type session struct {
 	world           World
 	asteroids       []*asteroid
 	asteroidManager *asteroidManager
-	//listernerManager *listernerManager
+	listenerManager *ListenerManager
 	// For external communication
 	write channels
 	read  channels
@@ -42,8 +43,11 @@ func (session *session) loop() {
 
 			// Should we double check if maxplayer reached?
 			if session.players < session.maxPlayers {
+				fmt.Println("HHHEEEEEE")
 				session.write.players <- Data{"Create new player", 100}
+				var port = session.listenerManager.NewObject()
 				session.players++
+				session.write.server <- Data{"Session: response to server", port}
 
 			} else {
 				session.write.server <- Data{"Session full", -1}
@@ -75,13 +79,12 @@ func Session(serverConn *Connection, startPort int, players int) {
 
 	// CREATE MANAGERS
 	// TODO: Loopify
-
+	session.write.server <- Data{"Session created", 0}
 	session.createManagers(startPort)
 
 	// RESPOND TO SERVER
 	//
 
-	session.write.server <- Data{"Session created", 0}
 	session.loop()
 
 }
@@ -98,9 +101,18 @@ func (session *session) createManagers(startPort int) {
 	session.read.asteroids = toAsteroids.read
 
 	session.asteroidManager = newAsteroidManager()
+	session.listenerManager = newListenerManager()
 
 	go session.asteroidManager.loop(toAsteroids, session.asteroids)
-	go createListenerManager(fromPlayers, startPort)
+	go session.listenerManager.loop(fromPlayers, session.maxPlayers, startPort)
+
+	time.Sleep(250 * time.Millisecond)
+
+	var port = session.listenerManager.NewObject()
+	fmt.Println("create manager Player created", port)
+	session.players++
+	//session.write.server <- Data{"Session: response to server", port}
+
 	//go createAsteroidManager(toAsteroids, session.asteroids)
 
 }

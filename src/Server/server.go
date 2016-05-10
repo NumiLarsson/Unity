@@ -139,9 +139,9 @@ func (server *server) createSession() int {
 
 	// Start a session and wait for it to send confirmation
 	go Session(sessionSide, server.getNextPort(), server.maxPlayers)
-	<-serverSide.read
+	x := <-serverSide.read
 
-	fmt.Println("Session created")
+	fmt.Println("Session created", x)
 
 	// Create a local copy
 	session := new(gameSession)
