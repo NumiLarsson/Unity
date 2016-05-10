@@ -38,19 +38,21 @@ func (session *session) loop() {
 		select {
 		case data := <-session.read.server:
 
-			// Receive info to spawn new listener
-			fmt.Println("Session: Read from server: ", data.action)
+			if data.action == "poke" {
 
-			// Should we double check if maxplayer reached?
-			if session.players < session.maxPlayers {
-				fmt.Println("HHHEEEEEE")
-				session.write.players <- Data{"Create new player", 100}
-				var port = session.listenerManager.NewObject()
-				session.players++
-				session.write.server <- Data{"Session: response to server", port}
+				// Check if theres room inside the session
+				if session.players < session.maxPlayers {
+					session.write.server <- Data{"Session has room", 200}
+				} else {
+					session.write.server <- Data{"Session full", -1}
+				}
 
 			} else {
-				session.write.server <- Data{"Session full", -1}
+
+				// Spawn a new player
+				var port = session.listenerManager.NewObject()
+				session.players++
+				session.write.server <- Data{"Session: player created", port}
 			}
 
 		// Send response back to server
@@ -108,9 +110,9 @@ func (session *session) createManagers(startPort int) {
 
 	time.Sleep(250 * time.Millisecond)
 
-	var port = session.listenerManager.NewObject()
-	fmt.Println("create manager Player created", port)
-	session.players++
+	//var port = session.listenerManager.NewObject()
+	//fmt.Println("create manager Player created", port)
+	//session.players++
 	//session.write.server <- Data{"Session: response to server", port}
 
 	//go createAsteroidManager(toAsteroids, session.asteroids)

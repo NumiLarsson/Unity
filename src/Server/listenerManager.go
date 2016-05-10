@@ -1,9 +1,10 @@
 package main
 
 import (
-	"./listener"
 	"fmt"
 	"net" //Used for the unimportable Listener
+
+	"./listener"
 	//"strconv"
 	"time"
 )
@@ -65,6 +66,13 @@ func (lisManager *ListenerManager) IncrementPort() {
 	lisManager.CurrentPort++
 }
 
+// getNextPort calculates the next start port to be used by a session
+func (lisManager *ListenerManager) getNextPort() int {
+	var port = lisManager.CurrentPort
+	lisManager.CurrentPort++
+	return port
+}
+
 func (lisManager *ListenerManager) IncrementCurrentPlayers() {
 	lisManager.CurrentPlayers++
 }
@@ -78,10 +86,11 @@ func (lisManager *ListenerManager) NewObject() int {
 	newListener := listener.NewListener(lisManager.CurrentPort)
 	//Insert the created listener to listenerList
 	lisManager.listeners = append(lisManager.listeners, newListener)
-	lisManager.IncrementPort()
+
+	//lisManager.IncrementPort()
 	lisManager.IncrementCurrentPlayers()
 
-	return lisManager.CurrentPort
+	return lisManager.getNextPort()
 }
 
 func (lisManager *ListenerManager) ReceiveFromSession( /*world *World*/ ) {
