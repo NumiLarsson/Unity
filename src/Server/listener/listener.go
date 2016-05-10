@@ -106,8 +106,8 @@ func (listen *Listener) Write(/*world *World*/) {
     
     currentWorld.Players[0] = player
     currentWorld.Asteroids[0] = asteroid
-    
-    jsonWorld, err := json.Marshal(&currentWorld)
+    //
+    jsonWorld, err := json.Marshal(&currentWorld/* world*/)
     if err != nil {
         panic(err)
     }
