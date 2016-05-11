@@ -1,4 +1,4 @@
-package main
+package asteroids
 
 import (
 	"fmt"
@@ -50,15 +50,8 @@ func makeConnection() (c1, c2 *Connection) {
 	return
 }
 
-func main() {
-
-	var server = createServer()
-	server.listen(server.createFakeUser())
-
-}
-
 // Only used to get some kind of input from a "user"
-func (server *server) createFakeUser() chan Data {
+func (server *server) CreateFakeUser() chan Data {
 
 	fakeUser := make(chan Data)
 	nextPort := server.nextPort // Prevents data race
@@ -76,9 +69,9 @@ func (server *server) createFakeUser() chan Data {
 	return fakeUser
 }
 
-// listen is a loop that server uses to listen for new user that want to connect
+// Listen is a loop that server uses to listen for new user that want to connect
 // Sends correct port to use in return
-func (server *server) listen(external chan Data) {
+func (server *server) Listen(external chan Data) {
 
 	// TEMPORARY
 	// ===
@@ -122,8 +115,8 @@ func (server *server) addPlayer() int {
 	return server.createSession()
 }
 
-// createServer creates a new server struct
-func createServer() *server {
+// CreateServer creates a new server struct
+func CreateServer() *server {
 
 	server := new(server)
 	server.totalPlayers = 0
