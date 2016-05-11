@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	//"net" //Used for the unimportable Listener
-
-	"./listener"
 	//"strconv"
 	//"time"
 )
@@ -15,8 +13,8 @@ type ListenerManager struct {
 	CurrentPlayers int
 	CurrentPort    int
 	input          chan (Data)
-	listeners      []*listener.Listener
-	Players        []listener.Player
+	listeners      []*Listener
+	Players        []Player
 	//World           [][]int
 }
 
@@ -64,7 +62,7 @@ func (manager *ListenerManager) init(sessionConn *Connection, maxPlayers int, fi
 	manager.CurrentPort = firstPort
 	manager.input = sessionConn.read
 
-	manager.listeners = make([]*listener.Listener, 0)
+	manager.listeners = make([]*Listener, 0)
 
 }
 
@@ -85,7 +83,7 @@ func (manager *ListenerManager) NewObject() int {
 
 	fmt.Println("Creating new object in listener manager")
 	//Creation of the listener
-	newListener := listener.NewListener(manager.CurrentPort)
+	newListener := NewListener(manager.CurrentPort)
 	//Insert the created listener to listenerList
 	manager.listeners = append(manager.listeners, newListener)
 
@@ -95,12 +93,12 @@ func (manager *ListenerManager) NewObject() int {
 }
 
 // collectPlayerPositions collect all player positions and return an array of them
-func (manager *ListenerManager) collectPlayerPositions() []listener.Player {
-	playerList := make([]listener.Player, 0)
+func (manager *ListenerManager) collectPlayerPositions() []Player {
+	playerList := make([]Player, 0)
 
 	for _, listener := range manager.listeners {
 
-		var player = listener.GetPlayer()
+		var player = listener.getPlayer()
 		playerList = append(playerList, player)
 	}
 
@@ -109,7 +107,7 @@ func (manager *ListenerManager) collectPlayerPositions() []listener.Player {
 
 // getObjects returns an array of playerpositions
 // TODO CHANGE listener.Player....
-func (manager *ListenerManager) getObjects() []listener.Player {
+func (manager *ListenerManager) getObjects() []Player {
 
 	return manager.Players
 }
