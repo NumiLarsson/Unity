@@ -47,6 +47,7 @@ func (session *session) loop() {
 		case <-fakeTick:
 			session.write.asteroids <- Data{"session.tick", 200}
 			session.write.players <- Data{"session.tick", 200}
+				
 
 		case data := <-session.read.server:
 
@@ -78,7 +79,9 @@ func (session *session) loop() {
 		// Collect player and asteroid positions
 		session.world.Players = session.listenerManager.getObjects()
 		// TODO: implement below
+	
 		//session.world.Asteroids = session.asteroidManager.getObjects()
+	
 	}
 
 }
@@ -96,7 +99,8 @@ func Session(serverConn *Connection, startPort int, players int) {
 	session.write.server <- Data{"session_created", 200}
 	session.createManagers(startPort)
 
-	session.loop()
+
+	session.loop()	
 
 }
 
@@ -117,4 +121,7 @@ func (session *session) createManagers(startPort int) {
 	go session.asteroidManager.loop(fromAsteroids, session.asteroids)
 	go session.listenerManager.loop(fromPlayers, session.maxPlayers, startPort)
 
+
 }
+
+
