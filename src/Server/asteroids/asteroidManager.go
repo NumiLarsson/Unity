@@ -28,7 +28,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 		case msg := <-manager.input:
 
 			if msg.action == "session.tick" {
-				manager.checkBoard()
+				manager.checkAsteroids()
 				//manager.print()
 				manager.spawnAsteroid()
 				manager.resumeAsteroids()
@@ -60,7 +60,7 @@ func (manager *asteroidManager) spawnAsteroid() {
 
 	if len(manager.asteroids) < manager.maxRoids && r >= manager.treshold {
 		//fmt.Println("SPAWNED NEW DROID")
-		manager.newObject()
+		manager.newAsteroid()
 	}
 
 }
@@ -75,13 +75,12 @@ func (manager *asteroidManager) resumeAsteroids() {
 }
 
 // checkBoard used to check if any asteroid is out of bounds
-func (manager *asteroidManager) checkBoard() {
+func (manager *asteroidManager) checkAsteroids() {
 
 	var offset = 0
 	for i, asteroid := range manager.asteroids {
 
 		if !asteroid.inBounds(manager) {
-			fmt.Println("Asteroid out of bounds. Die!")
 			manager.removeAsteroid(i + offset)
 			offset--
 		}
@@ -90,7 +89,7 @@ func (manager *asteroidManager) checkBoard() {
 
 }
 
-func (manager *asteroidManager) getObjects() []*asteroid {
+func (manager *asteroidManager) getAsteroids() []*asteroid {
 
 	return manager.asteroids
 }
@@ -102,7 +101,7 @@ func (manager *asteroidManager) removeAsteroid(i int) {
 
 // newObject creates a new asteroid, appends it to the asteroidmanagers array
 // and creates a new go-routine that ......TODO
-func (manager *asteroidManager) newObject() {
+func (manager *asteroidManager) newAsteroid() {
 
 	asteroid := newAsteroid()
 	manager.asteroids = append(manager.asteroids, asteroid)

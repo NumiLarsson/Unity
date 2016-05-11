@@ -2,9 +2,6 @@ package asteroids
 
 import (
 	"fmt"
-	//"net" //Used for the unimportable Listener
-	//"strconv"
-	//"time"
 )
 
 //ListenerManager is used as a struct to basically emulate an object
@@ -15,7 +12,6 @@ type ListenerManager struct {
 	input          chan (Data)
 	listeners      []*Listener
 	Players        []Player
-	//World           [][]int
 }
 
 // loop TODO
@@ -78,8 +74,8 @@ func (manager *ListenerManager) incrementCurrentPlayers() {
 	manager.CurrentPlayers++
 }
 
-//NewObject creates a new listener for the listener manager, used to connect to a new player.
-func (manager *ListenerManager) NewObject() int {
+//NewPlayer creates a new listener for the listener manager, used to connect to a new player.
+func (manager *ListenerManager) newPlayer() int {
 
 	fmt.Println("Creating new object in listener manager")
 	//Creation of the listener
@@ -105,27 +101,9 @@ func (manager *ListenerManager) collectPlayerPositions() []Player {
 	return playerList
 }
 
-// getObjects returns an array of playerpositions
-// TODO CHANGE listener.Player....
-func (manager *ListenerManager) getObjects() []Player {
-
+// getPlayers returns an array of playerpositions
+func (manager *ListenerManager) getPlayers() []Player {
 	return manager.Players
-}
-
-// ReceiveFromSession handles data from session
-func (manager *ListenerManager) ReceiveFromSession( /*world *World*/ ) {
-
-	//Range over the array of listeners, sending the info from session
-	//To each of the listeners via SendToClient-function
-
-	for _, listener := range manager.listeners {
-		if listener.ID != "" {
-			//			listener.SendToClient(world)
-
-			fmt.Println("todo "+listener.ID, listener.Port)
-		}
-	}
-
 }
 
 // SendToClient broadcasts world-info to every listener
@@ -137,27 +115,3 @@ func (manager *ListenerManager) sendToClient(world *World) {
 		}
 	}
 }
-
-/*func (listener *listener.Listener) sendToClient(world *World) {
-	fmt.Println("Todo" + listener.ID)
-}*/
-
-/*func main() {
-	//Main used for testing, will be removed upon final product
-	fmt.Println()
-
-	world := new(World)
-	lisManager := NewListenerManager(10, 9000)
-
-	port := lisManager.NewObject()
-	fmt.Println()
-
-	port2 := lisManager.NewObject()
-
-	fmt.Println()
-	fmt.Println(port, lisManager.listenerList[0].ID)
-	fmt.Println(port2, lisManager.listenerList[1].ID)
-	fmt.Println(len(lisManager.listenerList))
-	fmt.Println()
-	lisManager.ReceiveFromSession(world)
-}*/

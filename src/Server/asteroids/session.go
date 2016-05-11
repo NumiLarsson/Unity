@@ -47,7 +47,6 @@ func (session *session) loop() {
 
 			session.write.asteroids <- Data{"session.tick", 200}
 			session.write.players <- Data{"session.tick", 200}
-				
 
 		case data := <-session.read.server:
 
@@ -63,7 +62,7 @@ func (session *session) loop() {
 			} else {
 
 				// Spawn a new player
-				var port = session.listenerManager.NewObject()
+				var port = session.listenerManager.newPlayer()
 				session.players++
 				session.write.server <- Data{"session.player_created", port}
 			}
@@ -78,11 +77,9 @@ func (session *session) loop() {
 
 		// Collect player and asteroid positions
 
-
-		session.world.players = session.listenerManager.getObjects()
-		session.world.asteroids = session.asteroidManager.getObjects()
+		session.world.players = session.listenerManager.getPlayers()
+		session.world.asteroids = session.asteroidManager.getAsteroids()
 		session.detectCollisions()
-
 
 	}
 
@@ -101,8 +98,7 @@ func Session(serverConn *Connection, startPort int, players int) {
 	session.write.server <- Data{"session_created", 200}
 	session.createManagers(startPort)
 
-
-	session.loop()	
+	session.loop()
 
 }
 
@@ -123,7 +119,6 @@ func (session *session) createManagers(startPort int) {
 	go session.asteroidManager.loop(fromAsteroids, session.asteroids)
 	go session.listenerManager.loop(fromPlayers, session.maxPlayers, startPort)
 
-
 }
 
 func (session *session) detectCollisions() {
@@ -143,4 +138,3 @@ func (session *session) detectCollisions() {
 	}
 
 }
-
