@@ -63,15 +63,22 @@ func (manager *asteroidManager) resumeAsteroids() {
 // checkBoard used to check if any asteroid is out of bounds
 func (manager *asteroidManager) checkBoard() {
 
+	var offset = 0
 	for i, asteroid := range manager.asteroids {
 
 		if !asteroid.inBounds(manager) {
 			fmt.Println("Asteroid out of bounds. Die!")
-			manager.removeAsteroid(i)
+			manager.removeAsteroid(i + offset)
+			offset -= 1
 		}
 
 	}
 
+}
+
+func (manager *asteroidManager) getObjects() []*asteroid {
+
+	return manager.asteroids
 }
 
 // removeAsteroid removes specific asteroid from manager asteroid array
@@ -106,6 +113,9 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*aster
 	manager.asteroids = asteroids
 	manager.input = sessionConn.read
 
+	manager.newObject()
+	manager.newObject()
+	manager.newObject()
 	manager.newObject()
 
 	//fmt.Printf("%d\n", (len(manager.asteroids)))
