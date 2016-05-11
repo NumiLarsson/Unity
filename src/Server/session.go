@@ -1,7 +1,6 @@
 package main
 
 import (
-	"./listener"
 	"fmt"
 	"time"
 )
@@ -10,8 +9,8 @@ import (
 //type World int
 // TODO: CHANGE THIS
 type World struct {
-	Players   []listener.Player
-	Asteroids []*listener.Asteroid
+	Players []Player
+	//Asteroids []*listener.Asteroid
 }
 
 // channels struct used to implement a structured way to handle multiple
