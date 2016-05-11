@@ -1,7 +1,6 @@
 package main
 
 import (
-	"./listener"
 	"fmt"
 	"time"
 )
@@ -10,8 +9,8 @@ import (
 //type World int
 // TODO: CHANGE THIS
 type World struct {
-	Players   []listener.Player
-	Asteroids []*listener.Asteroid
+	players   []Player
+	asteroids []*asteroid
 }
 
 // channels struct used to implement a structured way to handle multiple
@@ -45,6 +44,7 @@ func (session *session) loop() {
 
 		select {
 		case <-fakeTick:
+
 			session.write.asteroids <- Data{"session.tick", 200}
 			session.write.players <- Data{"session.tick", 200}
 				
@@ -77,11 +77,13 @@ func (session *session) loop() {
 		}
 
 		// Collect player and asteroid positions
-		session.world.Players = session.listenerManager.getObjects()
-		// TODO: implement below
-	
-		//session.world.Asteroids = session.asteroidManager.getObjects()
-	
+
+
+		session.world.players = session.listenerManager.getObjects()
+		session.world.asteroids = session.asteroidManager.getObjects()
+		session.detectCollisions()
+
+
 	}
 
 }
@@ -124,4 +126,19 @@ func (session *session) createManagers(startPort int) {
 
 }
 
+func (session *session) detectCollisions() {
+
+	for _, a1 := range session.world.asteroids {
+
+		for _, a2 := range session.world.asteroids {
+
+			if a1.x == a2.x && a1.y == a2.y {
+				fmt.Println("COLLISION")
+			}
+
+		}
+
+	}
+
+}
 
