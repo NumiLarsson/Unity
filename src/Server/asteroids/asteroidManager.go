@@ -1,17 +1,19 @@
 package asteroids
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
 type asteroidManager struct {
 	xMax      int
 	yMax      int
 	nextID    int
+	maxRoids  int
+	treshold  int
 	input     chan (Data)
 	asteroids []*asteroid // Accessible from session.go
-	// spawn frequency
-	// max asteroids
-
 }
 
 // loop …
@@ -27,7 +29,8 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 
 			if msg.action == "session.tick" {
 				manager.checkBoard()
-				manager.print()
+				//manager.print()
+				manager.spawnAsteroid()
 				manager.resumeAsteroids()
 
 			} else {
@@ -45,6 +48,19 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 		// 6. Depending on the outcome and parameters asteroidManager may spawn additional asteroids
 		// 7. REPEAT
 
+	}
+
+}
+
+func (manager *asteroidManager) spawnAsteroid() {
+
+	r := rand.Intn(101)
+
+	//fmt.Println(manager.maxRoids)
+
+	if len(manager.asteroids) < manager.maxRoids && r >= manager.treshold {
+		//fmt.Println("SPAWNED NEW DROID")
+		manager.newObject()
 	}
 
 }
@@ -67,7 +83,7 @@ func (manager *asteroidManager) checkBoard() {
 		if !asteroid.inBounds(manager) {
 			fmt.Println("Asteroid out of bounds. Die!")
 			manager.removeAsteroid(i + offset)
-			offset -= 1
+			offset--
 		}
 
 	}
@@ -106,15 +122,12 @@ func newAsteroidManager() *asteroidManager {
 
 func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*asteroid) {
 
-	manager.xMax = 10
-	manager.yMax = 10
+	manager.xMax = 100
+	manager.yMax = 100
 	manager.asteroids = asteroids
+	manager.treshold = 20
+	manager.maxRoids = 20
 	manager.input = sessionConn.read
-
-	manager.newObject()
-	manager.newObject()
-	manager.newObject()
-	manager.newObject()
 
 	//fmt.Printf("%d\n", (len(manager.asteroids)))
 

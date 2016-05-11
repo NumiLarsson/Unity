@@ -94,8 +94,8 @@ func (manager *ListenerManager) NewObject() int {
 
 // collectPlayerPositions collect all player positions and return an array of them
 func (manager *ListenerManager) collectPlayerPositions() []Player {
-	playerList := make([]Player, 0)
-
+	//playerList := make([]Player, 0)
+	var playerList []Player
 	for _, listener := range manager.listeners {
 
 		var player = listener.getPlayer()

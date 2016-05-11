@@ -1,10 +1,18 @@
 all:
 	go run main.go
 
+race:
+	go run -race main.go
+
 doc:
-	go doc
-	(sleep 1; open http://localhost:6060/) &
-	godoc -http=:6060
+	@go doc
+	@echo "Documentation available at: http://localhost:6060/"
+	@godoc -http=:6060
 
 test:
-	go test server.go session.go listenerManager.go asteroidManager.go asteroid.go asteroid_test.go
+	@cd asteroids && \
+	go test *.go -v
+
+openatom:
+	@cd ../../.. && \
+	atom ospp-2016-group-08

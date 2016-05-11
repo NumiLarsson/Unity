@@ -92,7 +92,7 @@ func Session(serverConn *Connection, startPort int, players int) {
 
 	session.write.server = serverConn.write
 	session.read.server = serverConn.read
-	session.asteroids = make([]*asteroid, 0)
+	//session.asteroids = make([]*asteroid, 0)
 
 	session.write.server <- Data{"session_created", 200}
 	session.createManagers(startPort)
@@ -126,7 +126,9 @@ func (session *session) detectCollisions() {
 
 		for _, a2 := range session.world.asteroids {
 
-			if a1.x == a2.x && a1.y == a2.y {
+			if a1.id == a2.id {
+				continue
+			} else if a1.x == a2.x && a1.y == a2.y {
 				fmt.Println("COLLISION")
 			}
 
