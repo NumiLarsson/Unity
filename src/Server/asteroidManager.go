@@ -1,4 +1,4 @@
-package asteroids
+package main
 
 import "fmt"
 
