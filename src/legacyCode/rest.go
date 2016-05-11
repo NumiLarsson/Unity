@@ -1,4 +1,4 @@
-package main
+package asteroids
 
 import (
 	//"container/list"
