@@ -36,7 +36,6 @@ func (asteroid *asteroid) move() {
 
 	asteroid.x += asteroid.xStep
 	asteroid.y += asteroid.yStep
-
 }
 
 // inBounds checks if a given asteroid a is inside the bounds
