@@ -45,6 +45,13 @@ func (session *session) loop() {
 		select {
 		case <-fakeTick:
 
+			// Collect player and asteroid positions
+			session.world.players = session.listenerManager.getPlayers()
+			session.world.asteroids = session.asteroidManager.getAsteroids()
+			session.detectCollisions()
+
+			// Broadcast collisions to managers
+
 			session.write.asteroids <- Data{"session.tick", 200}
 			session.write.players <- Data{"session.tick", 200}
 
@@ -74,12 +81,6 @@ func (session *session) loop() {
 			session.write.server <- userdata
 
 		}
-
-		// Collect player and asteroid positions
-
-		session.world.players = session.listenerManager.getPlayers()
-		session.world.asteroids = session.asteroidManager.getAsteroids()
-		session.detectCollisions()
 
 	}
 

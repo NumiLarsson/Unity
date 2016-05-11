@@ -12,6 +12,7 @@ type asteroidManager struct {
 	nextID    int
 	maxRoids  int
 	treshold  int
+	deathRow  *[]int
 	input     chan (Data)
 	asteroids []*asteroid // Accessible from session.go
 }
@@ -28,7 +29,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 		case msg := <-manager.input:
 
 			if msg.action == "session.tick" {
-				manager.checkAsteroids()
+				manager.removeDeadAsteroids()
 				//manager.print()
 				manager.spawnAsteroid()
 				manager.resumeAsteroids()
@@ -74,13 +75,19 @@ func (manager *asteroidManager) resumeAsteroids() {
 
 }
 
+func onDeathRow(a *asteroid, deathRow *[]int) bool {
+	return false
+}
+
 // checkBoard used to check if any asteroid is out of bounds
-func (manager *asteroidManager) checkAsteroids() {
+func (manager *asteroidManager) removeDeadAsteroids() {
 
 	var offset = 0
 	for i, asteroid := range manager.asteroids {
 
-		if !asteroid.inBounds(manager) {
+		// Check if inside kill list
+
+		if onDeathRow(asteroid, manager.deathRow) || !asteroid.inBounds(manager) {
 			manager.removeAsteroid(i + offset)
 			offset--
 		}
