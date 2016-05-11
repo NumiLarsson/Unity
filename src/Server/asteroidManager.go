@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
 type asteroidManager struct {
