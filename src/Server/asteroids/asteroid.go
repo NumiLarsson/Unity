@@ -60,8 +60,8 @@ func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 	asteroid.x = rand.Intn(xMax)
 	asteroid.y = rand.Intn(yMax)
 	asteroid.id = id
-	asteroid.xStep = 1
-	asteroid.yStep = 0
+	asteroid.xStep = rand.Intn(3) - 1
+	asteroid.yStep = rand.Intn(3) - 1
 	asteroid.input = make(chan Data)
 
 }
