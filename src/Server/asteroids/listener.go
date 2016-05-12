@@ -36,7 +36,7 @@ func createSocket(port int) (net.Listener, error) {
 }
 
 //NewListener creates a new socket then runs this socket as a go routine
-func NewListener(port int /*, conn *Connection*/) *Listener {
+func NewListener(port int /*, conn *Connection*/) (*Listener, Player) {
 
 	listener := new(Listener)
 
@@ -47,13 +47,16 @@ func NewListener(port int /*, conn *Connection*/) *Listener {
 	}
 
 	listener.Port = port
+	listener.player.XCord = 0
+	listener.player.YCord = 0
+	listener.player.Lives = 3
 
 	//listener.write = conn.read //Fan in to manager
 	//listener.read = conn.write //Fan out from manager
 
 	go listener.startUpListener()
 
-	return listener
+	return listener, listener.player
 }
 
 func (listen *Listener) startUpListener() {

@@ -75,17 +75,20 @@ func (manager *ListenerManager) incrementCurrentPlayers() {
 }
 
 //NewPlayer creates a new listener for the listener manager, used to connect to a new player.
-func (manager *ListenerManager) newPlayer() int {
+func (manager *ListenerManager) newPlayer() (int, Player) {
 
 	fmt.Println("Creating new object in listener manager")
-	//Creation of the listener
-	newListener := NewListener(manager.CurrentPort)
+	//Creation of the listener and listener-player
+	newListener, newPlayer := NewListener(manager.CurrentPort)
+
 	//Insert the created listener to listenerList
+	//Insert the created player to Players
 	manager.listeners = append(manager.listeners, newListener)
+	manager.Players = append(manager.Players, newPlayer)
 
 	manager.incrementCurrentPlayers()
 
-	return manager.getNextPort()
+	return manager.getNextPort(), newPlayer
 }
 
 // collectPlayerPositions collect all player positions and return an array of them

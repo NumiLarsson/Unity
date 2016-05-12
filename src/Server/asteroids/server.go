@@ -134,7 +134,9 @@ func (server *server) createSession() int {
 	// Start a session and wait for it to send confirmation
 
 	nextPort := server.getNextPort() // Prevents data race
-	go Session(sessionSide, nextPort, server.maxPlayers)
+
+	//Hardcoded size of the world for now
+	go Session(sessionSide, nextPort, server.maxPlayers, 400)
 	<-serverSide.read
 
 	fmt.Println("Session created")
