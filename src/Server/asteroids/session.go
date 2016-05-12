@@ -9,6 +9,7 @@ import (
 //type World int
 // TODO: CHANGE THIS
 type World struct {
+	worldSize int
 	players   []Player
 	asteroids []*asteroid
 }
@@ -24,6 +25,7 @@ type channels struct {
 // session struct stores info regarding players,session managers,
 // read/write channels etc.
 type session struct {
+	worldSize       int
 	players         int
 	maxPlayers      int
 	world           World
@@ -34,6 +36,26 @@ type session struct {
 	write channels
 	read  channels
 }
+
+
+// Session …
+func Session(serverConn *Connection, startPort int, players int, worldSize int) {
+
+	session := new(session)
+	session.maxPlayers = players
+
+	session.worldSize = worldSize
+	session.write.server = serverConn.write
+	session.read.server = serverConn.read
+	//session.asteroids = make([]*asteroid, 0)
+
+	session.write.server <- Data{"session_created", 200}
+	session.createManagers(startPort)
+
+	session.loop()
+
+}
+
 
 // loop is the sessions ....TODO
 func (session *session) loop() {
@@ -48,7 +70,9 @@ func (session *session) loop() {
 			// Collect player and asteroid positions
 			session.world.players = session.listenerManager.getPlayers()
 			session.world.asteroids = session.asteroidManager.getAsteroids()
-			session.detectCollisions()
+
+			session.world.collisionManager()
+			//session.detectCollisions()
 
 			// Broadcast collisions to managers
 
@@ -69,8 +93,10 @@ func (session *session) loop() {
 			} else {
 
 				// Spawn a new player
-				var port = session.listenerManager.newPlayer()
+				var port, newPlayer = session.listenerManager.newPlayer()
 				session.players++
+				session.world.players = append(session.world.players, newPlayer)
+
 				session.write.server <- Data{"session.player_created", port}
 			}
 
@@ -86,33 +112,20 @@ func (session *session) loop() {
 
 }
 
-// Session …
-func Session(serverConn *Connection, startPort int, players int) {
-
-	session := new(session)
-	session.maxPlayers = players
-
-	session.write.server = serverConn.write
-	session.read.server = serverConn.read
-	//session.asteroids = make([]*asteroid, 0)
-
-	session.write.server <- Data{"session_created", 200}
-	session.createManagers(startPort)
-
-	session.loop()
-
-}
-
 // createManagers sets up managers and their respective connections to/from session
 func (session *session) createManagers(startPort int) {
 
 	toPlayers, fromPlayers := makeConnection()
-	session.write.players = toPlayers.write
-	session.read.players = toPlayers.read
+	session.write.players   = toPlayers.write
+	session.read.players    = toPlayers.read
 
 	toAsteroids, fromAsteroids := makeConnection()
-	session.write.asteroids = toAsteroids.write
-	session.read.asteroids = toAsteroids.read
+	session.write.asteroids     = toAsteroids.write
+	session.read.asteroids      = toAsteroids.read
+
+	session.world.worldSize = session.worldSize
+	session.world.players   = make([]Player, 0)
+	session.world.asteroids = make([]*asteroid, 0)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
