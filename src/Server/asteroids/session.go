@@ -75,9 +75,17 @@ func (session *session) loop() {
 			session.world.asteroids = session.asteroidManager.getAsteroids()
 
 
+
 			
 		//	session.world.collisionManager()
 			//session.detectCollisions()
+
+			session.world.collisionManager()
+
+			// Send collision ids back to asteroid manager
+			deathRow := session.detectCollisions()
+			session.asteroidManager.updateDeathRow(deathRow)
+
 
 			// Broadcast collisions to managers
 
@@ -143,7 +151,9 @@ func (session *session) createManagers(startPort int) {
 
 }
 
-func (session *session) detectCollisions() {
+func (session *session) detectCollisions() []int {
+
+	var collisions []int
 
 	for _, a1 := range session.world.asteroids {
 
@@ -152,8 +162,23 @@ func (session *session) detectCollisions() {
 			if a1.id == a2.id {
 				continue
 			} else if a1.x == a2.x && a1.y == a2.y {
-				fmt.Println("COLLISION")
+				if !inList(collisions, a1.id) {
+					collisions = append(collisions, a1.id)
+					fmt.Println("COLLISION")
+				}
 			}
 		}
 	}
+
+	return collisions
+
+}
+
+func inList(list []int, item int) bool {
+	for _, current := range list {
+		if item == current {
+			return true
+		}
+	}
+	return false
 }
