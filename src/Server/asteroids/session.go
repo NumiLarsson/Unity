@@ -37,8 +37,7 @@ type session struct {
 	read  channels
 }
 
-
-// Session …
+// Session …TODO rename to init?
 func Session(serverConn *Connection, startPort int, players int, worldSize int) {
 
 	session := new(session)
@@ -55,7 +54,6 @@ func Session(serverConn *Connection, startPort int, players int, worldSize int) 
 	session.loop()
 
 }
-
 
 // loop is the sessions ....TODO
 func (session *session) loop() {
@@ -116,15 +114,15 @@ func (session *session) loop() {
 func (session *session) createManagers(startPort int) {
 
 	toPlayers, fromPlayers := makeConnection()
-	session.write.players   = toPlayers.write
-	session.read.players    = toPlayers.read
+	session.write.players = toPlayers.write
+	session.read.players = toPlayers.read
 
 	toAsteroids, fromAsteroids := makeConnection()
-	session.write.asteroids     = toAsteroids.write
-	session.read.asteroids      = toAsteroids.read
+	session.write.asteroids = toAsteroids.write
+	session.read.asteroids = toAsteroids.read
 
 	session.world.worldSize = session.worldSize
-	session.world.players   = make([]Player, 0)
+	session.world.players = make([]Player, 0)
 	session.world.asteroids = make([]*asteroid, 0)
 
 	session.asteroidManager = newAsteroidManager()
