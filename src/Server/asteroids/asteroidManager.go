@@ -12,7 +12,7 @@ type asteroidManager struct {
 	nextID    int
 	maxRoids  int
 	treshold  int
-	deathRow  *[]int
+	deathRow  []int
 	input     chan (Data)
 	asteroids []*asteroid // Accessible from session.go
 }
@@ -31,6 +31,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 			if msg.action == "session.tick" {
 				manager.removeDeadAsteroids()
 				//manager.print()
+				//TODO spawn on correct x/y
 				manager.spawnAsteroid()
 				manager.resumeAsteroids()
 
@@ -53,11 +54,11 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 
 }
 
+// spawnAsteroid spawns a new asteroid if current asteroids in world below maxValue and
+// if the randomized int that is set has a higher value than the worlds threshold
 func (manager *asteroidManager) spawnAsteroid() {
 
 	r := rand.Intn(101)
-
-	//fmt.Println(manager.maxRoids)
 
 	if len(manager.asteroids) < manager.maxRoids && r >= manager.treshold {
 		//fmt.Println("SPAWNED NEW DROID")
@@ -75,11 +76,18 @@ func (manager *asteroidManager) resumeAsteroids() {
 
 }
 
-func onDeathRow(a *asteroid, deathRow *[]int) bool {
+// onDeathRow TODO: implement! should check if current asteroid is on deathrow and can be removed
+func onDeathRow(a *asteroid, deathRow []int) bool {
+	for _, dead := range deathRow {
+		if a.id == dead {
+			return true
+		}
+	}
 	return false
 }
 
-// checkBoard used to check if any asteroid is out of bounds
+// removeDeadAsteroids used to check if any asteroid has been in a collision
+// or if it's out of bounds
 func (manager *asteroidManager) removeDeadAsteroids() {
 
 	var offset = 0
@@ -96,6 +104,7 @@ func (manager *asteroidManager) removeDeadAsteroids() {
 
 }
 
+// getAsteroids return the array containing the current asteroids
 func (manager *asteroidManager) getAsteroids() []*asteroid {
 
 	return manager.asteroids
@@ -103,6 +112,7 @@ func (manager *asteroidManager) getAsteroids() []*asteroid {
 
 // removeAsteroid removes specific asteroid from manager asteroid array
 func (manager *asteroidManager) removeAsteroid(i int) {
+
 	manager.asteroids = append(manager.asteroids[:i], manager.asteroids[i+1:]...)
 }
 
@@ -126,6 +136,8 @@ func newAsteroidManager() *asteroidManager {
 
 }
 
+// init initiate the asteroid manager with hardcoded values TODO: input?
+// and sets channels to session and
 func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*asteroid) {
 
 	manager.xMax = 100
@@ -135,18 +147,22 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*aster
 	manager.maxRoids = 20
 	manager.input = sessionConn.read
 
-	//fmt.Printf("%d\n", (len(manager.asteroids)))
-
-	// Send confirmation back to Session
-	//sessionConn.write <- Data{"connect new manager",1}
-
-	//manager.loop(sessionConn)
 }
 
+// getNextID returns the id to be used and sets the next value
 func (manager *asteroidManager) getNextID() int {
 	var id = manager.nextID
 	manager.nextID++
 	return id
+}
+
+func (manager *asteroidManager) updateDeathRow(deathRow []int) {
+	manager.deathRow = deathRow
+
+	if len(manager.deathRow) > 0 {
+		fmt.Println("Asteroid collision:", manager.deathRow)
+	}
+
 }
 
 // ONLY FOR TEST
