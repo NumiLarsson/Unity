@@ -1,9 +1,7 @@
 package asteroids
 
-import (
-	"fmt"
-	"strconv"
-)
+import "fmt"
+
 
 func (world *World) collisionManager() *World {
 
@@ -23,7 +21,9 @@ func (player *Player) checkCoordinates(asteroid *asteroid) bool {
 
 	//Size of the objects will alter the collision hitbox
 	//For now every object is only a dot
-	if player.XCord == asteroid.x || player.YCord == asteroid.y {
+
+	if player.XCord == asteroid.x && player.YCord == asteroid.y {
+
 		return true
 	}
 
@@ -36,7 +36,9 @@ func (player *Player) checkCollision(world *World) {
 	for _, asteroid := range world.asteroids {
 		if player.checkCoordinates(asteroid) {
 			fmt.Println("Player collided with asteroid at coordinates")
-			fmt.Println("(" + strconv.Itoa(player.XCord) + "," + strconv.Itoa(player.YCord) + ")")
+
+			fmt.Println("(", player.XCord, player.YCord, ")")
+
 			player.death(world)
 		}
 	}
