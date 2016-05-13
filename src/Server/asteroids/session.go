@@ -141,22 +141,27 @@ func (session *session) detectCollisions() []int {
 	var collisions []int
 
 	for _, a1 := range session.world.asteroids {
-
 		for _, a2 := range session.world.asteroids {
 
-			if a1.id == a2.id {
-				continue
-			} else if a1.x == a2.x && a1.y == a2.y {
-				if !inList(collisions, a1.id) {
-					collisions = append(collisions, a1.id)
-					fmt.Println("COLLISION")
-				}
+			if isCollision(a1, a2) && !inList(collisions, a1.id) {
+				collisions = append(collisions, a1.id)
 			}
-
 		}
-
 	}
+
 	return collisions
+
+}
+
+func isCollision(a1 *asteroid, a2 *asteroid) bool {
+
+	if a1.id == a2.id {
+		return false
+	} else if a1.x == a2.x && a1.y == a2.y {
+		return true
+	}
+
+	return false
 
 }
 
