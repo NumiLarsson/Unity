@@ -11,7 +11,7 @@ type ListenerManager struct {
 	CurrentPort    int
 	input          chan (Data)
 	listeners      []*Listener
-	Players        []Player
+	Players        []*Player
 }
 
 // loop TODO
@@ -73,12 +73,13 @@ func (manager *ListenerManager) incrementCurrentPlayers() {
 }
 
 //NewPlayer creates a new listener for the listener manager, used to connect to a new player.
-func (manager *ListenerManager) newPlayer() (int, Player) {
+func (manager *ListenerManager) newPlayer() (int, *Player) {
 
 	fmt.Println("Creating new object in listener manager")
 	//Creation of the listener and listener-player
-	newListener, newPlayer := NewListener(manager.CurrentPort)
+	newListener := NewListener(manager.CurrentPort)
 
+	newPlayer  := newListener.player
 	//Insert the created listener to listenerList
 	//Insert the created player to Players
 	manager.listeners = append(manager.listeners, newListener)
@@ -90,9 +91,9 @@ func (manager *ListenerManager) newPlayer() (int, Player) {
 }
 
 // collectPlayerPositions collect all player positions and return an array of them
-func (manager *ListenerManager) collectPlayerPositions() []Player {
+func (manager *ListenerManager) collectPlayerPositions() []*Player {
 	//playerList := make([]Player, 0)
-	var playerList []Player
+	var playerList []*Player
 	for _, listener := range manager.listeners {
 
 		var player = listener.getPlayer()
@@ -103,7 +104,7 @@ func (manager *ListenerManager) collectPlayerPositions() []Player {
 }
 
 // getPlayers returns an array of playerpositions
-func (manager *ListenerManager) getPlayers() []Player {
+func (manager *ListenerManager) getPlayers() []*Player {
 	return manager.Players
 }
 
