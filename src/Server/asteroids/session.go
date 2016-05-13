@@ -37,7 +37,6 @@ type session struct {
 	read  channels
 }
 
-
 // Session …
 func Session(serverConn *Connection, startPort int, players int, worldSize int) {
 
@@ -56,9 +55,9 @@ func Session(serverConn *Connection, startPort int, players int, worldSize int) 
 
 }
 
-
 // loop is the sessions ....TODO
 func (session *session) loop() {
+
 
 	for {
 
@@ -71,7 +70,9 @@ func (session *session) loop() {
 			session.world.players = session.listenerManager.getPlayers()
 			session.world.asteroids = session.asteroidManager.getAsteroids()
 
-			session.world.collisionManager()
+
+			
+		//	session.world.collisionManager()
 			//session.detectCollisions()
 
 			// Broadcast collisions to managers
@@ -100,12 +101,15 @@ func (session *session) loop() {
 				session.write.server <- Data{"session.player_created", port}
 			}
 
+		
+
 		// Send response back to server
 		case userdata := <-session.read.players:
 
 			fmt.Printf("Session: Read from manager %s\n", userdata.action)
 			session.write.server <- userdata
 
+		
 		}
 
 	}
@@ -116,15 +120,15 @@ func (session *session) loop() {
 func (session *session) createManagers(startPort int) {
 
 	toPlayers, fromPlayers := makeConnection()
-	session.write.players   = toPlayers.write
-	session.read.players    = toPlayers.read
+	session.write.players = toPlayers.write
+	session.read.players = toPlayers.read
 
 	toAsteroids, fromAsteroids := makeConnection()
-	session.write.asteroids     = toAsteroids.write
-	session.read.asteroids      = toAsteroids.read
+	session.write.asteroids = toAsteroids.write
+	session.read.asteroids = toAsteroids.read
 
 	session.world.worldSize = session.worldSize
-	session.world.players   = make([]Player, 0)
+	session.world.players = make([]Player, 0)
 	session.world.asteroids = make([]*asteroid, 0)
 
 	session.asteroidManager = newAsteroidManager()
@@ -146,9 +150,6 @@ func (session *session) detectCollisions() {
 			} else if a1.x == a2.x && a1.y == a2.y {
 				fmt.Println("COLLISION")
 			}
-
 		}
-
 	}
-
 }

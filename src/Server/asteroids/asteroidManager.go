@@ -3,6 +3,8 @@ package asteroids
 import (
 	"fmt"
 	"math/rand"
+	"os"
+	"os/exec"
 )
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
@@ -23,7 +25,6 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 	manager.init(sessionConn, asteroids)
 
 	for {
-
 		select {
 
 		case msg := <-manager.input:
@@ -155,3 +156,23 @@ func (manager *asteroidManager) print() {
 		fmt.Println("(", asteroid.id, ",", asteroid.x, ",", asteroid.y, ")")
 	}
 }
+
+// ONLY FOR TEST
+func (manager *asteroidManager) printWorld(){
+
+
+	for y := 0; y < manager.yMax ; y++ {
+		fmt.Println("")
+		for x := 0; x < manager.xMax ; x++{
+			fmt.Print("* ")
+			
+		}
+	}
+	
+	c := exec.Command("clear")
+	c.Stdout = os.Stdout
+	c.Run()
+	
+}
+
+
