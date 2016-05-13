@@ -78,7 +78,7 @@ func (server *server) Listen(external chan Data) {
 	// TEMPORARY
 	// ===
 	// Kill the server after 5 seconds of inactivity
-	timeout := time.After(5 * time.Second)
+	timeout := time.After(60 * time.Second)
 	
 	go acceptNewPlayers(external)
 	 
@@ -166,7 +166,7 @@ func (server *server) createSession() int {
 	nextPort := server.getNextPort() // Prevents data race
 
 	//Hardcoded size of the world for now
-	go Session(sessionSide, nextPort, server.maxPlayers, 400)
+	Session(sessionSide, nextPort, server.maxPlayers, 400)
 	<-serverSide.read
 
 	fmt.Println("Session created")

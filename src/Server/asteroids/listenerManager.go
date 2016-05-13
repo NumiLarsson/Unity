@@ -79,7 +79,7 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	//Creation of the listener and listener-player
 	newListener := NewListener(manager.CurrentPort)
 
-	newPlayer  := newListener.player
+	newPlayer := newListener.player
 	//Insert the created listener to listenerList
 	//Insert the created player to Players
 	manager.listeners = append(manager.listeners, newListener)
@@ -112,8 +112,7 @@ func (manager *ListenerManager) getPlayers() []*Player {
 func (manager *ListenerManager) sendToClient(world *World) {
 	for _, listener := range manager.listeners {
 		if listener.ID != "" {
-			//Function call where the world-info
-			//Is sent to each listener in the list
+			go listener.Write(world)
 		}
 	}
 }
