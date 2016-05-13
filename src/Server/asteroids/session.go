@@ -10,7 +10,7 @@ import (
 // TODO: CHANGE THIS
 type World struct {
 	worldSize int
-	players   []Player
+	players   []*Player
 	asteroids []*asteroid
 }
 
@@ -125,7 +125,7 @@ func (session *session) createManagers(startPort int) {
 	session.read.asteroids = toAsteroids.read
 
 	session.world.worldSize = session.worldSize
-	session.world.players = make([]Player, 0)
+	session.world.players = make([]*Player, 0)
 	session.world.asteroids = make([]*asteroid, 0)
 
 	session.asteroidManager = newAsteroidManager()
