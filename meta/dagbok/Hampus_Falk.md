@@ -90,8 +90,10 @@ Möte med grupp med syftet att påbörja sammanslagningen av listener, session o
 Möte med grupp där sammanslagningen fortskred. Milstolpe 2 redovisades inför andra grupper samt planering att ses imorgon torsdag för nya uppdelningar och planering inför nästa milstolpe. ca 6h
 
 ##### Torsdag
+Ensamt arbete med collisionManager samt fortsatt kodande för att skapa ett de facto spel, ca 7h
 
 ##### Fredag
+Ensamt arbete med collisionManager, inte så mycket arbete, dock har adderat funktioner andra delar av laget skulle behöva, ca 2h
 
 ## Vecka 20
 
