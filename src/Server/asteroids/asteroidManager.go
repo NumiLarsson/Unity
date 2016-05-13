@@ -158,7 +158,10 @@ func (manager *asteroidManager) getNextID() int {
 
 func (manager *asteroidManager) updateDeathRow(deathRow []int) {
 	manager.deathRow = deathRow
-	fmt.Println(manager.deathRow)
+
+	if len(manager.deathRow) > 0 {
+		fmt.Println("Asteroid collision:", manager.deathRow)
+	}
 
 }
 
