@@ -14,7 +14,7 @@ type asteroidManager struct {
 	nextID    int
 	maxRoids  int
 	treshold  int
-	deathRow  *[]int
+	deathRow  []int
 	input     chan (Data)
 	asteroids []*asteroid // Accessible from session.go
 }
@@ -32,6 +32,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 			if msg.action == "session.tick" {
 				manager.removeDeadAsteroids()
 				//manager.print()
+				//TODO spawn on correct x/y
 				manager.spawnAsteroid()
 				manager.resumeAsteroids()
 
@@ -77,7 +78,12 @@ func (manager *asteroidManager) resumeAsteroids() {
 }
 
 // onDeathRow TODO: implement! should check if current asteroid is on deathrow and can be removed
-func onDeathRow(a *asteroid, deathRow *[]int) bool {
+func onDeathRow(a *asteroid, deathRow []int) bool {
+	for _, dead := range deathRow {
+		if a.id == dead {
+			return true
+		}
+	}
 	return false
 }
 
@@ -107,6 +113,7 @@ func (manager *asteroidManager) getAsteroids() []*asteroid {
 
 // removeAsteroid removes specific asteroid from manager asteroid array
 func (manager *asteroidManager) removeAsteroid(i int) {
+
 	manager.asteroids = append(manager.asteroids[:i], manager.asteroids[i+1:]...)
 }
 
@@ -148,6 +155,12 @@ func (manager *asteroidManager) getNextID() int {
 	var id = manager.nextID
 	manager.nextID++
 	return id
+}
+
+func (manager *asteroidManager) updateDeathRow(deathRow []int) {
+	manager.deathRow = deathRow
+	fmt.Println(manager.deathRow)
+
 }
 
 // ONLY FOR TEST
