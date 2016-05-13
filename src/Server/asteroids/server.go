@@ -1,9 +1,9 @@
 package asteroids
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
-	"encoding/json"
 )
 
 // Data struct to be sent in channels
@@ -78,9 +78,9 @@ func (server *server) Listen(external chan Data) {
 	// ===
 	// Kill the server after 5 seconds of inactivity
 	timeout := time.After(5 * time.Second)
-	
+
 	go acceptNewPlayers(external)
-	 
+
 	for {
 		select {
 		// TODO change external to correct input channel/port used by external comm.
@@ -105,22 +105,22 @@ func acceptNewPlayers(conn chan Data) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	for {
 		tcpConn, err := socket.Accept()
 		if err != nil {
 			panic(err)
 		}
-		
+
 		conn <- Data{"NewUser", 0}
-		portData := <- conn
-		
+		portData := <-conn
+
 		jsonPort, err := json.Marshal(&portData.result)
 		if err != nil {
-			panic(err)	
+			panic(err)
 		}
 		tcpConn.Write(jsonPort)
-		
+
 		tcpConn.Close()
 	}
 }
