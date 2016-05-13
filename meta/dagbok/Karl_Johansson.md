@@ -113,9 +113,15 @@ asteroids.go och lite clean up av kod <br>
 Ändra om kod till mer object orienterat, synca över alla "moduler"
 
 ##### Tisdag
-**13:00-
+**13:00-17:00**
+Påbörja merge av alla kod<br>
+**20:00-21:30**
+skicka positionerna från listener->listenerManager->session
 
 ##### Onsdag
+**10:00-17:00**
+Merge kod, refaktorera, förbereda för och ha milstolpe 2 möte.<br>
+Påbörja deathRow för asteroids
 
 ##### Torsdag
 
