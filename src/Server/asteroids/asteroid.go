@@ -62,7 +62,7 @@ func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 	asteroid.xStep = rand.Intn(3) - 1
 	asteroid.yStep = rand.Intn(3) - 1
 
-//	asteroid.checkSizeToWorld(xMax, yMax)
+	//	asteroid.checkSizeToWorld(xMax, yMax)
 
 	asteroid.input = make(chan Data)
 

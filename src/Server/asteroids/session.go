@@ -37,7 +37,11 @@ type session struct {
 	read  channels
 }
 
-// Session …
+
+
+
+// Session …TODO rename to init?
+
 func Session(serverConn *Connection, startPort int, players int, worldSize int) {
 
 	session := new(session)
