@@ -36,9 +36,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 				// TODO: remove asteroids who has a collision or hit
 			}
 		}
-
 	}
-
 }
 
 // newAsteroidsManager creates a new asteroid manager
