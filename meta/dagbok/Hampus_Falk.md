@@ -84,8 +84,10 @@ Fortsatt kodande, samt inläsning av utmaningar som kommer att komma, ca 2h
 Extensivt ensamt arbete med kod för förståelse av annan skriven sådan samt kodskrivande med syfte att förbättra förståelsen , samt en möjlig väg för sammanfogning av den skrivna koden från alla håll, ca 6h
 
 ##### Tisdag
+Möte med grupp med syftet att påbörja sammanslagningen av listener, session och server. Eget arbete hemma med påläsning om de delar som skall göras ca 4h
 
 ##### Onsdag
+Möte med grupp där sammanslagningen fortskred. Milstolpe 2 redovisades inför andra grupper samt planering att ses imorgon torsdag för nya uppdelningar och planering inför nästa milstolpe. ca 6h
 
 ##### Torsdag
 
