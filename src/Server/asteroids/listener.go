@@ -5,6 +5,7 @@ import (
 	"net"
 	"strconv"
 	"time" //TEMP
+	"encoding/json"
 )
 
 //Player is used to represent the players in the game world
@@ -72,35 +73,23 @@ func (listen *Listener) startUpListener() {
 }
 
 func (listen *Listener) idleListener() {
-	for {
-		time.Sleep(time.Second)
-		listen.conn.Write(listen.writeBuffer[0])
+	for {		
+		if (listen.writeBuffer[0] != nil) {
+			listen.conn.Write(listen.writeBuffer[0])
+			listen.writeBuffer = listen.writeBuffer[1:]
+		} else {
+			time.Sleep(time.Second)	
+		}
 	}
 }
 
-func (listen *Listener) Write( /*world *World*/ ) {
-	//TEMPCODE
-	listen.writeBuffer = make([][]byte, 10)
-
-	/*
-		currentWorld := new(World)
-		currentWorld.Players = make([]*Player, 1)
-		currentWorld.Asteroids = make([]*Asteroid, 1)
-	*/
-
-	/*
-				currentWorld.Players[0] = player
-				currentWorld.Asteroids[0] = asteroid
-			jsonWorld, err := json.Marshal(&currentWorld)
-			if err != nil {
-				panic(err)
-			}
-
-		fmt.Println(string(jsonWorld))
-
-		listen.writeBuffer[0] = jsonWorld
-
-	*/
+func (listen *Listener) Write(world *World) {
+	jsonWorld, err := json.Marshal(world)
+	if err != nil {
+		panic(err)
+	}
+	
+	listen.writeBuffer = append(listen.writeBuffer, jsonWorld)
 }
 
 func (listen *Listener) getPlayer() *Player {

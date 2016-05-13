@@ -28,7 +28,7 @@ type session struct {
 	worldSize       int
 	players         int
 	maxPlayers      int
-	world           World
+	world           *World
 	asteroids       []*asteroid
 	asteroidManager *asteroidManager
 	listenerManager *ListenerManager
@@ -51,7 +51,7 @@ func Session(serverConn *Connection, startPort int, players int, worldSize int) 
 	session.write.server <- Data{"session_created", 200}
 	session.createManagers(startPort)
 
-	session.loop()
+	go session.loop()
 
 }
 
@@ -76,6 +76,10 @@ func (session *session) loop() {
 			session.asteroidManager.updateDeathRow(deathRow)
 
 			// Broadcast collisions to managers
+			
+			//TEMP BROADCAST TO CLIENTS
+			session.listenerManager.sendToClient(session.world)
+			//TEMP BROADCAST TO CLIENTS
 
 			session.write.asteroids <- Data{"session.tick", 200}
 			session.write.players <- Data{"session.tick", 200}
@@ -97,13 +101,14 @@ func (session *session) loop() {
 				var port, newPlayer = session.listenerManager.newPlayer()
 				session.players++
 				session.world.players = append(session.world.players, newPlayer)
+
 				session.write.server <- Data{"session.player_created", port}
 			}
 
 		// Send response back to server
 		case userdata := <-session.read.players:
 
-			fmt.Printf("[SESSION] Read from manager %s\n", userdata.action)
+			fmt.Printf("Session: Read from manager %s\n", userdata.action)
 			session.write.server <- userdata
 
 		}
@@ -113,7 +118,7 @@ func (session *session) loop() {
 }
 
 // createManagers sets up managers and their respective connections to/from session
-func (session *session) createManagers(startPort int) {
+func (session *session) createManagers(startPort int, /*maxPlayers int, maxAsteroids*/) {
 
 	toPlayers, fromPlayers := makeConnection()
 	session.write.players = toPlayers.write
@@ -124,8 +129,8 @@ func (session *session) createManagers(startPort int) {
 	session.read.asteroids = toAsteroids.read
 
 	session.world.worldSize = session.worldSize
-	session.world.players = make([]*Player, 0)
-	session.world.asteroids = make([]*asteroid, 0)
+	session.world.players = make([]*Player, 1/*maxPlayers*/)
+	session.world.asteroids = make([]*asteroid, 2/*maxAsteroids*/)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
