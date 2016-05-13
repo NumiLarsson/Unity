@@ -26,7 +26,8 @@ type Listener struct {
 	//Connection
 }
 
-func createSocket(port int) (net.Listener, error) {
+//CreateSocket creates a tcp listener at the specified port
+func CreateSocket(port int) (net.Listener, error) {
 	connection, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		return nil, err
@@ -41,7 +42,7 @@ func NewListener(port int /*, conn *Connection*/) (*Listener, Player) {
 	listener := new(Listener)
 
 	var err error
-	listener.socket, err = createSocket(port)
+	listener.socket, err = CreateSocket(port)
 	if err != nil {
 		panic(err)
 	}
