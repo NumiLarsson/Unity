@@ -117,7 +117,7 @@ func acceptNewPlayers(conn chan Data) {
 		
 		jsonPort, err := json.Marshal(&portData.result)
 		if err != nil {
-			panic(err)
+			panic(err)	
 		}
 		tcpConn.Write(jsonPort)
 		
