@@ -119,7 +119,9 @@ Påbörja merge av alla kod<br>
 skicka positionerna från listener->listenerManager->session
 
 ##### Onsdag
-**10:00-
+**10:00-17:00**
+Merge kod, refaktorera, förbereda för och ha milstolpe 2 möte.<br>
+Påbörja deathRow för asteroids
 
 ##### Torsdag
 

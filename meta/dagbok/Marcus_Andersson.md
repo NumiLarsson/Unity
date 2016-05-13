@@ -89,8 +89,14 @@ Refaktorerade Session, påbörjade Asteroids
 ## Vecka 19
 
 ##### Måndag
+**10:00-12:30**
+Initial implementation av asteroider<br>
+**15:00-17:00**
+Gjorde om vår kod så att den blev mer "objektorienterad"
 
 ##### Tisdag
+**13:00-17:00**
+Ihopsättning av all kod. Tittade också på automation (testning, dokumentation)
 
 ##### Onsdag
 
