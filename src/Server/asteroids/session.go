@@ -60,10 +60,10 @@ func (session *session) loop() {
 
 	for {
 
-		fakeTick := time.After(16 * time.Millisecond)
+		tick := time.After(16 * time.Millisecond)
 
 		select {
-		case <-fakeTick:
+		case <-tick:
 
 			// Collect player and asteroid positions
 			session.world.players = session.listenerManager.getPlayers()
