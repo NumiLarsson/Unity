@@ -32,8 +32,7 @@ func (player *Player) checkCollision(world *World) {
 
 	for _, asteroid := range world.asteroids {
 		if player.checkCoordinates(asteroid) {
-			fmt.Println("Player collided with asteroid at coordinates")
-			fmt.Println("(", player.XCord, player.YCord, ")")
+			fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.XCord, player.YCord, ")")
 			player.death(world)
 		}
 	}

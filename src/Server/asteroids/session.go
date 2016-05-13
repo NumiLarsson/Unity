@@ -97,14 +97,13 @@ func (session *session) loop() {
 				var port, newPlayer = session.listenerManager.newPlayer()
 				session.players++
 				session.world.players = append(session.world.players, newPlayer)
-
 				session.write.server <- Data{"session.player_created", port}
 			}
 
 		// Send response back to server
 		case userdata := <-session.read.players:
 
-			fmt.Printf("Session: Read from manager %s\n", userdata.action)
+			fmt.Printf("[SESSION] Read from manager %s\n", userdata.action)
 			session.write.server <- userdata
 
 		}

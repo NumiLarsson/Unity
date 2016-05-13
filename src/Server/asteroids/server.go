@@ -50,7 +50,7 @@ func makeConnection() (c1, c2 *Connection) {
 
 	return
 }
-/*
+
 // Only used to get some kind of input from a "user"
 func (server *server) CreateFakeUser() chan Data {
 
@@ -59,17 +59,16 @@ func (server *server) CreateFakeUser() chan Data {
 
 	go func() {
 
-		time.Sleep(250 * time.Millisecond)
 		fakeUser <- Data{"server.new_user", nextPort}
+		<-fakeUser
 
-		time.Sleep(500 * time.Millisecond)
 		fakeUser <- Data{"server.new_user", nextPort}
+		<-fakeUser
 
 	}()
 
 	return fakeUser
 }
-*/
 
 // Listen is a loop that server uses to listen for new user that want to connect
 // Sends correct port to use in return
@@ -85,16 +84,16 @@ func (server *server) Listen(external chan Data) {
 	for {
 		select {
 		// TODO change external to correct input channel/port used by external comm.
-		case message := <-external:
-			fmt.Println("Server: New user wants to connect \n", message.action)
+		case <-external:
+			fmt.Println("[SERVER] New user wants to connect")
 			// TODO: Possibly in a go-routine based on performance
 			port := server.addPlayer()
 			external <- Data{"port", port}
 			// Port to use should be sent to the user
-			fmt.Println("Server: Port set up for new user", port)
+			fmt.Println("[SERVER] Port set up for new user", port)
 
 		case <-timeout:
-			fmt.Println("\n======\nServer terminated due to inactivity")
+			fmt.Println("\n========\n[SERVER] Terminated due to 5 seconds of inactivity\n========")
 			return
 		}
 	}
@@ -169,7 +168,7 @@ func (server *server) createSession() int {
 	go Session(sessionSide, nextPort, server.maxPlayers, 400)
 	<-serverSide.read
 
-	fmt.Println("Session created")
+	fmt.Println("[SERVER] Session created")
 
 	// Create a local copy
 	session := new(gameSession)
@@ -187,7 +186,7 @@ func (server *server) createPlayer(gs *gameSession) int {
 
 	gs.write <- Data{"server.connect_player", 1}
 	data := <-gs.read
-	fmt.Println("Player connected")
+	fmt.Println("[SERVER] Player connected")
 	server.totalPlayers++
 	return data.result
 }

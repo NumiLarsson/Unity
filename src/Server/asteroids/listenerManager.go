@@ -32,7 +32,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 				// Send update + world to players
 
 			} else {
-				fmt.Println("Collision!! \n ", msg.action)
+				fmt.Println("[LIST.MAN] Collision!! \n ", msg.action)
 				// TODO: remove asteroids who has a collision or hit
 			}
 		}
@@ -42,7 +42,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 // newAsteroidsManager creates a new asteroid manager
 func newListenerManager() *ListenerManager {
 
-	fmt.Println("ListenerManager created")
+	fmt.Println("[LIST.MAN] Created")
 	return new(ListenerManager)
 
 }
@@ -75,11 +75,11 @@ func (manager *ListenerManager) incrementCurrentPlayers() {
 //NewPlayer creates a new listener for the listener manager, used to connect to a new player.
 func (manager *ListenerManager) newPlayer() (int, *Player) {
 
-	fmt.Println("Creating new object in listener manager")
+	fmt.Println("[LIST.MAN] Creating new object in listener manager")
 	//Creation of the listener and listener-player
 	newListener := NewListener(manager.CurrentPort)
 
-	newPlayer  := newListener.player
+	newPlayer := newListener.player
 	//Insert the created listener to listenerList
 	//Insert the created player to Players
 	manager.listeners = append(manager.listeners, newListener)
