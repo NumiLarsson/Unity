@@ -3,14 +3,17 @@ package asteroids
 import "fmt"
 
 func (world *World) collisionManager() *World {
+	var deadPlayerIDs   []int
+	var deadAsteroidIDs []int
+	
+	
+	deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
+		
+	//Used to make it compile
+	fmt.Println(deadPlayerIDs, deadAsteroidIDs)
 
-	//Check every player to see if they collide with an asteroid
-	for _, player := range world.players {
-		player.checkCollision(world)
-
-	}
 	//TODO
-	//enter similar ranges with every object collidable
+	//enter similar ranges with every object destructible
 	return world
 }
 
@@ -27,16 +30,32 @@ func (player *Player) checkCoordinates(asteroid *asteroid) bool {
 	return false
 }
 
-//Might split up in to several functions depending on the object
-func (player *Player) checkCollision(world *World) {
+//Checks the collisions during the tick and returns two arrays
+//Of the player and asteroid IDs which were destroyed
+//Could be made to act as a hub for every collision at once
+//Thus becoming the real collisionManager (Consider changing name)
+func checkCollision(world *World) ([]int, []int){
+	var deadPlayerIDs   []int
+	var deadAsteroidIDs []int
+	
 
-	for _, asteroid := range world.asteroids {
-		if player.checkCoordinates(asteroid) {
-			fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.XCord, player.YCord, ")")
-			player.death(world)
+	for _, player := range world.players {
+		for _, asteroid := range world.asteroids {
+			if player.checkCoordinates(asteroid) {
+				fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.XCord, player.YCord, ")")
+
+				//Player collision with an asteroid will
+				//Kill the player and the asteroid
+				//It only makes sense... Right?
+				deadPlayerIDs = append(deadPlayerIDs, player.ID)
+				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.id)
+
+				player.death(world)
+			}
 		}
 	}
 
+	return deadPlayerIDs, deadAsteroidIDs
 }
 
 func (player *Player) death(world *World) {

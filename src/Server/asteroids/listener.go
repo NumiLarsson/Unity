@@ -10,6 +10,7 @@ import (
 
 //Player is used to represent the players in the game world
 type Player struct {
+	ID int
 	XCord int
 	YCord int
 	Lives int
