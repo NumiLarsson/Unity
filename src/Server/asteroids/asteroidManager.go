@@ -167,7 +167,18 @@ func (manager *asteroidManager) updateDeathRow(deathRow []int) {
 
 // ONLY FOR TEST
 func (manager *asteroidManager) print() {
+
 	for _, asteroid := range manager.asteroids {
 		fmt.Println("(", asteroid.id, ",", asteroid.x, ",", asteroid.y, ")")
 	}
+	/*
+		fmt.Print("\033[2J\033[;H")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+	*/
 }
