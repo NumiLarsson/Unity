@@ -53,8 +53,10 @@ public class GameLoop : MonoBehaviour {
     }
 }
 
-class World {
+class WorldClient {
     int worldSize { get; set; }
+    Player []players { get; set; }
+    Asteroid []asteroids { get; set; }
 }
 
 class Player {

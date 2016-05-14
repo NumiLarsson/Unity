@@ -15,6 +15,13 @@ type World struct {
 	asteroids []*asteroid
 }
 
+//TEMPSTRUCT since I can't send asteroids
+type WorldClient struct {
+	players []*Player
+	asteroids []*AsteroidClient
+}
+//TEMPSTRUCT since I can't send asteroids
+
 // channels struct used to implement a structured way to handle multiple
 // write/read channels for session
 type channels struct {
@@ -63,7 +70,7 @@ func (session *session) loop() {
 
 	for {
 
-		tick := time.After(16 * time.Millisecond)
+		tick := time.After(160 * time.Millisecond)
 
 		select {
 		case <-tick:
@@ -80,12 +87,26 @@ func (session *session) loop() {
 			// Broadcast collisions to managers
 			
 			//TEMP BROADCAST TO CLIENTS
-			/*jsonArray, err := json.Marshal(session.world)
+			tempWorld := new(WorldClient)
+			tempWorld.players = make([]*Player, 1)
+			tempWorld.asteroids = make([]*AsteroidClient, 2)
+			
+			tempPlayer := new(Player)
+			tempPlayer.XCord = 1;
+			tempPlayer.YCord = 2;
+			tempPlayer.Lives = 3;
+			
+			tempAsteroid1 := AsteroidClient{1,1,1}
+			tempAsteroid2 := AsteroidClient{2,2,2}
+			tempWorld.players[0] = tempPlayer
+			tempWorld.asteroids[0] = &tempAsteroid1
+			tempWorld.asteroids[1] = &tempAsteroid2
+			/*jsonArray, err := json.Marshal()
 			if err != nil {
 				panic(err)
 			}
 			fmt.Println(string(jsonArray))*/
-			session.listenerManager.sendToClient(session.world)
+			session.listenerManager.sendToClient(tempWorld)
 			//TEMP BROADCAST TO CLIENTS
 
 			session.write.asteroids <- Data{"session.tick", 200}
