@@ -3,6 +3,7 @@ package asteroids
 import (
 	"fmt"
 	"time"
+	//"encoding/json"
 )
 
 // World is a placeholder for the gameboard
@@ -48,7 +49,9 @@ func Session(serverConn *Connection, startPort int, players int, worldSize int) 
 	session.read.server = serverConn.read
 	//session.asteroids = make([]*asteroid, 0)
 
-	session.write.server <- Data{"session_created", 200}
+	//session.write.server <- Data{"session_created", 200}
+	//This is not using GO so it's 100000% deadlocked.
+	
 	session.createManagers(startPort)
 
 	go session.loop()
@@ -64,7 +67,6 @@ func (session *session) loop() {
 
 		select {
 		case <-tick:
-
 			// Collect player and asteroid positions
 			session.world.players = session.listenerManager.getPlayers()
 			session.world.asteroids = session.asteroidManager.getAsteroids()
@@ -78,6 +80,11 @@ func (session *session) loop() {
 			// Broadcast collisions to managers
 			
 			//TEMP BROADCAST TO CLIENTS
+			/*jsonArray, err := json.Marshal(session.world)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(string(jsonArray))*/
 			session.listenerManager.sendToClient(session.world)
 			//TEMP BROADCAST TO CLIENTS
 
@@ -128,9 +135,10 @@ func (session *session) createManagers(startPort int, /*maxPlayers int, maxAster
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
+	session.world = new(World)
 	session.world.worldSize = session.worldSize
-	session.world.players = make([]*Player, 1/*maxPlayers*/)
-	session.world.asteroids = make([]*asteroid, 2/*maxAsteroids*/)
+	session.world.players = make([]*Player, 0/*maxPlayers*/)
+	session.world.asteroids = make([]*asteroid, 0/*maxAsteroids*/)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()

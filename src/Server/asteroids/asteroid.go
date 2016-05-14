@@ -5,12 +5,27 @@ import "math/rand"
 type asteroid struct {
 	x     int
 	y     int
-	xStep int
-	yStep int
-	id    int
-	size  int
-	phase int
-	input chan (Data)
+	xStep int //These do not belong in the asteroid we send to C#
+	yStep int //These do not belong in the asteroid we send to C#
+	id    int //These do not belong in the asteroid we send to C#
+	size  int //These do not belong in the asteroid we send to C#
+	phase int 
+	input chan (Data) //These do not belong in the asteroid we send to C#
+}
+
+//AsteroidClient is the public data that we send to clients
+type AsteroidClient struct {
+	x		int
+	y 		int
+	stage 	int
+}
+
+func (asteroid *asteroid) getClientData() *AsteroidClient{
+	asteroidClient := new(AsteroidClient)
+	asteroidClient.x = asteroid.x
+	asteroidClient.y = asteroid.y
+	asteroidClient.stage = asteroid.phase
+	return asteroidClient
 }
 
 func (asteroid *asteroid) loop() { //loop(id int, xMax int, yMax int) {
@@ -65,5 +80,4 @@ func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 //	asteroid.checkSizeToWorld(xMax, yMax)
 
 	asteroid.input = make(chan Data)
-
 }
