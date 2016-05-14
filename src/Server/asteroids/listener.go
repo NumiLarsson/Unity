@@ -1,10 +1,9 @@
 package asteroids
 
 import (
-	//TEMP
 	"net"
 	"strconv"
-	"time" //TEMP
+	//"time" //TEMP
 	"encoding/json"
 )
 
@@ -23,7 +22,7 @@ type Listener struct {
 	Port        int
 	player      *Player
 	conn        net.Conn
-	writeBuffer [][]byte
+	writeBuffer chan []byte
 	//Connection
 }
 
@@ -53,6 +52,8 @@ func NewListener(port int /*, conn *Connection*/) (*Listener) {
 	listener.player.XCord = 0
 	listener.player.YCord = 0
 	listener.player.Lives = 3
+	
+	listener.writeBuffer = make(chan []byte, 60)
 
 	//listener.write = conn.read //Fan in to manager
 	//listener.read = conn.write //Fan out from manager
@@ -68,18 +69,18 @@ func (listen *Listener) startUpListener() {
 	if err != nil {
 		panic(err)
 	}
+	listen.ID = "Hello World"
 
 	listen.idleListener()
 }
 
 func (listen *Listener) idleListener() {
-	for {		
-		if (listen.writeBuffer[0] != nil) {
-			listen.conn.Write(listen.writeBuffer[0])
-			listen.writeBuffer = listen.writeBuffer[1:]
-		} else {
-			time.Sleep(time.Second)	
-		}
+	for {
+		select{
+			case jsonWorld := <- listen.writeBuffer:
+				listen.conn.Write(jsonWorld)
+			default:
+		}		 
 	}
 }
 
@@ -88,8 +89,7 @@ func (listen *Listener) Write(world *World) {
 	if err != nil {
 		panic(err)
 	}
-	
-	listen.writeBuffer = append(listen.writeBuffer, jsonWorld)
+	listen.writeBuffer <- jsonWorld
 }
 
 func (listen *Listener) getPlayer() *Player {

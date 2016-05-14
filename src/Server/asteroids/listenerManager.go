@@ -56,7 +56,7 @@ func (manager *ListenerManager) init(sessionConn *Connection, maxPlayers int, fi
 	manager.CurrentPort = firstPort
 	manager.input = sessionConn.read
 
-	manager.listeners = make([]*Listener, 0)
+	manager.listeners = make([]*Listener, 1)
 
 }
 
@@ -82,7 +82,10 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	newPlayer := newListener.player
 	//Insert the created listener to listenerList
 	//Insert the created player to Players
-	manager.listeners = append(manager.listeners, newListener)
+	//manager.listeners = append(manager.listeners, newListener)
+	manager.listeners[0] = newListener;
+	//APPEND IS NOT WORKING, STOP USING IT PLEASE
+	
 	manager.Players = append(manager.Players, newPlayer)
 
 	manager.incrementCurrentPlayers()
@@ -98,6 +101,7 @@ func (manager *ListenerManager) collectPlayerPositions() []*Player {
 
 		var player = listener.getPlayer()
 		playerList = append(playerList, player)
+		fmt.Println(player.XCord)
 	}
 
 	return playerList
