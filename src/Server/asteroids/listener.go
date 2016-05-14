@@ -1,6 +1,7 @@
 package asteroids
 
 import (
+	"fmt" //TEMP
 	"net"
 	"strconv"
 	//"time" //TEMP
@@ -79,12 +80,13 @@ func (listen *Listener) idleListener() {
 		select{
 			case jsonWorld := <- listen.writeBuffer:
 				listen.conn.Write(jsonWorld)
+				fmt.Println("Sent info to client", string(jsonWorld))
 			default:
 		}		 
 	}
 }
 
-func (listen *Listener) Write(world *World) {
+func (listen *Listener) Write(world /**World*/*WorldClient) {
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)

@@ -101,7 +101,6 @@ func (manager *ListenerManager) collectPlayerPositions() []*Player {
 
 		var player = listener.getPlayer()
 		playerList = append(playerList, player)
-		fmt.Println(player.XCord)
 	}
 
 	return playerList
@@ -113,7 +112,7 @@ func (manager *ListenerManager) getPlayers() []*Player {
 }
 
 // SendToClient broadcasts world-info to every listener
-func (manager *ListenerManager) sendToClient(world *World) {
+func (manager *ListenerManager) sendToClient(world /**World*/*WorldClient) {
 	for _, listener := range manager.listeners {
 		if listener.ID != "" {
 			go listener.Write(world)
