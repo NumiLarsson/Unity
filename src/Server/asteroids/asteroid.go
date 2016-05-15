@@ -56,14 +56,43 @@ func newAsteroid() *asteroid {
 
 func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 
-	asteroid.x = rand.Intn(xMax)
-	asteroid.y = rand.Intn(yMax)
 	asteroid.id = id
-	asteroid.xStep = rand.Intn(3) - 1
-	asteroid.yStep = rand.Intn(3) - 1
+	asteroid.randowSpawn(xMax, yMax)
 
-//	asteroid.checkSizeToWorld(xMax, yMax)
+	//	asteroid.checkSizeToWorld(xMax, yMax)
 
 	asteroid.input = make(chan Data)
+
+}
+
+func (asteroid *asteroid) randowSpawn(xMax int, yMax int) {
+
+	randomDir := rand.Intn(4)
+
+	switch randomDir {
+	case 0:
+		asteroid.x = rand.Intn(xMax)
+		asteroid.y = 0 - asteroid.size
+		asteroid.xStep = 0
+		asteroid.yStep = 1
+
+	case 1:
+		asteroid.x = xMax
+		asteroid.y = rand.Intn(yMax)
+		asteroid.xStep = -1
+		asteroid.yStep = 0
+
+	case 2:
+		asteroid.x = rand.Intn(xMax)
+		asteroid.y = yMax
+		asteroid.xStep = 0
+		asteroid.yStep = -1
+
+	case 3:
+		asteroid.x = 0 - asteroid.size
+		asteroid.y = rand.Intn(yMax)
+		asteroid.xStep = 1
+		asteroid.yStep = 0
+	}
 
 }
