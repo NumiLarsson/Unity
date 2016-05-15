@@ -26,10 +26,10 @@ type channels struct {
 // read/write channels etc.
 type session struct {
 	worldSize       int
-	players         int
+	currentPlayers  int
 	maxPlayers      int
 	world           World
-	asteroids       []*asteroid
+	asteroids       []*asteroid // TODO remove? do we use this anymore
 	asteroidManager *asteroidManager
 	listenerManager *ListenerManager
 	// For external communication
@@ -72,8 +72,9 @@ func (session *session) loop() {
 			session.world.collisionManager()
 
 			// Send collision ids back to asteroid manager
-			deathRow := session.detectCollisions()
+			deathRow, playerCollisions := session.detectCollisions()
 			session.asteroidManager.updateDeathRow(deathRow)
+			session.listenerManager.handleCollisions(playerCollisions)
 
 			// Broadcast collisions to managers
 
@@ -89,7 +90,7 @@ func (session *session) loop() {
 			if data.action == "server.poke" {
 
 				// Check if theres room inside the session
-				if session.players < session.maxPlayers {
+				if session.currentPlayers < session.maxPlayers {
 					session.write.server <- Data{"session.has_room", 200}
 				} else {
 					session.write.server <- Data{"session.no_room", -1}
@@ -99,7 +100,7 @@ func (session *session) loop() {
 
 				// Spawn a new player
 				var port, newPlayer = session.listenerManager.newPlayer()
-				session.players++
+				session.currentPlayers++
 				session.world.players = append(session.world.players, newPlayer)
 
 				session.write.server <- Data{"session.player_created", port}
@@ -140,27 +141,80 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 
 }
 
+// =======================TODO: REBUILD IN COLLISION MANAGER? ===========================
+// ======================= FIX MORE GENERIC =============================================
 // detectCollisions checks each asteroid and stores all asteroids that have collided
 // TODO players and use collision manager?
-func (session *session) detectCollisions() []int {
+func (session *session) detectCollisions() ([]int, []int) {
 
-	var collisions []int
+	var asteroidCollisions []int
+	var playerCollisions []int
 
-	for _, a1 := range session.world.asteroids {
-		for _, a2 := range session.world.asteroids {
+	// First check player vs player collisions
+	// second check player vs asteroid
+	// last check asteroid vs asteroid
+	playerCollisions = session.playerPlayerCollision(playerCollisions)
+	playerCollisions, asteroidCollisions =
+		session.playerAsteroidCollision(playerCollisions, asteroidCollisions)
 
-			if isCollision(a1, a2) && !inList(collisions, a1.id) {
-				collisions = append(collisions, a1.id)
-			}
-		}
-	}
+	asteroidCollisions = session.asteroidAsteroidCollision(asteroidCollisions)
 
-	return collisions
+	return asteroidCollisions, playerCollisions
 
 }
 
-// isCollision checks is if two asteroids are on the same position causing a collision
-func isCollision(a1 *asteroid, a2 *asteroid) bool {
+func (session *session) asteroidAsteroidCollision(asteroidCollisions []int) []int {
+	for _, a1 := range session.world.asteroids {
+		for _, a2 := range session.world.asteroids {
+
+			if isCollisionAsteroidAsteroid(a1, a2) &&
+				!inList(asteroidCollisions, a1.id) {
+				asteroidCollisions = append(asteroidCollisions, a1.id)
+			}
+		}
+	}
+	return asteroidCollisions
+}
+
+//
+func (session *session) playerAsteroidCollision(playerCollisions []int,
+	asteroidCollisions []int) ([]int, []int) {
+	//var playerCollisions, asteroidCollisions []int
+
+	for _, p := range session.world.players {
+		for _, a := range session.world.asteroids {
+			if isCollisionPlayerAsteroid(p, a) {
+				if !inList(playerCollisions, p.id) {
+					playerCollisions = append(playerCollisions, p.id)
+				}
+				if !inList(asteroidCollisions, a.id) {
+					asteroidCollisions = append(asteroidCollisions, a.id)
+				}
+
+			}
+		}
+	}
+	return playerCollisions, asteroidCollisions
+}
+
+func (session *session) playerPlayerCollision(playerCollisions []int) []int {
+	//var playerCollisions []int
+
+	for _, p1 := range session.world.players {
+		for _, p2 := range session.world.players {
+			if isCollisionPlayerPlayer(p1, p2) && !inList(playerCollisions, p1.id) {
+				playerCollisions = append(playerCollisions, p1.id)
+
+			}
+		}
+	}
+	return playerCollisions
+
+}
+
+// isCollisionAsteroidAsteroid checks is if two asteroids are on
+// the same position causing a collision
+func isCollisionAsteroidAsteroid(a1 *asteroid, a2 *asteroid) bool {
 
 	if a1.id == a2.id {
 		return false
@@ -172,6 +226,29 @@ func isCollision(a1 *asteroid, a2 *asteroid) bool {
 
 }
 
+// isCollisionAsteroidPlayer  TODO some sort of interface to take generic input?
+func isCollisionPlayerAsteroid(p *Player, a *asteroid) bool {
+
+	if p.x == a.x && p.y == a.y {
+		return true
+	}
+
+	return false
+
+}
+
+// TODO some sort of interface to take generic input?
+func isCollisionPlayerPlayer(p1 *Player, p2 *Player) bool {
+
+	if p1.id == p2.id {
+		return false
+	} else if p1.x == p2.x && p1.y == p2.y {
+		return true
+	}
+
+	return false
+}
+
 // inList checks if the item is is already in the list
 func inList(list []int, item int) bool {
 	for _, current := range list {
@@ -181,3 +258,6 @@ func inList(list []int, item int) bool {
 	}
 	return false
 }
+
+// =======================TODO: REBUILD IN COLLISION MANAGER? ===========================
+// ======================= FIX MORE GENERIC =============================================
