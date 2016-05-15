@@ -2,18 +2,18 @@ package asteroids
 
 import (
 	//TEMP
+	"encoding/json"
 	"net"
 	"strconv"
 	"time" //TEMP
-	"encoding/json"
 )
 
 //Player is used to represent the players in the game world
 type Player struct {
-	ID int
-	XCord int
-	YCord int
-	Lives int
+	id    int
+	x     int
+	y     int
+	lives int
 }
 
 //Listener is responsible for a client each
@@ -39,7 +39,7 @@ func CreateSocket(port int) (net.Listener, error) {
 }
 
 //NewListener creates a new socket then runs this socket as a go routine
-func NewListener(port int /*, conn *Connection*/) (*Listener) {
+func NewListener(port int /*, conn *Connection*/) *Listener {
 
 	listener := new(Listener)
 
@@ -51,9 +51,9 @@ func NewListener(port int /*, conn *Connection*/) (*Listener) {
 
 	listener.Port = port
 	listener.player = new(Player)
-	listener.player.XCord = 0
-	listener.player.YCord = 0
-	listener.player.Lives = 3
+	listener.player.x = 0
+	listener.player.y = 0
+	listener.player.lives = 3
 
 	//listener.write = conn.read //Fan in to manager
 	//listener.read = conn.write //Fan out from manager
@@ -74,12 +74,12 @@ func (listen *Listener) startUpListener() {
 }
 
 func (listen *Listener) idleListener() {
-	for {		
-		if (listen.writeBuffer[0] != nil) {
+	for {
+		if listen.writeBuffer[0] != nil {
 			listen.conn.Write(listen.writeBuffer[0])
 			listen.writeBuffer = listen.writeBuffer[1:]
 		} else {
-			time.Sleep(time.Second)	
+			time.Sleep(time.Second)
 		}
 	}
 }
@@ -89,7 +89,7 @@ func (listen *Listener) Write(world *World) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	listen.writeBuffer = append(listen.writeBuffer, jsonWorld)
 }
 
