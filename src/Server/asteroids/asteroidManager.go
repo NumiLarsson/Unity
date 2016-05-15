@@ -37,7 +37,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 				manager.resumeAsteroids()
 
 			} else {
-				fmt.Println("Collision!! \n ", msg.action)
+				fmt.Println("[AST.MAN] Collision!! \n ", msg.action)
 				// TODO: remove asteroids who has a collision or hit
 			}
 		}
@@ -132,7 +132,7 @@ func (manager *asteroidManager) newAsteroid() {
 // newAsteroidsManager creates a new asteroid manager
 func newAsteroidManager() *asteroidManager {
 
-	fmt.Println("AsteroidManager created")
+	fmt.Println("[AST.MAN] Created")
 	return new(asteroidManager)
 
 }
@@ -161,16 +161,27 @@ func (manager *asteroidManager) updateDeathRow(deathRow []int) {
 	manager.deathRow = deathRow
 
 	if len(manager.deathRow) > 0 {
-		fmt.Println("Asteroid collision:", manager.deathRow)
+		fmt.Println("[AST.MAN] Collision:", manager.deathRow)
 	}
 
 }
 
 // ONLY FOR TEST
 func (manager *asteroidManager) print() {
+
 	for _, asteroid := range manager.asteroids {
 		fmt.Println("(", asteroid.id, ",", asteroid.x, ",", asteroid.y, ")")
 	}
+	/*
+		fmt.Print("\033[2J\033[;H")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+	*/
 }
 
 // ONLY FOR TEST

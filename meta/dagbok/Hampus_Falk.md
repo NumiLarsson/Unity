@@ -87,6 +87,7 @@ Extensivt ensamt arbete med kod för förståelse av annan skriven sådan samt k
 Möte med grupp med syftet att påbörja sammanslagningen av listener, session och server. Eget arbete hemma med påläsning om de delar som skall göras ca 4h
 
 ##### Onsdag
+Möte med grupp där sammanslagningen fortskred. Milstolpe 2 redovisades inför andra grupper samt planering att ses imorgon torsdag för nya uppdelningar och planering inför nästa milstolpe. ca 6h
 
 ##### Torsdag
 
