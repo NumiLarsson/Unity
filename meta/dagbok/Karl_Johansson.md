@@ -126,6 +126,12 @@ Påbörja deathRow för asteroids
 ##### Torsdag
 
 ##### Fredag
+**10:00-15:00**
+Kommunikation av kollisioner mellan session.go och asteroidManager
+
+##### Söndag
+**20:00-22:00**
+Ändringar i session.go för alla kollisioner
 
 ## Vecka 20
 
