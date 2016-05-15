@@ -28,7 +28,7 @@ type session struct {
 	worldSize       int
 	players         int
 	maxPlayers      int
-	world           *World
+	world           World
 	asteroids       []*asteroid
 	asteroidManager *asteroidManager
 	listenerManager *ListenerManager
@@ -51,7 +51,7 @@ func Session(serverConn *Connection, startPort int, players int, worldSize int) 
 	session.write.server <- Data{"session_created", 200}
 	session.createManagers(startPort)
 
-	go session.loop()
+	session.loop()
 
 }
 
@@ -76,9 +76,9 @@ func (session *session) loop() {
 			session.asteroidManager.updateDeathRow(deathRow)
 
 			// Broadcast collisions to managers
-			
+
 			//TEMP BROADCAST TO CLIENTS
-			session.listenerManager.sendToClient(session.world)
+			//session.listenerManager.sendToClient(session.world)
 			//TEMP BROADCAST TO CLIENTS
 
 			session.write.asteroids <- Data{"session.tick", 200}
@@ -118,7 +118,7 @@ func (session *session) loop() {
 }
 
 // createManagers sets up managers and their respective connections to/from session
-func (session *session) createManagers(startPort int, /*maxPlayers int, maxAsteroids*/) {
+func (session *session) createManagers(startPort int /*maxPlayers int, maxAsteroids*/) {
 
 	toPlayers, fromPlayers := makeConnection()
 	session.write.players = toPlayers.write
@@ -128,9 +128,9 @@ func (session *session) createManagers(startPort int, /*maxPlayers int, maxAster
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
-	session.world.worldSize = session.worldSize
-	session.world.players = make([]*Player, 1/*maxPlayers*/)
-	session.world.asteroids = make([]*asteroid, 2/*maxAsteroids*/)
+	session.world.worldSize = 400 //session.worldSize
+	session.world.players = make([]*Player, 1 /*maxPlayers*/)
+	session.world.asteroids = make([]*asteroid, 2 /*maxAsteroids*/)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
