@@ -3,6 +3,7 @@ package asteroids
 import (
 	"fmt"
 	"time"
+	"encoding/json"
 )
 
 // Data struct to be sent in channels
@@ -49,7 +50,7 @@ func makeConnection() (c1, c2 *Connection) {
 
 	return
 }
-
+/*
 // Only used to get some kind of input from a "user"
 func (server *server) CreateFakeUser() chan Data {
 
@@ -68,6 +69,7 @@ func (server *server) CreateFakeUser() chan Data {
 
 	return fakeUser
 }
+*/
 
 // Listen is a loop that server uses to listen for new user that want to connect
 // Sends correct port to use in return
@@ -76,16 +78,18 @@ func (server *server) Listen(external chan Data) {
 	// TEMPORARY
 	// ===
 	// Kill the server after 5 seconds of inactivity
-	timeout := time.After(5 * time.Second)
-
+	timeout := time.After(60 * time.Second)
+	
+	go acceptNewPlayers(external)
+	 
 	for {
 		select {
 		// TODO change external to correct input channel/port used by external comm.
 		case message := <-external:
 			fmt.Println("Server: New user wants to connect \n", message.action)
 			// TODO: Possibly in a go-routine based on performance
-			var port = server.addPlayer()
-
+			port := server.addPlayer()
+			external <- Data{"port", port}
 			// Port to use should be sent to the user
 			fmt.Println("Server: Port set up for new user", port)
 
@@ -95,6 +99,31 @@ func (server *server) Listen(external chan Data) {
 		}
 	}
 
+}
+
+func acceptNewPlayers(conn chan Data) {
+	socket, err := CreateSocket(9000)
+	if err != nil {
+		panic(err)
+	}
+	
+	for {
+		tcpConn, err := socket.Accept()
+		if err != nil {
+			panic(err)
+		}
+		
+		conn <- Data{"NewUser", 0}
+		portData := <- conn
+		
+		jsonPort, err := json.Marshal(&portData.result)
+		if err != nil {
+			panic(err)	
+		}
+		tcpConn.Write(jsonPort)
+		
+		tcpConn.Close()
+	}
 }
 
 // addPlayer adds a player to first available session that has capacity for a new player
@@ -120,7 +149,8 @@ func CreateServer() *server {
 
 	server := new(server)
 	server.totalPlayers = 0
-	server.nextPort = 9000
+	server.nextPort = 9001 //9001 becuase it allows us to count acceptNewPlayers
+	//based on the ports, and also gives us 9000 as static server port
 	server.maxPlayers = 8
 
 	return server
@@ -136,7 +166,7 @@ func (server *server) createSession() int {
 	nextPort := server.getNextPort() // Prevents data race
 
 	//Hardcoded size of the world for now
-	go Session(sessionSide, nextPort, server.maxPlayers, 400)
+	Session(sessionSide, nextPort, server.maxPlayers, 400)
 	<-serverSide.read
 
 	fmt.Println("Session created")

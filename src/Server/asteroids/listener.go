@@ -5,10 +5,12 @@ import (
 	"net"
 	"strconv"
 	"time" //TEMP
+	"encoding/json"
 )
 
 //Player is used to represent the players in the game world
 type Player struct {
+	ID int
 	XCord int
 	YCord int
 	Lives int
@@ -20,13 +22,14 @@ type Listener struct {
 	socket      net.Listener
 	ID          string
 	Port        int
-	player      Player
+	player      *Player
 	conn        net.Conn
 	writeBuffer [][]byte
 	//Connection
 }
 
-func createSocket(port int) (net.Listener, error) {
+//CreateSocket creates a tcp listener at the specified port
+func CreateSocket(port int) (net.Listener, error) {
 	connection, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		return nil, err
@@ -36,17 +39,18 @@ func createSocket(port int) (net.Listener, error) {
 }
 
 //NewListener creates a new socket then runs this socket as a go routine
-func NewListener(port int /*, conn *Connection*/) (*Listener, Player) {
+func NewListener(port int /*, conn *Connection*/) (*Listener) {
 
 	listener := new(Listener)
 
 	var err error
-	listener.socket, err = createSocket(port)
+	listener.socket, err = CreateSocket(port)
 	if err != nil {
 		panic(err)
 	}
 
 	listener.Port = port
+	listener.player = new(Player)
 	listener.player.XCord = 0
 	listener.player.YCord = 0
 	listener.player.Lives = 3
@@ -56,7 +60,7 @@ func NewListener(port int /*, conn *Connection*/) (*Listener, Player) {
 
 	go listener.startUpListener()
 
-	return listener, listener.player
+	return listener //Listener has player in it!
 }
 
 func (listen *Listener) startUpListener() {
@@ -70,42 +74,25 @@ func (listen *Listener) startUpListener() {
 }
 
 func (listen *Listener) idleListener() {
-	for {
-		time.Sleep(time.Second)
-		listen.conn.Write(listen.writeBuffer[0])
+	for {		
+		if (listen.writeBuffer[0] != nil) {
+			listen.conn.Write(listen.writeBuffer[0])
+			listen.writeBuffer = listen.writeBuffer[1:]
+		} else {
+			time.Sleep(time.Second)	
+		}
 	}
 }
 
-func (listen *Listener) Write( /*world *World*/ ) {
-	//TEMPCODE
-	listen.writeBuffer = make([][]byte, 10)
-
-	/*
-		currentWorld := new(World)
-		currentWorld.Players = make([]*Player, 1)
-		currentWorld.Asteroids = make([]*Asteroid, 1)
-	*/
-
-	player := new(Player)
-	player.Lives = 1
-	player.XCord = 1
-	player.YCord = 1
-
-	/*
-				currentWorld.Players[0] = player
-				currentWorld.Asteroids[0] = asteroid
-			jsonWorld, err := json.Marshal(&currentWorld)
-			if err != nil {
-				panic(err)
-			}
-
-		fmt.Println(string(jsonWorld))
-
-		listen.writeBuffer[0] = jsonWorld
-
-	*/
+func (listen *Listener) Write(world *World) {
+	jsonWorld, err := json.Marshal(world)
+	if err != nil {
+		panic(err)
+	}
+	
+	listen.writeBuffer = append(listen.writeBuffer, jsonWorld)
 }
 
-func (listen *Listener) getPlayer() Player {
+func (listen *Listener) getPlayer() *Player {
 	return listen.player
 }
