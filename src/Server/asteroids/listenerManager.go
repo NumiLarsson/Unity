@@ -117,6 +117,7 @@ func (manager *ListenerManager) sendToClient(world *World) {
 	}
 }
 
+// TODO to implement
 func (manager *ListenerManager) handleCollisions(list []int) {
 
 }
