@@ -140,6 +140,8 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 
 }
 
+// detectCollisions checks each asteroid and stores all asteroids that have collided
+// TODO players and use collision manager?
 func (session *session) detectCollisions() []int {
 
 	var collisions []int
@@ -157,6 +159,7 @@ func (session *session) detectCollisions() []int {
 
 }
 
+// isCollision checks is if two asteroids are on the same position causing a collision
 func isCollision(a1 *asteroid, a2 *asteroid) bool {
 
 	if a1.id == a2.id {
@@ -169,6 +172,7 @@ func isCollision(a1 *asteroid, a2 *asteroid) bool {
 
 }
 
+// inList checks if the item is is already in the list
 func inList(list []int, item int) bool {
 	for _, current := range list {
 		if item == current {
