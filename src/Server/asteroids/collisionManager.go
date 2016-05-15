@@ -52,17 +52,21 @@ func checkCollision(world *World) ([]int, []int){
 				//It only makes sense... Right?
 				deadPlayerIDs = append(deadPlayerIDs, player.ID)
 				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.id)
-
+				
+			}
+		}
+		
+		
 	for _, asteroid := range world.asteroids {
 		if player.checkCoordinates(asteroid) {
 			fmt.Println("Player collided with asteroid at coordinates")
 
 			fmt.Println("(", player.XCord, player.YCord, ")")
-
+			
 			player.death(world)
-			}
-
+			
 		}
+	}
 	}
 
 	return deadPlayerIDs, deadAsteroidIDs
