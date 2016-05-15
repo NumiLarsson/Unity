@@ -50,7 +50,7 @@ func makeConnection() (c1, c2 *Connection) {
 
 	return
 }
-/*
+
 // Only used to get some kind of input from a "user"
 func (server *server) CreateFakeUser() chan Data {
 
@@ -69,7 +69,7 @@ func (server *server) CreateFakeUser() chan Data {
 
 	return fakeUser
 }
-*/
+
 
 // Listen is a loop that server uses to listen for new user that want to connect
 // Sends correct port to use in return
