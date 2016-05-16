@@ -3,6 +3,7 @@ package asteroids
 import (
 	//TEMP
 	"encoding/json"
+	"math/rand"
 	"net"
 	"strconv"
 	"time" //TEMP
@@ -60,10 +61,9 @@ func newPlayer() *Player {
 	return new(Player)
 }
 
-func (player *Player) init(id int) {
+func (player *Player) init(id int, xMax int, yMax int) {
 	player.Id = id
-	player.X = 0
-	player.Y = 0
+	player.randomSpawn(xMax, yMax)
 	player.Lives = 3
 	player.Alive = true
 }
@@ -100,4 +100,13 @@ func (listen *Listener) Write(world *World) {
 
 func (listen *Listener) getPlayer() *Player {
 	return listen.player
+}
+
+func (player *Player) randomSpawn(xMax int, yMax int) {
+	player.X = rand.Intn(xMax)
+	player.Y = rand.Intn(yMax)
+}
+
+func (player *Player) isAlive() bool {
+	return player.Alive
 }

@@ -6,6 +6,8 @@ import (
 
 //ListenerManager is used as a struct to basically emulate an object
 type ListenerManager struct {
+	xMax           int
+	yMax           int
 	maxPlayers     int
 	currentPlayers int
 	currentPort    int
@@ -55,8 +57,13 @@ func newListenerManager() *ListenerManager {
 func (manager *ListenerManager) init(sessionConn *Connection,
 	maxPlayers int, firstPort int, players []*Player) {
 
+	// TODO fix hardcoded variables
+	manager.xMax = 100
+	manager.yMax = 100
+
 	manager.maxPlayers = maxPlayers
 	manager.currentPlayers = 0
+	manager.nextId = 1
 	manager.currentPort = firstPort
 	manager.input = sessionConn.read
 	manager.players = players
@@ -87,7 +94,7 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	listener.init(manager.currentPort)
 
 	player := newPlayer()
-	player.init(manager.getNextId())
+	player.init(manager.getNextId(), manager.xMax, manager.yMax)
 	listener.player = player
 
 	//Insert the created listener to listenerList
