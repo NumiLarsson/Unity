@@ -66,7 +66,8 @@ func TestGetNextSessionID(t *testing.T) {
 
 func TestMakeConnection(t *testing.T) {
 
-	cInternal, cExternal := makeTwoWayConnection()
+	cInternal := MakeConnection()
+	cExternal := cInternal.FlipConnection()
 
 	// cInternal writes to cExternal's read and vice versea
 

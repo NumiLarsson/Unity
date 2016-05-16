@@ -43,20 +43,24 @@ func debugPrint(str string) {
 
 }
 
-// makeTwoWayConnection creates two connections where the outlets of the second is
-// the reverse of the first
-func makeTwoWayConnection() (c1, c2 *Connection) {
+// MakeConnection makes a Connection struct with channels of type data
+func MakeConnection() *Connection {
 
-	c1 = new(Connection)
-	c2 = new(Connection)
+	conn := new(Connection)
+	conn.read = make(chan Data)
+	conn.write = make(chan Data)
+	return conn
 
-	c1.read = make(chan Data)
-	c1.write = make(chan Data)
+}
 
-	c2.read = c1.write
-	c2.write = c1.read
+// FlipConnection flips the outlets of a Connection struct
+func (conn *Connection) FlipConnection() *Connection {
 
-	return
+	flipped := new(Connection)
+	flipped.read = conn.write
+	flipped.write = conn.read
+	return flipped
+
 }
 
 // CreateFakeUser is a temporary/debug function to create a mock user
@@ -167,19 +171,20 @@ func CreateServer(debugMode bool) *Server {
 // createSession creates a local copy of the session in the server
 func (server *Server) createSession() int {
 
-	serverSide, sessionSide := makeTwoWayConnection()
+	//serverSide, sessionSide := makeTwoWayConnection()
+	sessConn := MakeConnection()
 	nextPort := server.getNextPort()
 
 	// Start a session and wait for it to send confirmation
-	go Session(sessionSide, nextPort, server.maxPlayers, 400)
-	<-serverSide.read
+	go Session(sessConn.FlipConnection(), nextPort, server.maxPlayers, 400)
+	<-sessConn.read
 
 	debugPrint(fmt.Sprintln("[SERVER] Session created"))
 
 	// Create a local fake-session to track some basic stats
 	session := new(gameSession)
 
-	session.Connection = serverSide
+	session.Connection = sessConn
 	session.id = server.getNextSessionID()
 	server.sessions = append(server.sessions, session)
 
