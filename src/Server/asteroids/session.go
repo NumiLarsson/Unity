@@ -125,11 +125,11 @@ func (session *session) loop() {
 // createManagers sets up managers and their respective connections to/from session
 func (session *session) createManagers(startPort int /*maxPlayers int, maxAsteroids*/) {
 
-	toPlayers, fromPlayers := makeConnection()
+	toPlayers, fromPlayers := makeTwoWayConnection()
 	session.write.players = toPlayers.write
 	session.read.players = toPlayers.read
 
-	toAsteroids, fromAsteroids := makeConnection()
+	toAsteroids, fromAsteroids := makeTwoWayConnection()
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
