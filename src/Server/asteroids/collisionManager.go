@@ -14,54 +14,44 @@ import "fmt"
 
 }*/
 
-func (world *World) asteroidAsteroidCollision(asteroidCollisions []int) []int {
+func (world *World) asteroidAsteroidCollision() {
 	for _, a1 := range world.asteroids {
 		for _, a2 := range world.asteroids {
 
-			if isCollisionAsteroidAsteroid(a1, a2) &&
-				!inList(asteroidCollisions, a1.Id) {
-				asteroidCollisions = append(asteroidCollisions, a1.Id)
+			if isCollisionAsteroidAsteroid(a1, a2){
+				a1.Alive = false
 			}
 		}
 	}
-	return asteroidCollisions
+	
 }
 
 //
-func (world *World) playerAsteroidCollision(playerCollisions []int,
-	asteroidCollisions []int) ([]int, []int) {
+func (world *World) playerAsteroidCollision() {
 	//var playerCollisions, asteroidCollisions []int
 
 	for _, p := range world.players {
 		for _, a := range world.asteroids {
 			if isCollisionPlayerAsteroid(p, a) {
-				if !inList(playerCollisions, p.Id) {
-					playerCollisions = append(playerCollisions, p.Id)
-				}
-				if !inList(asteroidCollisions, a.Id) {
-					asteroidCollisions = append(asteroidCollisions, a.Id)
+				p.Alive = false
+				a.Alive = false
 				}
 
-			}
-		}
+		}		
 	}
-	return playerCollisions, asteroidCollisions
 }
 
-func (world *World) playerPlayerCollision(playerCollisions []int) []int {
-	//var playerCollisions []int
+func (world *World) playerPlayerCollision() {
 
 	for _, p1 := range world.players {
 		for _, p2 := range world.players {
-			if isCollisionPlayerPlayer(p1, p2) && !inList(playerCollisions, p1.Id) {
-				playerCollisions = append(playerCollisions, p1.Id)
+			if isCollisionPlayerPlayer(p1, p2) {
+				p1.Alive = false
 
 			}
 		}
 
 	}
-	return playerCollisions
-
 }
 
 // isCollisionAsteroidAsteroid checks is if two asteroids are on
@@ -114,27 +104,39 @@ func inList(list []int, item int) bool {
 // ======================= FIX MORE GENERIC =============================================
 // detectCollisions checks each asteroid and stores all asteroids that have collided
 
-func (world *World) collisionManager() ([]int, []int) {
+func (world *World) collisionManager() {
 
-	var deadPlayerIDs []int
-	var deadAsteroidIDs []int
 
 	//deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
 
-	deadPlayerIDs = world.playerPlayerCollision(deadPlayerIDs)
+	world.playerPlayerCollision()
 	// second check player vs asteroid
-	deadPlayerIDs, deadAsteroidIDs =
-		world.playerAsteroidCollision(deadPlayerIDs, deadAsteroidIDs)
+	world.playerAsteroidCollision()
 	// last check asteroid vs asteroid
-	deadAsteroidIDs = world.asteroidAsteroidCollision(deadAsteroidIDs)
+	world.asteroidAsteroidCollision()
 
+
+	var deadPlayerIDs []int
+	var deadAsteroidIDs []int
+	
+	for _ , player := range world.players{
+		if player.Alive == false {
+			deadPlayerIDs = append(deadPlayerIDs, player.Id)
+		}
+	}
+
+	for _ , asteroid := range world.asteroids{
+		if asteroid.Alive == false {
+			deadAsteroidIDs = append(deadAsteroidIDs, asteroid.Id)
+		}
+	}
+	
 	//Used to make it compile
 	if len(deadPlayerIDs) > 0 || len(deadAsteroidIDs) > 0 {
 		fmt.Println("[COL.MAN] Collisions, Players:", deadPlayerIDs,
 			"Asteroids:", deadAsteroidIDs)
 	}
 
-	return deadAsteroidIDs, deadPlayerIDs
 }
 
 //Check the objects coordinates to see if collision occurs
@@ -181,7 +183,7 @@ func checkCollision(world *World) ([]int, []int) {
 			if player.checkCoordinates(asteroid) {
 				fmt.Println("Player collided with asteroid at coordinates")
 
-				fmt.Println("(", player.x, player.y, ")")
+				fmt.Println("(", player.X, player.Y, ")")
 
 				player.death(world)
 

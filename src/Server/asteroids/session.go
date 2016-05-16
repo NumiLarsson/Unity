@@ -73,11 +73,12 @@ func (session *session) loop() {
 			//	session.world.collisionManager()
 			//session.detectCollisions()
 
-			deathRow, playerCollisions := session.world.collisionManager()
+			session.world.collisionManager()
 
 			// Send collision ids back to asteroid manager
-			session.asteroidManager.updateDeathRow(deathRow)
-			session.listenerManager.handleCollisions(playerCollisions)
+
+			//session.asteroidManager.updateDeathRow(deathRow)
+			//session.listenerManager.handleCollisions(playerCollisions)
 
 			// Broadcast collisions to managers
 
