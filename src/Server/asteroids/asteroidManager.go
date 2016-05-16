@@ -14,11 +14,11 @@ type asteroidManager struct {
 	treshold  int
 	deathRow  []int
 	input     chan (Data)
-	asteroids []*asteroid // Accessible from session.go
+	asteroids []*Asteroid // Accessible from session.go
 }
 
 // loop …
-func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*asteroid) {
+func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Asteroid) {
 
 	manager.init(sessionConn, asteroids)
 
@@ -77,9 +77,9 @@ func (manager *asteroidManager) resumeAsteroids() {
 }
 
 // onDeathRow TODO: implement! should check if current asteroid is on deathrow and can be removed
-func onDeathRow(a *asteroid, deathRow []int) bool {
+func onDeathRow(a *Asteroid, deathRow []int) bool {
 	for _, dead := range deathRow {
-		if a.id == dead {
+		if a.Id == dead {
 			return true
 		}
 	}
@@ -105,7 +105,7 @@ func (manager *asteroidManager) removeDeadAsteroids() {
 }
 
 // getAsteroids return the array containing the current asteroids
-func (manager *asteroidManager) getAsteroids() []*asteroid {
+func (manager *asteroidManager) getAsteroids() []*Asteroid {
 
 	return manager.asteroids
 }
@@ -138,7 +138,7 @@ func newAsteroidManager() *asteroidManager {
 
 // init initiate the asteroid manager with hardcoded values TODO: input?
 // and sets channels to session and
-func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*asteroid) {
+func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*Asteroid) {
 
 	manager.xMax = 100
 	manager.yMax = 100
@@ -169,7 +169,7 @@ func (manager *asteroidManager) updateDeathRow(deathRow []int) {
 func (manager *asteroidManager) print() {
 
 	for _, asteroid := range manager.asteroids {
-		fmt.Println("(", asteroid.id, ",", asteroid.x, ",", asteroid.y, ")")
+		fmt.Println("(", asteroid.Id, ",", asteroid.X, ",", asteroid.Y, ")")
 	}
 	/*
 		fmt.Print("\033[2J\033[;H")
