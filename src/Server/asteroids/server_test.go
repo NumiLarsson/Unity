@@ -45,6 +45,25 @@ func TestGetNextPort(t *testing.T) {
 
 }
 
+func TestGetNextSessionID(t *testing.T) {
+
+	server := CreateServer(false)
+	// Make sure server is up
+	time.Sleep(100 * time.Millisecond)
+
+	if server.nextSession != 0 {
+		t.Error("Expected nextSession", 0, "\b, got", server.nextSession)
+	}
+	nextSession := server.getNextSessionID()
+	if nextSession != 0 {
+		t.Error("Expected nextSession", 0, "\b, got", nextSession)
+	}
+	if server.nextSession != 1 {
+		t.Error("Expected nextSession", 1, "\b, got", server.nextSession)
+	}
+
+}
+
 func TestMakeConnection(t *testing.T) {
 
 	cInternal, cExternal := makeTwoWayConnection()
