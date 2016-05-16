@@ -17,14 +17,8 @@ import "fmt"
 func (world *World) asteroidAsteroidCollision() {
 
 	for _, a1 := range world.asteroids {
-		if a1.Alive {
-			for _, a2 := range world.asteroids {
-
-				if isCollisionAsteroidAsteroid(a1, a2) {
-					a1.Alive = false
-					a2.Alive = false
-				}
-			}
+		for _, a2 := range world.asteroids {
+			isCollisionAsteroidAsteroid(a1, a2)
 		}
 	}
 
@@ -34,13 +28,9 @@ func (world *World) asteroidAsteroidCollision() {
 func (world *World) playerAsteroidCollision() {
 
 	for _, p := range world.players {
-		if p.Alive {
-			for _, a := range world.asteroids {
-				if isCollisionPlayerAsteroid(p, a) {
-					p.Alive = false
-					a.Alive = false
-				}
-			}
+		for _, a := range world.asteroids {
+			isCollisionPlayerAsteroid(p, a)
+
 		}
 	}
 }
@@ -48,52 +38,45 @@ func (world *World) playerAsteroidCollision() {
 func (world *World) playerPlayerCollision() {
 
 	for _, p1 := range world.players {
-		if p1.Alive {
-			for _, p2 := range world.players {
-				if isCollisionPlayerPlayer(p1, p2) {
-					p1.Alive = false
-					p2.Alive = false
-				}
-			}
+		for _, p2 := range world.players {
+			isCollisionPlayerPlayer(p1, p2)
 		}
 	}
 }
 
 // isCollisionAsteroidAsteroid checks is if two asteroids are on
 // the same position causing a collision
-func isCollisionAsteroidAsteroid(a1 *Asteroid, a2 *Asteroid) bool {
+func isCollisionAsteroidAsteroid(a1 *Asteroid, a2 *Asteroid) {
 
 	if a1.Id == a2.Id {
-		return false
+		return
 	} else if a1.X == a2.X && a1.Y == a2.Y {
-		return true
+		a1.Alive = false
+		a2.Alive = false
+
 	}
-
-	return false
-
 }
 
 // isCollisionAsteroidPlayer  TODO some sort of interface to take generic input?
-func isCollisionPlayerAsteroid(p *Player, a *Asteroid) bool {
+func isCollisionPlayerAsteroid(p *Player, a *Asteroid) {
 
 	if p.X == a.X && p.Y == a.Y {
-		return true
+		p.Alive = false
+		a.Alive = false
 	}
-
-	return false
 
 }
 
 // TODO some sort of interface to take generic input?
-func isCollisionPlayerPlayer(p1 *Player, p2 *Player) bool {
+func isCollisionPlayerPlayer(p1 *Player, p2 *Player) {
 
 	if p1.Id == p2.Id {
-		return false
+		return
 	} else if p1.X == p2.X && p1.Y == p2.Y {
-		return true
+		p1.Alive = false
+		p2.Alive = false
 	}
 
-	return false
 }
 
 // inList checks if the item is is already in the list

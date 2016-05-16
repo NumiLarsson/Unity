@@ -34,10 +34,9 @@ func (asteroid *Asteroid) loop() { //loop(id int, xMax int, yMax int) {
 
 }
 
-func (asteroid *Asteroid) isAlive() bool{
-	return asteroid.Alive 
+func (asteroid *Asteroid) isAlive() bool {
+	return asteroid.Alive
 }
-
 
 // move updates the asteroids location with each tick
 func (asteroid *Asteroid) move() {
@@ -58,7 +57,6 @@ func (asteroid *Asteroid) inBounds(manager *asteroidManager) bool {
 
 // newAsteroid allocates a new astroid
 func newAsteroid() *Asteroid {
-
 	return new(Asteroid)
 
 }
