@@ -2,7 +2,7 @@ package asteroids
 
 import (
 	"fmt"
-	"math/rand"	
+	"math/rand"
 )
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
@@ -27,12 +27,13 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 		select {
 
 		case msg := <-manager.input:
-			
+
 			if msg.action == "session.tick" {
+				//manager.print()
 				manager.updateDeathRow()
 				manager.removeDeadAsteroids()
 				//manager.print()
-				
+
 				//TODO spawn on correct x/y
 				manager.spawnAsteroid()
 				manager.resumeAsteroids()
@@ -42,16 +43,6 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 				// TODO: remove asteroids who has a collision or hit
 			}
 		}
-
-		// 1. Iterate over each of the asteroids
-		// 		- Check if it's inside the board, otherwise destroy it [remove from "shared" list]
-		// 2. Session reads shared Data
-		// 3. Session sends back any collisions/hits and whom it affects [possibly useful to store the asteroids in a map?]
-		// 4. asteroidManager broadcasts to those affected and tells them to "die"
-		// 5. asteroidManager removes the affected asteroids from the "shared" list
-		// 6. Depending on the outcome and parameters asteroidManager may spawn additional asteroids
-		// 7. REPEAT
-
 	}
 
 }
@@ -94,22 +85,23 @@ func (manager *asteroidManager) removeDeadAsteroids() {
 
 	var offset = 0
 
-//	fmt.Println("before",len(manager.asteroids))
-	
-	for i, asteroid := range manager.asteroids {
-		
+	//	fmt.Println("before",len(manager.asteroids))
+
+	var acopy = make([]*Asteroid, len(manager.asteroids))
+	copy(acopy, manager.asteroids)
+
+	for i, asteroid := range acopy {
+
 		// Check if inside kill list
-		
-		
+
 		if !asteroid.isAlive() || !asteroid.inBounds(manager) {
 			manager.removeAsteroid(i + offset)
-			offset--	
-		}	
-	}	
+			offset--
+		}
+	}
 	//fmt.Println("After",len(manager.asteroids))
 
 }
-
 
 // getAsteroids return the array containing the current asteroids
 func (manager *asteroidManager) getAsteroids() []*Asteroid {
@@ -120,7 +112,7 @@ func (manager *asteroidManager) getAsteroids() []*Asteroid {
 // removeAsteroid removes specific asteroid from manager asteroid array
 func (manager *asteroidManager) removeAsteroid(i int) {
 	//fmt.Println("i:",i)
-	
+
 	manager.asteroids = append(manager.asteroids[:i], manager.asteroids[i+1:]...)
 
 }
@@ -168,16 +160,15 @@ func (manager *asteroidManager) getNextID() int {
 func (manager *asteroidManager) updateDeathRow() {
 
 	var deathRow []int
-	
-	for _ , asteroid := range manager.asteroids {
+
+	for _, asteroid := range manager.asteroids {
 		if !asteroid.isAlive() {
-			deathRow = append(deathRow,asteroid.Id)
+			deathRow = append(deathRow, asteroid.Id)
 		}
 	}
 
-
 	manager.deathRow = deathRow
-	
+
 	if len(manager.deathRow) > 0 {
 		fmt.Println("[AST.MAN] Collision:", manager.deathRow)
 	}
@@ -186,17 +177,13 @@ func (manager *asteroidManager) updateDeathRow() {
 // ONLY FOR TEST
 func (manager *asteroidManager) print() {
 
+	var list []int
+
 	for _, asteroid := range manager.asteroids {
-		fmt.Println("(", asteroid.Id, ",", asteroid.X, ",", asteroid.Y, ")")
+		list = append(list, asteroid.Id)
+
 	}
-	/*
-		fmt.Print("\033[2J\033[;H")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-	*/
+	fmt.Println(len(manager.asteroids))
+	fmt.Println(list)
+
 }
