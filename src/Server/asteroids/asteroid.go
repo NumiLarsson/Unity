@@ -3,32 +3,19 @@ package asteroids
 import "math/rand"
 
 type asteroid struct {
-	x     int
-	y     int
-	xStep int //These do not belong in the asteroid we send to C#
-	yStep int //These do not belong in the asteroid we send to C#
-	id    int //These do not belong in the asteroid we send to C#
-	size  int //These do not belong in the asteroid we send to C#
-	phase int 
-	input chan (Data) //These do not belong in the asteroid we send to C#
+	X     int
+	Y     int
+	ID    int
+	Phase int
+	xStep int
+	yStep int
+	size  int
+	input chan (Data)
 }
 
-//AsteroidClient is the public data that we send to clients
-type AsteroidClient struct {
-	x		int
-	y 		int
-	stage 	int
-}
 
-func (asteroid *asteroid) getClientData() *AsteroidClient{
-	asteroidClient := new(AsteroidClient)
-	asteroidClient.x = asteroid.x
-	asteroidClient.y = asteroid.y
-	asteroidClient.stage = asteroid.phase
-	return asteroidClient
-}
 
-func (asteroid *asteroid) loop() { //loop(id int, xMax int, yMax int) {
+func (asteroid *asteroid) loop() { //loop(id int, XMax int, yMax int) {
 
 	for {
 
@@ -49,17 +36,17 @@ func (asteroid *asteroid) loop() { //loop(id int, xMax int, yMax int) {
 
 func (asteroid *asteroid) move() {
 
-	asteroid.x += asteroid.xStep
-	asteroid.y += asteroid.yStep
+	asteroid.X += asteroid.xStep
+	asteroid.Y += asteroid.yStep
 }
 
 // inBounds checks if a given asteroid a is inside the bounds
 func (asteroid *asteroid) inBounds(manager *asteroidManager) bool {
 
-	return asteroid.x >= 0 &&
-		asteroid.y >= 0 &&
-		asteroid.x <= manager.xMax &&
-		asteroid.y <= manager.yMax
+	return asteroid.X >= 0 &&
+		asteroid.Y >= 0 &&
+		asteroid.X <= manager.xMax &&
+		asteroid.Y <= manager.yMax
 
 }
 
@@ -71,13 +58,42 @@ func newAsteroid() *asteroid {
 
 func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 
-	asteroid.x = rand.Intn(xMax)
-	asteroid.y = rand.Intn(yMax)
-	asteroid.id = id
-	asteroid.xStep = rand.Intn(3) - 1
-	asteroid.yStep = rand.Intn(3) - 1
+	asteroid.ID = id
+	asteroid.randowSpawn(xMax, yMax)
 
-//	asteroid.checkSizeToWorld(xMax, yMax)
+	//	asteroid.checkSizeToWorld(xMax, yMax)
 
 	asteroid.input = make(chan Data)
+}
+
+func (asteroid *asteroid) randowSpawn(xMax int, yMax int) {
+
+	randomDir := rand.Intn(4)
+
+	switch randomDir {
+	case 0:
+		asteroid.X = rand.Intn(xMax)
+		asteroid.Y = 0 - asteroid.size
+		asteroid.xStep = 0
+		asteroid.yStep = 1
+
+	case 1:
+		asteroid.X = xMax
+		asteroid.Y = rand.Intn(yMax)
+		asteroid.xStep = -1
+		asteroid.yStep = 0
+
+	case 2:
+		asteroid.X = rand.Intn(xMax)
+		asteroid.Y = yMax
+		asteroid.xStep = 0
+		asteroid.yStep = -1
+
+	case 3:
+		asteroid.X = 0 - asteroid.size
+		asteroid.Y = rand.Intn(yMax)
+		asteroid.xStep = 1
+		asteroid.yStep = 0
+	}
+
 }

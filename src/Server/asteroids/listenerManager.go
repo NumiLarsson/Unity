@@ -32,7 +32,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 				// Send update + world to players
 
 			} else {
-				fmt.Println("Collision!! \n ", msg.action)
+				fmt.Println("[LIST.MAN] Collision!! \n ", msg.action)
 				// TODO: remove asteroids who has a collision or hit
 			}
 		}
@@ -42,7 +42,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 // newAsteroidsManager creates a new asteroid manager
 func newListenerManager() *ListenerManager {
 
-	fmt.Println("ListenerManager created")
+	fmt.Println("[LIST.MAN] Created")
 	return new(ListenerManager)
 
 }
@@ -75,7 +75,7 @@ func (manager *ListenerManager) incrementCurrentPlayers() {
 //NewPlayer creates a new listener for the listener manager, used to connect to a new player.
 func (manager *ListenerManager) newPlayer() (int, *Player) {
 
-	fmt.Println("Creating new object in listener manager")
+	fmt.Println("[LIST.MAN] Creating new object in listener manager")
 	//Creation of the listener and listener-player
 	newListener := NewListener(manager.CurrentPort)
 
@@ -91,6 +91,12 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	manager.incrementCurrentPlayers()
 
 	return manager.getNextPort(), newPlayer
+}
+
+//TEMP FAKE func 
+func (player *Player) fakeMovePlayer()  {
+	player.XCord++
+		player.YCord++
 }
 
 // collectPlayerPositions collect all player positions and return an array of them
@@ -112,7 +118,7 @@ func (manager *ListenerManager) getPlayers() []*Player {
 }
 
 // SendToClient broadcasts world-info to every listener
-func (manager *ListenerManager) sendToClient(world /**World*/*WorldClient) {
+func (manager *ListenerManager) sendToClient(world /**World*/*World) {
 	for _, listener := range manager.listeners {
 		if listener.ID != "" {
 			go listener.Write(world)

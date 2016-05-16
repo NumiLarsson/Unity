@@ -2,7 +2,7 @@ package asteroids
 
 import (
 	"fmt"
-	"math/rand"
+	//"math/rand"
 )
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
@@ -36,7 +36,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 				manager.resumeAsteroids()
 
 			} else {
-				fmt.Println("Collision!! \n ", msg.action)
+				fmt.Println("[AST.MAN] Collision!! \n ", msg.action)
 				// TODO: remove asteroids who has a collision or hit
 			}
 		}
@@ -57,14 +57,19 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 // spawnAsteroid spawns a new asteroid if current asteroids in world below maxValue and
 // if the randomized int that is set has a higher value than the worlds threshold
 func (manager *asteroidManager) spawnAsteroid() {
-
+	/*
 	r := rand.Intn(101)
 
 	if len(manager.asteroids) < manager.maxRoids && r >= manager.treshold {
 		//fmt.Println("SPAWNED NEW DROID")
 		manager.newAsteroid()
 	}
-
+	
+	Infinite spawning new asteroids every tick?
+	*/
+	if len(manager.asteroids) < manager.maxRoids {
+		manager.newAsteroid()
+	}
 }
 
 // resumeAsteroids used to send "tick" to all asteroids
@@ -79,7 +84,7 @@ func (manager *asteroidManager) resumeAsteroids() {
 // onDeathRow TODO: implement! should check if current asteroid is on deathrow and can be removed
 func onDeathRow(a *asteroid, deathRow []int) bool {
 	for _, dead := range deathRow {
-		if a.id == dead {
+		if a.ID == dead {
 			return true
 		}
 	}
@@ -125,13 +130,12 @@ func (manager *asteroidManager) newAsteroid() {
 
 	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
 	go asteroid.loop()
-
 }
 
 // newAsteroidsManager creates a new asteroid manager
 func newAsteroidManager() *asteroidManager {
 
-	fmt.Println("AsteroidManager created")
+	fmt.Println("[AST.MAN] Created")
 	return new(asteroidManager)
 
 }
@@ -160,14 +164,25 @@ func (manager *asteroidManager) updateDeathRow(deathRow []int) {
 	manager.deathRow = deathRow
 
 	if len(manager.deathRow) > 0 {
-		fmt.Println("Asteroid collision:", manager.deathRow)
+		fmt.Println("[AST.MAN] Collision:", manager.deathRow)
 	}
 
 }
 
 // ONLY FOR TEST
 func (manager *asteroidManager) print() {
+
 	for _, asteroid := range manager.asteroids {
-		fmt.Println("(", asteroid.id, ",", asteroid.x, ",", asteroid.y, ")")
+		fmt.Println("(", asteroid.ID, ",", asteroid.X, ",", asteroid.Y, ")")
 	}
+	/*
+		fmt.Print("\033[2J\033[;H")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+		fmt.Println(". . . . . . . . . .")
+	*/
 }

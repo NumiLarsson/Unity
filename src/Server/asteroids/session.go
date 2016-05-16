@@ -3,7 +3,6 @@ package asteroids
 import (
 	"fmt"
 	"time"
-	//"encoding/json"
 )
 
 // World is a placeholder for the gameboard
@@ -11,16 +10,9 @@ import (
 // TODO: CHANGE THIS
 type World struct {
 	worldSize int
-	players   []*Player
-	asteroids []*asteroid
+	Players   []*Player //Json only exports exported objects,
+	Asteroids []*asteroid //keep these as capital first letter
 }
-
-//TEMPSTRUCT since I can't send asteroids
-type WorldClient struct {
-	players []*Player
-	asteroids []*AsteroidClient
-}
-//TEMPSTRUCT since I can't send asteroids
 
 // channels struct used to implement a structured way to handle multiple
 // write/read channels for session
@@ -70,45 +62,31 @@ func (session *session) loop() {
 
 	for {
 
-		tick := time.After(160 * time.Millisecond)
+		tick := time.After(500 * time.Millisecond)
+		//TEMP, tick should be 16 * millisecond
 
 		select {
 		case <-tick:
 			// Collect player and asteroid positions
-			session.world.players = session.listenerManager.getPlayers()
-			session.world.asteroids = session.asteroidManager.getAsteroids()
-
+			session.world.Players = session.listenerManager.getPlayers()
+			session.world.Asteroids = session.asteroidManager.getAsteroids()
+			
+			session.world.Players[0].fakeMovePlayer()
+			
 			session.world.collisionManager()
-
+			
 			// Send collision ids back to asteroid manager
 			deathRow := session.detectCollisions()
 			session.asteroidManager.updateDeathRow(deathRow)
 
-			// Broadcast collisions to managers
+			//Empty world {}, something is going wrong.
+			//session.world.players jsons fine, but world just doesn't
+			
 			
 			//TEMP BROADCAST TO CLIENTS
-			tempWorld := new(WorldClient)
-			tempWorld.players = make([]*Player, 1)
-			tempWorld.asteroids = make([]*AsteroidClient, 2)
-			
-			tempPlayer := new(Player)
-			tempPlayer.XCord = 1;
-			tempPlayer.YCord = 2;
-			tempPlayer.Lives = 3;
-			
-			tempAsteroid1 := AsteroidClient{1,1,1}
-			tempAsteroid2 := AsteroidClient{2,2,2}
-			tempWorld.players[0] = tempPlayer
-			tempWorld.asteroids[0] = &tempAsteroid1
-			tempWorld.asteroids[1] = &tempAsteroid2
-			/*jsonArray, err := json.Marshal()
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(string(jsonArray))*/
-			session.listenerManager.sendToClient(tempWorld)
+			session.listenerManager.sendToClient(session.world)
 			//TEMP BROADCAST TO CLIENTS
-
+			
 			session.write.asteroids <- Data{"session.tick", 200}
 			session.write.players <- Data{"session.tick", 200}
 
@@ -128,7 +106,7 @@ func (session *session) loop() {
 				// Spawn a new player
 				var port, newPlayer = session.listenerManager.newPlayer()
 				session.players++
-				session.world.players = append(session.world.players, newPlayer)
+				session.world.Players = append(session.world.Players, newPlayer)
 
 				session.write.server <- Data{"session.player_created", port}
 			}
@@ -146,7 +124,7 @@ func (session *session) loop() {
 }
 
 // createManagers sets up managers and their respective connections to/from session
-func (session *session) createManagers(startPort int, /*maxPlayers int, maxAsteroids*/) {
+func (session *session) createManagers(startPort int /*maxPlayers int, maxAsteroids int*/) {
 
 	toPlayers, fromPlayers := makeConnection()
 	session.write.players = toPlayers.write
@@ -158,26 +136,25 @@ func (session *session) createManagers(startPort int, /*maxPlayers int, maxAster
 
 	session.world = new(World)
 	session.world.worldSize = session.worldSize
-	session.world.players = make([]*Player, 0/*maxPlayers*/)
-	session.world.asteroids = make([]*asteroid, 0/*maxAsteroids*/)
+	session.world.Players = make([]*Player, 0/*maxPlayers*/)
+	session.world.Asteroids = make([]*asteroid, 0/*maxAsteroids*/)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
 
 	go session.asteroidManager.loop(fromAsteroids, session.asteroids)
 	go session.listenerManager.loop(fromPlayers, session.maxPlayers, startPort)
-
 }
 
 func (session *session) detectCollisions() []int {
 
 	var collisions []int
 
-	for _, a1 := range session.world.asteroids {
-		for _, a2 := range session.world.asteroids {
+	for _, a1 := range session.world.Asteroids {
+		for _, a2 := range session.world.Asteroids {
 
-			if isCollision(a1, a2) && !inList(collisions, a1.id) {
-				collisions = append(collisions, a1.id)
+			if isCollision(a1, a2) && !inList(collisions, a1.ID) {
+				collisions = append(collisions, a1.ID)
 			}
 		}
 	}
@@ -188,9 +165,9 @@ func (session *session) detectCollisions() []int {
 
 func isCollision(a1 *asteroid, a2 *asteroid) bool {
 
-	if a1.id == a2.id {
+	if a1.ID == a2.ID {
 		return false
-	} else if a1.x == a2.x && a1.y == a2.y {
+	} else if a1.X == a2.X && a1.Y == a2.Y {
 		return true
 	}
 
