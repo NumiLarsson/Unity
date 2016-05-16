@@ -1,15 +1,18 @@
 package asteroids
 
 import (
-	"fmt" //TEMP
+	//"fmt" //TEMP
 	"net"
 	"strconv"
 	//"time" //TEMP
 	"encoding/json"
+	//"encoding/binary"
 )
 
 //Player is used to represent the players in the game world
 type Player struct {
+	Name string
+	id int
 	XCord int
 	YCord int
 	Lives int
@@ -50,6 +53,7 @@ func NewListener(port int /*, conn *Connection*/) (*Listener) {
 
 	listener.Port = port
 	listener.player = new(Player)
+	listener.player.Name = strconv.Itoa(port);
 	listener.player.XCord = 0
 	listener.player.YCord = 0
 	listener.player.Lives = 3
@@ -79,18 +83,25 @@ func (listen *Listener) idleListener() {
 	for {
 		select{
 			case jsonWorld := <- listen.writeBuffer:
+				//sizeWorld := binary.Size(jsonWorld)
+				//jsonSize, err := json.Marshal(sizeWorld)
+				//if err != nil {
+				//	panic(err)
+				//}
+				//listen.conn.Write(jsonSize)
 				listen.conn.Write(jsonWorld)
-				fmt.Println("Sent info to client", string(jsonWorld))
 			default:
 		}		 
 	}
 }
 
-func (listen *Listener) Write(world /**World*/*WorldClient) {
+//Write writes world to clients
+func (listen *Listener) Write(world *World) {
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
 	}
+	
 	listen.writeBuffer <- jsonWorld
 }
 
