@@ -10,10 +10,11 @@ import (
 
 //Player is used to represent the players in the game world
 type Player struct {
-	id    int
-	x     int
-	y     int
-	lives int
+	Id    int
+	X     int
+	Y     int
+	Lives int
+	Alive bool
 }
 
 //Listener is responsible for a client each
@@ -51,9 +52,10 @@ func NewListener(port int /*, conn *Connection*/) *Listener {
 
 	listener.Port = port
 	listener.player = new(Player)
-	listener.player.x = 0
-	listener.player.y = 0
-	listener.player.lives = 3
+	listener.player.X = 0
+	listener.player.Y = 0
+	listener.player.Lives = 3
+	listener.player.Alive = true
 
 	//listener.write = conn.read //Fan in to manager
 	//listener.read = conn.write //Fan out from manager
