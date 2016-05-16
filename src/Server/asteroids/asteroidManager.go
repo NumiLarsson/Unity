@@ -25,7 +25,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 	manager.init(sessionConn, asteroids)
 
 	for {
-		manager.print()
+	//	manager.print()
 		select {
 
 		case msg := <-manager.input:
@@ -183,24 +183,6 @@ func (manager *asteroidManager) print() {
 		fmt.Println(". . . . . . . . . .")
 		fmt.Println(". . . . . . . . . .")
 	*/
-}
-
-// ONLY FOR TEST
-func (manager *asteroidManager) printWorld(){
-
-
-	for y := 0; y < manager.yMax ; y++ {
-		fmt.Println("")
-		for x := 0; x < manager.xMax ; x++{
-			fmt.Print("* ")
-			
-		}
-	}
-	
-	c := exec.Command("clear")
-	c.Stdout = os.Stdout
-	c.Run()
-	
 }
 
 

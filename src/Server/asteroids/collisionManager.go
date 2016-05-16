@@ -27,7 +27,7 @@ func (player *Player) checkCoordinates(asteroid *asteroid) bool {
 	//For now every object is only a dot
 
 
-	if player.XCord == asteroid.x && player.YCord == asteroid.y {
+	if player.x == asteroid.x && player.x == asteroid.y {
 
 		return true
 	}
@@ -62,7 +62,7 @@ func checkCollision(world *World) ([]int, []int) {
 		if player.checkCoordinates(asteroid) {
 			fmt.Println("Player collided with asteroid at coordinates")
 
-			fmt.Println("(", player.XCord, player.YCord, ")")
+			fmt.Println("(", player.x, player.y, ")")
 			
 			player.death(world)
 			
