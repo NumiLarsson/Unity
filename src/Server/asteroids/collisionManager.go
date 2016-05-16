@@ -111,8 +111,7 @@ func inList(list []int, item int) bool {
 
 func (world *World) collisionManager() {
 
-	//deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
-
+	// First check player vs player
 	world.playerPlayerCollision()
 	// second check player vs asteroid
 	world.playerAsteroidCollision()
@@ -155,46 +154,6 @@ func (player *Player) checkCoordinates(asteroid *Asteroid) bool {
 	}
 
 	return false
-}
-
-//Checks the collisions during the tick and returns two arrays
-//Of the player and asteroid IDs which were destroyed
-//Could be made to act as a hub for every collision at once
-//Thus becoming the real collisionManager (Consider changing name)
-func checkCollision(world *World) ([]int, []int) {
-	var deadPlayerIDs []int
-	var deadAsteroidIDs []int
-
-	for _, player := range world.players {
-		for _, asteroid := range world.asteroids {
-			if player.checkCoordinates(asteroid) {
-				fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.X, player.Y, ")")
-
-				//Player collision with an asteroid will
-				//Kill the player and the asteroid
-				//It only makes sense... Right?
-
-				deadPlayerIDs = append(deadPlayerIDs, player.Id)
-				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.Id)
-
-				player.death(world)
-
-			}
-		}
-
-		for _, asteroid := range world.asteroids {
-			if player.checkCoordinates(asteroid) {
-				fmt.Println("Player collided with asteroid at coordinates")
-
-				fmt.Println("(", player.X, player.Y, ")")
-
-				player.death(world)
-
-			}
-		}
-	}
-
-	return deadPlayerIDs, deadAsteroidIDs
 }
 
 func (player *Player) death(world *World) {
