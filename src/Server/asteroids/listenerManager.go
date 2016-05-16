@@ -6,17 +6,22 @@ import (
 
 //ListenerManager is used as a struct to basically emulate an object
 type ListenerManager struct {
-	MaxPlayers     int
-	CurrentPlayers int
-	CurrentPort    int
+	xMax           int
+	yMax           int
+	maxPlayers     int
+	currentPlayers int
+	currentPort    int
+	nextId         int
 	input          chan (Data)
 	listeners      []*Listener
-	Players        []*Player
+	players        []*Player
 }
 
 // loop TODO
-func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, startPort int) {
-	manager.init(sessionConn, maxPlayers, startPort)
+func (manager *ListenerManager) loop(sessionConn *Connection,
+	maxPlayers int, startPort int, players []*Player) {
+
+	manager.init(sessionConn, maxPlayers, startPort, players)
 
 	for {
 
@@ -27,7 +32,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 			if msg.action == "session.tick" {
 				// Read current values
 				// TODO: Where should input from user be checked
-				manager.Players = manager.collectPlayerPositions()
+				manager.players = manager.collectPlayerPositions()
 
 				// Send update + world to players
 
@@ -49,12 +54,19 @@ func newListenerManager() *ListenerManager {
 
 //NewListenerManager does exactly what it says, with a cap on maxPlayers
 //connected and maxPlayers numbers of ports in a row from firstPort
-func (manager *ListenerManager) init(sessionConn *Connection, maxPlayers int, firstPort int) {
+func (manager *ListenerManager) init(sessionConn *Connection,
+	maxPlayers int, firstPort int, players []*Player) {
 
-	manager.MaxPlayers = maxPlayers
-	manager.CurrentPlayers = 0
-	manager.CurrentPort = firstPort
+	// TODO fix hardcoded variables
+	manager.xMax = 100
+	manager.yMax = 100
+
+	manager.maxPlayers = maxPlayers
+	manager.currentPlayers = 0
+	manager.nextId = 1
+	manager.currentPort = firstPort
 	manager.input = sessionConn.read
+	manager.players = players
 
 	manager.listeners = make([]*Listener, 0)
 
@@ -62,32 +74,46 @@ func (manager *ListenerManager) init(sessionConn *Connection, maxPlayers int, fi
 
 // getNextPort calculates the next start port to be used by a session
 func (manager *ListenerManager) getNextPort() int {
-	var port = manager.CurrentPort
-	manager.CurrentPort++
+	var port = manager.currentPort
+	manager.currentPort++
 	return port
 }
 
 // incrementCurrentPlayers increments currentPlayers
 func (manager *ListenerManager) incrementCurrentPlayers() {
-	manager.CurrentPlayers++
+	manager.currentPlayers++
 }
 
 //NewPlayer creates a new listener for the listener manager, used to connect to a new player.
 func (manager *ListenerManager) newPlayer() (int, *Player) {
 
 	fmt.Println("[LIST.MAN] Creating new object in listener manager")
-	//Creation of the listener and listener-player
-	newListener := NewListener(manager.CurrentPort)
 
-	newPlayer := newListener.player
+	//Creation of the listener and listener-player
+	listener := newListener()
+	listener.init(manager.currentPort)
+
+	player := newPlayer()
+	player.init(manager.getNextId(), manager.xMax, manager.yMax)
+	listener.player = player
+
 	//Insert the created listener to listenerList
 	//Insert the created player to Players
-	manager.listeners = append(manager.listeners, newListener)
-	manager.Players = append(manager.Players, newPlayer)
+	manager.listeners = append(manager.listeners, listener)
+	manager.players = append(manager.players, player)
 
 	manager.incrementCurrentPlayers()
 
-	return manager.getNextPort(), newPlayer
+	go listener.startUpListener()
+
+	return manager.getNextPort(), player
+}
+
+// getNextID returns the id to be used and sets the next value
+func (manager *ListenerManager) getNextId() int {
+	var id = manager.nextId
+	manager.nextId++
+	return id
 }
 
 // collectPlayerPositions collect all player positions and return an array of them
@@ -105,7 +131,7 @@ func (manager *ListenerManager) collectPlayerPositions() []*Player {
 
 // getPlayers returns an array of playerpositions
 func (manager *ListenerManager) getPlayers() []*Player {
-	return manager.Players
+	return manager.players
 }
 
 // SendToClient broadcasts world-info to every listener
