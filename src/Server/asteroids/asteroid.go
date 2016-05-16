@@ -32,6 +32,7 @@ func (asteroid *asteroid) loop() { //loop(id int, xMax int, yMax int) {
 
 }
 
+// move updates the asteroids location with each tick
 func (asteroid *asteroid) move() {
 
 	asteroid.x += asteroid.xStep
@@ -48,12 +49,14 @@ func (asteroid *asteroid) inBounds(manager *asteroidManager) bool {
 
 }
 
+// newAsteroid allocates a new astroid
 func newAsteroid() *asteroid {
 
 	return new(asteroid)
 
 }
 
+// init sets the asteroids values, id,channel and spawn location
 func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 
 	asteroid.id = id
@@ -65,6 +68,7 @@ func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 
 }
 
+// randomSpawn sets the location at which a asteroid is spawned
 func (asteroid *asteroid) randowSpawn(xMax int, yMax int) {
 
 	randomDir := rand.Intn(4)
