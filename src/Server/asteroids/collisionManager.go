@@ -4,14 +4,15 @@ import "fmt"
 
 
 func (world *World) collisionManager() *World {
-	var deadPlayerIDs   []int
+	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
-	
-	
+
 	deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
-		
+
 	//Used to make it compile
-	fmt.Println(deadPlayerIDs, deadAsteroidIDs)
+	if len(deadPlayerIDs) > 0 || len(deadAsteroidIDs) > 0 {
+		fmt.Println("[COL.MAN] Collisions, Players:", deadPlayerIDs, "Asteroids:", deadAsteroidIDs)
+	}
 
 	//TODO
 	//enter similar ranges with every object destructible
@@ -37,10 +38,9 @@ func (player *Player) checkCoordinates(asteroid *asteroid) bool {
 //Of the player and asteroid IDs which were destroyed
 //Could be made to act as a hub for every collision at once
 //Thus becoming the real collisionManager (Consider changing name)
-func checkCollision(world *World) ([]int, []int){
-	var deadPlayerIDs   []int
+func checkCollision(world *World) ([]int, []int) {
+	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
-	
 
 	for _, player := range world.players {
 		for _, asteroid := range world.asteroids {
