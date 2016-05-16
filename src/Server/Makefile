@@ -1,6 +1,9 @@
 all:
 	go run main.go
 
+silent:
+	go run main.go -s
+
 race:
 	go run -race main.go
 

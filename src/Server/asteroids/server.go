@@ -6,15 +6,13 @@ import (
 	"time"
 )
 
-// Data struct to be sent in channels
-// TODO: change to data
+// Data is a semi-generic struct to be sent in channels
 type Data struct {
 	action string
 	result int
 }
 
 // Connection struct, containing one write and one read channel
-// TODO: change to connection
 type Connection struct {
 	write chan Data
 	read  chan Data
@@ -26,8 +24,8 @@ type gameSession struct {
 	*Connection
 }
 
-// server struct used to store information about sessions, players etc.
-type server struct {
+// Server struct used to store information about sessions, players etc.
+type Server struct {
 	totalPlayers int
 	nextPort     int
 	maxPlayers   int
@@ -35,9 +33,19 @@ type server struct {
 	sessions     []*gameSession
 }
 
-// Creates two mirrored connections
-// TODO: Currently using Data channels, implement generic channels?
-func makeConnection() (c1, c2 *Connection) {
+var inDebugMode = true
+
+func debugPrint(str string) {
+
+	if inDebugMode {
+		fmt.Print("DEBUG: ", str)
+	}
+
+}
+
+// makeTwoWayConnection creates two connections where the outlets of the second is
+// the reverse of the first
+func makeTwoWayConnection() (c1, c2 *Connection) {
 
 	c1 = new(Connection)
 	c2 = new(Connection)
@@ -51,19 +59,17 @@ func makeConnection() (c1, c2 *Connection) {
 	return
 }
 
-// Only used to get some kind of input from a "user"
-func (server *server) CreateFakeUser() chan Data {
+// CreateFakeUser is a temporary/debug function to create a mock user
+func (server *Server) CreateFakeUser() chan Data {
 
 	fakeUser := make(chan Data)
-	nextPort := server.nextPort // Prevents data race
+	nextPort := server.nextPort
 
 	go func() {
 
-		//time.Sleep(250 * time.Millisecond)
 		fakeUser <- Data{"server.new_user", nextPort}
 		<-fakeUser
 
-		//time.Sleep(500 * time.Millisecond)
 		fakeUser <- Data{"server.new_user", nextPort}
 		<-fakeUser
 
@@ -72,26 +78,22 @@ func (server *server) CreateFakeUser() chan Data {
 	return fakeUser
 }
 
-// Listen is a loop that server uses to listen for new user that want to connect
-// Sends correct port to use in return
-func (server *server) Listen(external chan Data) {
+// Listen is a loop that server uses to listen for and setup new users
+func (server *Server) Listen(external chan Data) {
 
 	// TEMPORARY
 	// ===
-	// Kill the server after 5 seconds of inactivity
+	// Kill the server after 60 seconds of inactivity
 	timeout := time.After(60 * time.Second)
 
-	go acceptNewPlayers(external)
+	go server.acceptNewPlayers(external)
 
 	for {
 		select {
-		// TODO change external to correct input channel/port used by external comm.
 		case <-external:
-			// TODO: Possibly in a go-routine based on performance
 			port := server.addPlayer()
 			external <- Data{"port", port}
-			// Port to use should be sent to the user
-			fmt.Println("[SERVER] Port set up for new user", port)
+			debugPrint(fmt.Sprintln("[SERVER] Port set up for new user", port))
 
 		case <-timeout:
 			fmt.Println("\n========\n[SERVER] Terminated due to 60 seconds of inactivity\n========")
@@ -101,7 +103,7 @@ func (server *server) Listen(external chan Data) {
 
 }
 
-func acceptNewPlayers(conn chan Data) {
+func (server *Server) acceptNewPlayers(conn chan Data) {
 	socket, err := CreateSocket(9000)
 	if err != nil {
 		panic(err)
@@ -127,8 +129,7 @@ func acceptNewPlayers(conn chan Data) {
 }
 
 // addPlayer adds a player to first available session that has capacity for a new player
-// If no session has capacity or available, creates a new session and player
-func (server *server) addPlayer() int {
+func (server *Server) addPlayer() int {
 
 	for _, session := range server.sessions {
 
@@ -141,60 +142,70 @@ func (server *server) addPlayer() int {
 		}
 	}
 
+	// If no session has capacity or available, creates a new session and player
 	return server.createSession()
 }
 
 // CreateServer creates a new server struct
-func CreateServer() *server {
+func CreateServer(debugMode bool) *Server {
 
-	server := new(server)
-	server.totalPlayers = 0
-	server.nextPort = 9001 //9001 becuase it allows us to count acceptNewPlayers
-	//based on the ports, and also gives us 9000 as static server port
+	inDebugMode = debugMode
+
+	server := new(Server)
 	server.maxPlayers = 8
+	server.totalPlayers = 0
+
+	/*
+		9001 because it allows us to count acceptNewPlayers
+		based on the ports, and also gives us 9000 as static server port
+	*/
+	server.nextPort = 9001
 
 	return server
 }
 
 // createSession creates a local copy of the session in the server
-func (server *server) createSession() int {
+func (server *Server) createSession() int {
 
-	serverSide, sessionSide := makeConnection()
+	serverSide, sessionSide := makeTwoWayConnection()
+	nextPort := server.getNextPort()
 
 	// Start a session and wait for it to send confirmation
-
-	nextPort := server.getNextPort() // Prevents data race
-
-	//Hardcoded size of the world for now
 	go Session(sessionSide, nextPort, server.maxPlayers, 400)
 	<-serverSide.read
 
-	fmt.Println("[SERVER] Session created")
+	debugPrint(fmt.Sprintln("[SERVER] Session created"))
 
-	// Create a local copy
+	// Create a local fake-session to track some basic stats
 	session := new(gameSession)
 
 	session.Connection = serverSide
-	session.id = server.nextSession
-	server.nextSession++
+	session.id = server.getNextSessionID()
 	server.sessions = append(server.sessions, session)
 
 	return server.createPlayer(session)
 }
 
-// createPlayer sends request to session to create a new player and wait for confirmation
-func (server *server) createPlayer(gs *gameSession) int {
+// createPlayer sends request to session to create a new player and waits for confirmation
+func (server *Server) createPlayer(gs *gameSession) int {
 
 	gs.write <- Data{"server.connect_player", 1}
 	data := <-gs.read
-	fmt.Println("[SERVER] Player connected")
+
+	debugPrint(fmt.Sprintln("[SERVER] Player connected"))
+
 	server.totalPlayers++
 	return data.result
 }
 
-// getNextPort calculates the next start port to be used by a session
-func (server *server) getNextPort() int {
-	var port = server.nextPort
-	server.nextPort += server.maxPlayers
-	return port
+// getNextPort returns the next start port to be used by a session
+func (server *Server) getNextPort() int {
+	defer func() { server.nextPort += server.maxPlayers }()
+	return server.nextPort
+}
+
+// getNextSessionID returns the next session id to be used by a session
+func (server *Server) getNextSessionID() int {
+	defer func() { server.nextSession++ }()
+	return server.nextSession
 }
