@@ -13,6 +13,7 @@ func main() {
 	var inDebugMode = true
 
 	if len(argsWithoutProg) > 0 && argsWithoutProg[0] == "-s" {
+		inDebugMode = false
 		fmt.Println("\nServer starting in silent mode\n======")
 	}
 
