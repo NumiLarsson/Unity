@@ -9,7 +9,7 @@ import (
 type asteroidManager struct {
 	xMax      int
 	yMax      int
-	nextID    int
+	nextId    int
 	maxRoids  int
 	treshold  int
 	deathRow  []int
@@ -124,7 +124,7 @@ func (manager *asteroidManager) newAsteroid() {
 	asteroid := newAsteroid()
 	manager.asteroids = append(manager.asteroids, asteroid)
 
-	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
+	asteroid.init(manager.getNextId(), manager.xMax, manager.yMax)
 	go asteroid.loop()
 
 }
@@ -151,9 +151,9 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*Aster
 }
 
 // getNextID returns the id to be used and sets the next value
-func (manager *asteroidManager) getNextID() int {
-	var id = manager.nextID
-	manager.nextID++
+func (manager *asteroidManager) getNextId() int {
+	var id = manager.nextId
+	manager.nextId++
 	return id
 }
 
