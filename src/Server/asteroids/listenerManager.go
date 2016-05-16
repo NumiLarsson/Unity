@@ -2,6 +2,7 @@ package asteroids
 
 import (
 	"fmt"
+	"math/rand"
 )
 
 //ListenerManager is used as a struct to basically emulate an object
@@ -95,8 +96,8 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 
 //TEMP FAKE func 
 func (player *Player) fakeMovePlayer()  {
-	player.XCord++
-		player.YCord++
+	player.XCord = rand.Intn(5)
+	player.YCord = rand.Intn(5)
 }
 
 // collectPlayerPositions collect all player positions and return an array of them

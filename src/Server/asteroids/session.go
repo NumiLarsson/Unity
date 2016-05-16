@@ -62,7 +62,7 @@ func (session *session) loop() {
 
 	for {
 
-		tick := time.After(500 * time.Millisecond)
+		tick := time.After(16 * time.Millisecond)
 		//TEMP, tick should be 16 * millisecond
 
 		select {
@@ -137,8 +137,8 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.world = new(World)
 	session.world.worldSize = session.worldSize
 	session.world.Players = make([]*Player, 0/*maxPlayers*/)
-	session.world.Asteroids = make([]*asteroid, 0/*maxAsteroids*/)
-
+	session.world.Asteroids = make([]*asteroid, 1/*maxAsteroids*/)
+	 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
 

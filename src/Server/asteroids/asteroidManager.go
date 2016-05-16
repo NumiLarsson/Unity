@@ -147,10 +147,11 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*aster
 	manager.xMax = 100
 	manager.yMax = 100
 	manager.asteroids = asteroids
+	manager.newAsteroid()
+	manager.newAsteroid()
 	manager.treshold = 20
 	manager.maxRoids = 20
 	manager.input = sessionConn.read
-
 }
 
 // getNextID returns the id to be used and sets the next value

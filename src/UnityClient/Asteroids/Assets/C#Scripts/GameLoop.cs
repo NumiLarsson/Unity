@@ -20,7 +20,6 @@ public class GameLoop : MonoBehaviour {
     //GameObject []Players;
     //GameObject []Asteroids;
 
-    World gameWorld;
     ParallelUpdate threadedUpdate;
 
     public Text testText1;
@@ -44,7 +43,7 @@ public class GameLoop : MonoBehaviour {
         string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
         testText1.text = jsonString;
         Debug.Log( jsonString );
-        gameWorld = JsonMapper.ToObject<World>(jsonString);
+        World gameWorld = JsonMapper.ToObject<World>(jsonString);
 
         threadedUpdate = new ParallelUpdate(gameWorld, listenerSocket);
 
@@ -58,7 +57,10 @@ public class GameLoop : MonoBehaviour {
         if ( lastFrameTime < time - 20 ) {
             lastFrameTime = time;
         }
-        threadedUpdate.gameWorld.Players[0].DrawMe();
+        threadedUpdate.gameWorld.Players[0].DrawMe(playerPrefab);
+        for ( int i = 0; i < threadedUpdate.gameWorld.Asteroids.Length; i++ ) {
+            threadedUpdate.gameWorld.Asteroids[i].DrawMe( asteroidPrefab );
+        }
     }
 
     int requestPort(IPEndPoint serverIPEP) {
@@ -102,7 +104,32 @@ class World {
         foreach (Player player in newWorld.Players ) {
             UpdatePlayers( player );
         }
+
+        foreach (Asteroid asteroid in newWorld.Asteroids) {
+            UpdateAsteroids( asteroid );
+        }
         return this;
+    }
+
+    void UpdateAsteroids ( Asteroid newAsteroid ) {
+        foreach(Asteroid oldAsteroid in Asteroids) {
+            if (oldAsteroid.ID == newAsteroid.ID) {
+                oldAsteroid.X = newAsteroid.X;
+                oldAsteroid.Y = oldAsteroid.Y;
+                oldAsteroid.Phase = oldAsteroid.Phase;
+                return;
+            }
+        }
+        this.newAsteroid( newAsteroid );
+    }
+
+    void newAsteroid( Asteroid newAsteroid) {
+        for (int i = 0; i < Asteroids.Length; i++ ) {
+            if ( Asteroids[i].ID == -1) { //Change this, isAlive
+                Asteroids[i] = newAsteroid;
+            }
+        }
+        Asteroids[Asteroids.Length] = newAsteroid;
     }
 
     void UpdatePlayers (Player newPlayer) {
@@ -126,34 +153,84 @@ class World {
     }
 }
 
-class Player : GameLoop {
-    public GameObject   playerObject    { get; set; }
-    public string       Name            { get; set; }
-    public int          XCord           { get; set; }
-    public int          YCord           { get; set; }
-    public int          Lives           { get; set; }
+class playerObject : MonoBehaviour {
+    public GameObject playObj { get; set; }
 
-    public Player () {
+    public playerObject( GameObject playPrefab, int XCord, int YCord ) {
+        playObj = Instantiate( playPrefab );
+        Rigidbody playerBody = playObj.GetComponent < Rigidbody >();
+        playerBody.useGravity = false;
+        playObj.transform.position = new Vector3( XCord, YCord, 0 );
+        playerBody.freezeRotation = true;
     }
 
-    public void DrawMe() {
-        if (playerObject == null) {
-            playerObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            Rigidbody playerBody = playerObject.AddComponent<Rigidbody>();
-            playerBody.useGravity = false;
-            playerObject.transform.position = new Vector3 ( XCord, YCord, 0 );
-            playerBody.freezeRotation = true;
+    public void DrawMe(int XCord, int YCord) {
+        //playerObject = new GameObject( Name );
+        //Rigidbody playerBody = playerObject.AddComponent<Rigidbody>();
+        //playerBody.useGravity = false;
+        //playerObject.transform.position = new Vector3 ( XCord, YCord, 0 );
+        //playerBody.freezeRotation = true;
+        playObj.transform.position = new Vector3( XCord, YCord, 0 );
+    }
+}
 
+class Player {
+    public playerObject playObj { get; set; }
+    public string       Name    { get; set; }
+    public int          XCord   { get; set; }
+    public int          YCord   { get; set; }
+    public int          Lives   { get; set; }
+    public bool         drawn   { get; set; }
+
+    public Player () {
+        drawn = false;
+    }
+
+    public void DrawMe(GameObject playerPrefab) {
+        if ( !drawn ) {
+            playObj = new playerObject( playerPrefab, XCord, YCord );
+            drawn = true;
         } else {
-            playerObject.transform.position = new Vector3( XCord, YCord, 0 );
+            playObj.DrawMe( XCord, YCord );
         }
     }
 }
 
+class asteroidObject : MonoBehaviour {
+    public GameObject astObj { get; set; }
+
+    public asteroidObject ( GameObject astPrefab, int XCord, int YCord ) {
+        astObj = Instantiate( astPrefab );
+        Rigidbody playerBody = astObj.GetComponent < Rigidbody >();
+        playerBody.useGravity = false;
+        astObj.transform.position = new Vector3( XCord, YCord, 0 );
+        playerBody.freezeRotation = true;
+    }
+
+    public void DrawMe ( int XCord, int YCord ) {
+        //playerObject = new GameObject( Name );
+        //Rigidbody playerBody = playerObject.AddComponent<Rigidbody>();
+        //playerBody.useGravity = false;
+        //playerObject.transform.position = new Vector3 ( XCord, YCord, 0 );
+        //playerBody.freezeRotation = true;
+        astObj.transform.position = new Vector3( XCord, YCord, 0 );
+    }
+}
+
 class Asteroid {
-    public GameObject   gameObject  { get; set; }
-    public int          X           { get; set; }
-    public int          Y           { get; set; }
-    public int          ID          { get; set; }
-    public int          Phase       { get; set; }
+    public asteroidObject   astObj { get; set; }
+    public int              X      { get; set; }
+    public int              Y      { get; set; }
+    public int              ID     { get; set; }
+    public int              Phase  { get; set; }
+    public bool             drawn  { get; set; }
+
+    public void DrawMe ( GameObject asteroidPrefab ) {
+        if ( !drawn ) {
+            astObj = new asteroidObject( asteroidPrefab, X, Y );
+            drawn = true;
+        } else {
+            astObj.DrawMe( X, Y );
+        }
+    }
 }
