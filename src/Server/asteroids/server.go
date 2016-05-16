@@ -72,7 +72,6 @@ func (server *server) CreateFakeUser() chan Data {
 	return fakeUser
 }
 
-
 // Listen is a loop that server uses to listen for new user that want to connect
 // Sends correct port to use in return
 func (server *server) Listen(external chan Data) {
