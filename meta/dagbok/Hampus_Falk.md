@@ -95,6 +95,8 @@ Ensamt arbete med collisionManager samt fortsatt kodande för att skapa ett de f
 ##### Fredag
 Ensamt arbete med collisionManager, inte så mycket arbete, dock har adderat funktioner andra delar av laget skulle behöva, ca 2h
 
+##### Söndag
+Trivial genomläsning av koden som skrivits av de andra i gruppen för ökad förståelse, ca 2h
 ## Vecka 20
 
 ##### Måndag
