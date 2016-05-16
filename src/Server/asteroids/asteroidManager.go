@@ -140,7 +140,7 @@ func newAsteroidManager() *asteroidManager {
 // init initiate the asteroid manager with hardcoded values TODO: input?
 // and sets channels to session and
 func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*Asteroid) {
-
+	// TODO fix hardcoded variables
 	manager.xMax = 100
 	manager.yMax = 100
 	manager.asteroids = asteroids
