@@ -18,12 +18,12 @@ func (world *World) asteroidAsteroidCollision() {
 	for _, a1 := range world.asteroids {
 		for _, a2 := range world.asteroids {
 
-			if isCollisionAsteroidAsteroid(a1, a2){
+			if isCollisionAsteroidAsteroid(a1, a2) {
 				a1.Alive = false
 			}
 		}
 	}
-	
+
 }
 
 //
@@ -35,9 +35,9 @@ func (world *World) playerAsteroidCollision() {
 			if isCollisionPlayerAsteroid(p, a) {
 				p.Alive = false
 				a.Alive = false
-				}
+			}
 
-		}		
+		}
 	}
 }
 
@@ -106,7 +106,6 @@ func inList(list []int, item int) bool {
 
 func (world *World) collisionManager() {
 
-
 	//deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
 
 	world.playerPlayerCollision()
@@ -115,22 +114,21 @@ func (world *World) collisionManager() {
 	// last check asteroid vs asteroid
 	world.asteroidAsteroidCollision()
 
-
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
-	
-	for _ , player := range world.players{
+
+	for _, player := range world.players {
 		if player.Alive == false {
 			deadPlayerIDs = append(deadPlayerIDs, player.Id)
 		}
 	}
 
-	for _ , asteroid := range world.asteroids{
+	for _, asteroid := range world.asteroids {
 		if asteroid.Alive == false {
 			deadAsteroidIDs = append(deadAsteroidIDs, asteroid.Id)
 		}
 	}
-	
+
 	//Used to make it compile
 	if len(deadPlayerIDs) > 0 || len(deadAsteroidIDs) > 0 {
 		fmt.Println("[COL.MAN] Collisions, Players:", deadPlayerIDs,

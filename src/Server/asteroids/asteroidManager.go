@@ -2,7 +2,7 @@ package asteroids
 
 import (
 	"fmt"
-	"math/rand"	
+	"math/rand"
 )
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
@@ -27,12 +27,12 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 		select {
 
 		case msg := <-manager.input:
-			
+
 			if msg.action == "session.tick" {
 				manager.updateDeathRow()
 				manager.removeDeadAsteroids()
 				//manager.print()
-				
+
 				//TODO spawn on correct x/y
 				manager.spawnAsteroid()
 				manager.resumeAsteroids()
@@ -94,22 +94,20 @@ func (manager *asteroidManager) removeDeadAsteroids() {
 
 	var offset = 0
 
-//	fmt.Println("before",len(manager.asteroids))
-	
+	//	fmt.Println("before",len(manager.asteroids))
+
 	for i, asteroid := range manager.asteroids {
-		
+
 		// Check if inside kill list
-		
-		
+
 		if !asteroid.isAlive() || !asteroid.inBounds(manager) {
 			manager.removeAsteroid(i + offset)
-			offset--	
-		}	
-	}	
+			offset--
+		}
+	}
 	//fmt.Println("After",len(manager.asteroids))
 
 }
-
 
 // getAsteroids return the array containing the current asteroids
 func (manager *asteroidManager) getAsteroids() []*Asteroid {
@@ -120,7 +118,7 @@ func (manager *asteroidManager) getAsteroids() []*Asteroid {
 // removeAsteroid removes specific asteroid from manager asteroid array
 func (manager *asteroidManager) removeAsteroid(i int) {
 	//fmt.Println("i:",i)
-	
+
 	manager.asteroids = append(manager.asteroids[:i], manager.asteroids[i+1:]...)
 
 }
@@ -168,16 +166,15 @@ func (manager *asteroidManager) getNextID() int {
 func (manager *asteroidManager) updateDeathRow() {
 
 	var deathRow []int
-	
-	for _ , asteroid := range manager.asteroids {
+
+	for _, asteroid := range manager.asteroids {
 		if !asteroid.isAlive() {
-			deathRow = append(deathRow,asteroid.Id)
+			deathRow = append(deathRow, asteroid.Id)
 		}
 	}
 
-
 	manager.deathRow = deathRow
-	
+
 	if len(manager.deathRow) > 0 {
 		fmt.Println("[AST.MAN] Collision:", manager.deathRow)
 	}
