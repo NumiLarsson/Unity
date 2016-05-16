@@ -2,18 +2,20 @@ package asteroids
 
 import "math/rand"
 
-type asteroid struct {
-	x     int
-	y     int
+type Asteroid struct {
+	Id    int
+	X     int
+	Y     int
+	Phase int
+	Alive bool
 	xStep int
 	yStep int
-	id    int
 	size  int
-	phase int
+
 	input chan (Data)
 }
 
-func (asteroid *asteroid) loop() { //loop(id int, xMax int, yMax int) {
+func (asteroid *Asteroid) loop() { //loop(id int, xMax int, yMax int) {
 
 	for {
 
@@ -33,33 +35,34 @@ func (asteroid *asteroid) loop() { //loop(id int, xMax int, yMax int) {
 }
 
 // move updates the asteroids location with each tick
-func (asteroid *asteroid) move() {
+func (asteroid *Asteroid) move() {
 
-	asteroid.x += asteroid.xStep
-	asteroid.y += asteroid.yStep
+	asteroid.X += asteroid.xStep
+	asteroid.Y += asteroid.yStep
 }
 
 // inBounds checks if a given asteroid a is inside the bounds
-func (asteroid *asteroid) inBounds(manager *asteroidManager) bool {
+func (asteroid *Asteroid) inBounds(manager *asteroidManager) bool {
 
-	return asteroid.x >= 0 &&
-		asteroid.y >= 0 &&
-		asteroid.x <= manager.xMax &&
-		asteroid.y <= manager.yMax
+	return asteroid.X >= 0 &&
+		asteroid.Y >= 0 &&
+		asteroid.X <= manager.xMax &&
+		asteroid.Y <= manager.yMax
 
 }
 
 // newAsteroid allocates a new astroid
-func newAsteroid() *asteroid {
+func newAsteroid() *Asteroid {
 
-	return new(asteroid)
+	return new(Asteroid)
 
 }
 
 // init sets the asteroids values, id,channel and spawn location
-func (asteroid *asteroid) init(id int, xMax int, yMax int) {
+func (asteroid *Asteroid) init(id int, xMax int, yMax int) {
 
-	asteroid.id = id
+	asteroid.Id = id
+	asteroid.Alive = true
 	asteroid.randowSpawn(xMax, yMax)
 
 	//	asteroid.checkSizeToWorld(xMax, yMax)
@@ -69,32 +72,32 @@ func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 }
 
 // randomSpawn sets the location at which a asteroid is spawned
-func (asteroid *asteroid) randowSpawn(xMax int, yMax int) {
+func (asteroid *Asteroid) randowSpawn(xMax int, yMax int) {
 
 	randomDir := rand.Intn(4)
 
 	switch randomDir {
 	case 0:
-		asteroid.x = rand.Intn(xMax)
-		asteroid.y = 0 - asteroid.size
+		asteroid.X = rand.Intn(xMax)
+		asteroid.Y = 0 - asteroid.size
 		asteroid.xStep = 0
 		asteroid.yStep = 1
 
 	case 1:
-		asteroid.x = xMax
-		asteroid.y = rand.Intn(yMax)
+		asteroid.X = xMax
+		asteroid.Y = rand.Intn(yMax)
 		asteroid.xStep = -1
 		asteroid.yStep = 0
 
 	case 2:
-		asteroid.x = rand.Intn(xMax)
-		asteroid.y = yMax
+		asteroid.X = rand.Intn(xMax)
+		asteroid.Y = yMax
 		asteroid.xStep = 0
 		asteroid.yStep = -1
 
 	case 3:
-		asteroid.x = 0 - asteroid.size
-		asteroid.y = rand.Intn(yMax)
+		asteroid.X = 0 - asteroid.size
+		asteroid.Y = rand.Intn(yMax)
 		asteroid.xStep = 1
 		asteroid.yStep = 0
 	}

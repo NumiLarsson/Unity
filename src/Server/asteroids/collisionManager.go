@@ -2,29 +2,147 @@ package asteroids
 
 import "fmt"
 
-func (world *World) collisionManager() *World {
+// ======================= FIX MORE GENERIC =============================================
+// detectCollisions checks each asteroid and stores all asteroids that have collided
+// TODO players and use collision manager?
+/*func (session *session) detectCollisions() ([]int, []int) {
+
+	var asteroidCollisions []int
+	var playerCollisions []int
+
+	// First check player vs player collisions
+
+}*/
+
+func (world *World) asteroidAsteroidCollision(asteroidCollisions []int) []int {
+	for _, a1 := range world.asteroids {
+		for _, a2 := range world.asteroids {
+
+			if isCollisionAsteroidAsteroid(a1, a2) &&
+				!inList(asteroidCollisions, a1.Id) {
+				asteroidCollisions = append(asteroidCollisions, a1.Id)
+			}
+		}
+	}
+	return asteroidCollisions
+}
+
+//
+func (world *World) playerAsteroidCollision(playerCollisions []int,
+	asteroidCollisions []int) ([]int, []int) {
+	//var playerCollisions, asteroidCollisions []int
+
+	for _, p := range world.players {
+		for _, a := range world.asteroids {
+			if isCollisionPlayerAsteroid(p, a) {
+				if !inList(playerCollisions, p.Id) {
+					playerCollisions = append(playerCollisions, p.Id)
+				}
+				if !inList(asteroidCollisions, a.Id) {
+					asteroidCollisions = append(asteroidCollisions, a.Id)
+				}
+
+			}
+		}
+	}
+	return playerCollisions, asteroidCollisions
+}
+
+func (world *World) playerPlayerCollision(playerCollisions []int) []int {
+	//var playerCollisions []int
+
+	for _, p1 := range world.players {
+		for _, p2 := range world.players {
+			if isCollisionPlayerPlayer(p1, p2) && !inList(playerCollisions, p1.Id) {
+				playerCollisions = append(playerCollisions, p1.Id)
+
+			}
+		}
+
+	}
+	return playerCollisions
+
+}
+
+// isCollisionAsteroidAsteroid checks is if two asteroids are on
+// the same position causing a collision
+func isCollisionAsteroidAsteroid(a1 *Asteroid, a2 *Asteroid) bool {
+
+	if a1.Id == a2.Id {
+		return false
+	} else if a1.X == a2.X && a1.Y == a2.Y {
+		return true
+	}
+
+	return false
+
+}
+
+// isCollisionAsteroidPlayer  TODO some sort of interface to take generic input?
+func isCollisionPlayerAsteroid(p *Player, a *Asteroid) bool {
+
+	if p.X == a.X && p.Y == a.Y {
+		return true
+	}
+
+	return false
+
+}
+
+// TODO some sort of interface to take generic input?
+func isCollisionPlayerPlayer(p1 *Player, p2 *Player) bool {
+
+	if p1.Id == p2.Id {
+		return false
+	} else if p1.X == p2.X && p1.Y == p2.Y {
+		return true
+	}
+
+	return false
+}
+
+// inList checks if the item is is already in the list
+func inList(list []int, item int) bool {
+	for _, current := range list {
+		if item == current {
+			return true
+		}
+	}
+	return false
+}
+
+// ======================= FIX MORE GENERIC =============================================
+// detectCollisions checks each asteroid and stores all asteroids that have collided
+
+func (world *World) collisionManager() ([]int, []int) {
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
 
-	deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
+	//deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
+
+	deadPlayerIDs = world.playerPlayerCollision(deadPlayerIDs)
+	// second check player vs asteroid
+	deadPlayerIDs, deadAsteroidIDs =
+		world.playerAsteroidCollision(deadPlayerIDs, deadAsteroidIDs)
+	// last check asteroid vs asteroid
+	deadAsteroidIDs = world.asteroidAsteroidCollision(deadAsteroidIDs)
 
 	//Used to make it compile
 	if len(deadPlayerIDs) > 0 || len(deadAsteroidIDs) > 0 {
-		fmt.Println("[COL.MAN] Collisions, Players:", deadPlayerIDs, "Asteroids:", deadAsteroidIDs)
+		fmt.Println("[COL.MAN] Collisions, Players:", deadPlayerIDs,
+			"Asteroids:", deadAsteroidIDs)
 	}
 
-	//TODO
-	//enter similar ranges with every object destructible
-	return world
+	return deadAsteroidIDs, deadPlayerIDs
 }
 
 //Check the objects coordinates to see if collision occurs
 //COuld be made more generic using overriding
-func (player *Player) checkCoordinates(asteroid *asteroid) bool {
+func (player *Player) checkCoordinates(asteroid *Asteroid) bool {
 
 	//Size of the objects will alter the collision hitbox
 	//For now every object is only a dot
-	if player.x == asteroid.x && player.y == asteroid.y {
+	if player.X == asteroid.X && player.Y == asteroid.Y {
 		return true
 	}
 
@@ -42,13 +160,13 @@ func checkCollision(world *World) ([]int, []int) {
 	for _, player := range world.players {
 		for _, asteroid := range world.asteroids {
 			if player.checkCoordinates(asteroid) {
-				fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.x, player.y, ")")
+				fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.X, player.Y, ")")
 
 				//Player collision with an asteroid will
 				//Kill the player and the asteroid
 				//It only makes sense... Right?
-				deadPlayerIDs = append(deadPlayerIDs, player.id)
-				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.id)
+				deadPlayerIDs = append(deadPlayerIDs, player.Id)
+				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.Id)
 
 				player.death(world)
 			}
@@ -60,12 +178,12 @@ func checkCollision(world *World) ([]int, []int) {
 
 func (player *Player) death(world *World) {
 	//Make player sleep for a second or two before respawning?
-	player.lives--
+	player.Lives--
 	player.respawn(world)
 }
 
 //Very primitive respawn, put the dead player back at start-position (0,0)
 func (player *Player) respawn(world *World) {
-	player.x = 0
-	player.y = 0
+	player.X = 0
+	player.Y = 0
 }
