@@ -2,6 +2,21 @@ package asteroids
 
 import "fmt"
 
+// collisionManager used to get all collision that have occured during the last tick
+func (world *World) collisionManager() {
+
+	// removes old collisions
+	world.removeCollisions()
+
+	// First check player vs player and asteroid
+	world.playerCollision()
+
+	// Second check asteroid vs asteroid
+	world.asteroidCollision()
+
+	world.print()
+}
+
 // asteroidCollision is used to check if two asteroids have collided
 func (world *World) asteroidCollision() {
 
@@ -47,21 +62,20 @@ func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 
 }
 
-// collisionManager used to get all collision that have occured during the last tick
-func (world *World) collisionManager() {
+// appendCollision
+func (world *World) appendCollision(x int, y int) {
+	collision := new(Collision)
+	collision.X = x
+	collision.Y = y
 
-	// removes old collisions
-	world.removeCollisions()
+	world.Collisions = append(world.Collisions, collision)
+}
 
-	// First check player vs player and asteroid
-	world.playerCollision()
+func (world *World) removeCollisions() {
+	world.Collisions = make([]*Collision, 0)
+}
 
-	// Second check asteroid vs asteroid
-	world.asteroidCollision()
-
-	//////////////////////////////////////////////////////////
-	// Below used to have the same prints as before///////////
-	//////////////////////////////////////////////////////////
+func (world *World) print() {
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
 
@@ -77,23 +91,10 @@ func (world *World) collisionManager() {
 		}
 	}
 
-	if len(deadPlayerIDs) > 0 || len(deadAsteroidIDs) > 0 {
+	if len(deadPlayerIDs) > 2 || len(deadAsteroidIDs) > 0 {
 		debugPrint(fmt.Sprintln("[COL.MAN] Collisions, Players:", deadPlayerIDs,
 			"Asteroids:", deadAsteroidIDs))
 	}
-
-}
-
-func (world *World) appendCollision(x int, y int) {
-	collision := new(Collision)
-	collision.X = x
-	collision.Y = y
-
-	world.Collisions = append(world.Collisions, collision)
-}
-
-func (world *World) removeCollisions() {
-	world.Collisions = make([]*Collision, 0)
 }
 
 /////////////////////////////////////////////////////
