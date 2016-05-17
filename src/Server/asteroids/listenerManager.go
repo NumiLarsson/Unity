@@ -35,7 +35,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection,
 				// TODO: Where should input from user be checked
 				manager.handleCollisions()
 				manager.players = manager.collectPlayerPositions()
-				
+
 				// Send update + world to players
 
 			} else {
@@ -148,15 +148,15 @@ func (manager *ListenerManager) sendToClient(world World) {
 // handleCollisons handles collisons with a player
 func (manager *ListenerManager) handleCollisions() {
 
-	for _,player := range manager.players{
-		if !player.isAlive(){
+	for _, player := range manager.players {
+		if !player.isAlive() {
 			if player.getLives() > 1 {
 				player.setAlive()
-				player.Lives --
-			}else {
+				player.Lives--
+			} else {
 				// TODO : remove player
 			}
 		}
 	}
-	
+
 }
