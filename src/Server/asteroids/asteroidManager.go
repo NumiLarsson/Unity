@@ -92,7 +92,6 @@ func (manager *asteroidManager) removeDeadAsteroids() {
 
 	for i, asteroid := range acopy {
 
-
 		// Check if inside kill list
 
 		if !asteroid.isAlive() || !asteroid.inBounds(manager) {
