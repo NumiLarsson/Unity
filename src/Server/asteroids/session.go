@@ -150,5 +150,7 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	go session.listenerManager.loop(toPlayers.FlipConnection(),
 		session.maxPlayers, startPort, session.world.Players)
 
-	time.Sleep(30 * time.Millisecond)
+	// Wait for managers to signal that they are ready
+	<-toAsteroids.read
+	<-toPlayers.read
 }

@@ -21,6 +21,7 @@ type asteroidManager struct {
 func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Asteroid) {
 
 	manager.init(sessionConn, asteroids)
+	sessionConn.write <- Data{"a.manager_ready", 200}
 
 	for {
 		//manager.print()
