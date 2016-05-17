@@ -74,11 +74,10 @@ func (manager *ListenerManager) init(sessionConn *Connection,
 
 }
 
-// getNextPort calculates the next start port to be used by a session
+// getNextID returns the id to be used and sets the next value
 func (manager *ListenerManager) getNextPort() int {
-	var port = manager.currentPort
-	manager.currentPort++
-	return port
+	defer func() { manager.currentPort++ }()
+	return manager.currentPort
 }
 
 // incrementCurrentPlayers increments currentPlayers
