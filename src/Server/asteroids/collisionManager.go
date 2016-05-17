@@ -8,6 +8,7 @@ func (world *World) asteroidCollision() {
 	for _, a1 := range world.Asteroids {
 		for _, a2 := range world.Asteroids {
 			if isCollision(a1.X, a1.Y, a2.X, a2.Y) && a1.Id != a2.Id {
+				world.appendCollision(a1.X, a1.Y)
 				a1.Alive = false
 			}
 		}
@@ -21,6 +22,7 @@ func (world *World) playerCollision() {
 	for _, p := range world.Players {
 		for _, a := range world.Asteroids {
 			if isCollision(p.X, p.Y, a.X, p.Y) {
+				world.appendCollision(p.X, p.Y)
 				p.Alive = false
 				a.Alive = false
 			}
@@ -28,6 +30,7 @@ func (world *World) playerCollision() {
 
 		for _, p2 := range world.Players {
 			if isCollision(p.X, p.Y, p2.X, p2.Y) && p.Id != p2.Id {
+				world.appendCollision(p.X, p.Y)
 				p.Alive = false
 			}
 
@@ -46,6 +49,9 @@ func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 
 // collisionManager used to get all collision that have occured during the last tick
 func (world *World) collisionManager() {
+
+	// removes old collisions
+	world.removeCollisions()
 
 	// First check player vs player and asteroid
 	world.playerCollision()
@@ -76,6 +82,18 @@ func (world *World) collisionManager() {
 			"Asteroids:", deadAsteroidIDs))
 	}
 
+}
+
+func (world *World) appendCollision(x int, y int) {
+	collision := new(Collision)
+	collision.X = x
+	collision.Y = y
+
+	world.Collisions = append(world.Collisions, collision)
+}
+
+func (world *World) removeCollisions() {
+	world.Collisions = make([]*Collision, 0)
 }
 
 /////////////////////////////////////////////////////

@@ -124,6 +124,6 @@ func (player *Player) getLives() int {
 	return player.Lives
 }
 
-func (player *Player) setAlive(){
+func (player *Player) setAlive() {
 	player.Alive = true
 }

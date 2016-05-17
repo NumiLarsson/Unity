@@ -142,6 +142,7 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.world.worldSize = 400                             //session.worldSize
 	session.world.Players = make([]*Player, 0 /*maxPlayers*/) // HÄR GJORDES ÄNDRING
 	session.world.Asteroids = make([]*Asteroid, 0 /*maxAsteroids*/)
+	session.world.Collisions = make([]*Collision, 0)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
