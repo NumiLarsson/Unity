@@ -5,8 +5,8 @@ import "fmt"
 // asteroidCollision is used to check if two asteroids have collided
 func (world *World) asteroidCollision() {
 
-	for _, a1 := range world.asteroids {
-		for _, a2 := range world.asteroids {
+	for _, a1 := range world.Asteroids {
+		for _, a2 := range world.Asteroids {
 			if isCollision(a1.X, a1.Y, a2.X, a2.Y) && a1.Id != a2.Id {
 				a1.Alive = false
 			}
@@ -18,15 +18,15 @@ func (world *World) asteroidCollision() {
 // playerCollision is used to check if a player has collided with another player or asteroid
 func (world *World) playerCollision() {
 
-	for _, p := range world.players {
-		for _, a := range world.asteroids {
+	for _, p := range world.Players {
+		for _, a := range world.Asteroids {
 			if isCollision(p.X, p.Y, a.X, p.Y) {
 				p.Alive = false
 				a.Alive = false
 			}
 		}
 
-		for _, p2 := range world.players {
+		for _, p2 := range world.Players {
 			if isCollision(p.X, p.Y, p2.X, p2.Y) && p.Id != p2.Id {
 				p.Alive = false
 			}
@@ -59,13 +59,13 @@ func (world *World) collisionManager() {
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
 
-	for _, player := range world.players {
+	for _, player := range world.Players {
 		if player.Alive == false {
 			deadPlayerIDs = append(deadPlayerIDs, player.Id)
 		}
 	}
 
-	for _, asteroid := range world.asteroids {
+	for _, asteroid := range world.Asteroids {
 		if asteroid.Alive == false {
 			deadAsteroidIDs = append(deadAsteroidIDs, asteroid.Id)
 		}
