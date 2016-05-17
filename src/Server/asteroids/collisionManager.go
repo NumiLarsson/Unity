@@ -18,10 +18,10 @@ func (world *World) asteroidAsteroidCollision() {
 
 	for _, a1 := range world.asteroids {
 		for _, a2 := range world.asteroids {
-			isCollisionAsteroidAsteroid(a1, a2)	
+			isCollisionAsteroidAsteroid(a1, a2)
 		}
 	}
-	
+
 }
 
 //
