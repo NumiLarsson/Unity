@@ -48,7 +48,7 @@ func makeConnection() (c1, c2 *Connection) {
 	c2.read = c1.write
 	c2.write = c1.read
 
-	return
+	return c1, c2
 }
 
 // Only used to get some kind of input from a "user"
@@ -74,25 +74,26 @@ func (server *server) CreateFakeUser() chan Data {
 
 // Listen is a loop that server uses to listen for new user that want to connect
 // Sends correct port to use in return
-func (server *server) Listen(external chan Data) {
+func (server *server) Listen(/*external chan Data*/) {
 
 	// TEMPORARY
 	// ===
 	// Kill the server after 5 seconds of inactivity
 	timeout := time.After(60 * time.Second)
-
-	go acceptNewPlayers(external)
-
+	
+	newPlayers := make(chan int)
+	go acceptNewPlayers(newPlayers)
+	 
 	for {
 		select {
 		// TODO change external to correct input channel/port used by external comm.
-		case <-external:
+		case message := <-/*external*/newPlayers:
+			fmt.Println("[SERVER] New user wants to connect", message)
 			// TODO: Possibly in a go-routine based on performance
 			port := server.addPlayer()
-			external <- Data{"port", port}
-			// Port to use should be sent to the user
 			fmt.Println("[SERVER] Port set up for new user", port)
-
+			newPlayers <- port
+			// Port to use should be sent to the user
 		case <-timeout:
 			fmt.Println("\n========\n[SERVER] Terminated due to 60 seconds of inactivity\n========")
 			return
@@ -101,7 +102,7 @@ func (server *server) Listen(external chan Data) {
 
 }
 
-func acceptNewPlayers(conn chan Data) {
+func acceptNewPlayers(conn chan int) {
 	socket, err := CreateSocket(9000)
 	if err != nil {
 		panic(err)
@@ -109,14 +110,15 @@ func acceptNewPlayers(conn chan Data) {
 
 	for {
 		tcpConn, err := socket.Accept()
-		if err != nil {
+		if err != nil {	
 			panic(err)
 		}
+		
+		conn <- 100
+		fmt.Println("Sent request to server");
+		portData := <- conn
+		jsonPort, err := json.Marshal(&portData)
 
-		conn <- Data{"NewUser", 0}
-		portData := <-conn
-
-		jsonPort, err := json.Marshal(&portData.result)
 		if err != nil {
 			panic(err)
 		}
@@ -166,8 +168,9 @@ func (server *server) createSession() int {
 	nextPort := server.getNextPort() // Prevents data race
 
 	//Hardcoded size of the world for now
-	go Session(sessionSide, nextPort, server.maxPlayers, 400)
-	<-serverSide.read
+	Session(sessionSide, nextPort, server.maxPlayers, 400)
+	//<-serverSide.write
+	//This is not using GO so it's 100000% deadlocked.
 
 	fmt.Println("[SERVER] Session created")
 
@@ -178,7 +181,7 @@ func (server *server) createSession() int {
 	session.id = server.nextSession
 	server.nextSession++
 	server.sessions = append(server.sessions, session)
-
+	
 	return server.createPlayer(session)
 }
 

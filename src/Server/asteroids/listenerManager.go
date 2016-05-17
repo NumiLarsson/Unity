@@ -2,6 +2,7 @@ package asteroids
 
 import (
 	"fmt"
+	"math/rand"
 )
 
 //ListenerManager is used as a struct to basically emulate an object
@@ -56,7 +57,7 @@ func (manager *ListenerManager) init(sessionConn *Connection, maxPlayers int, fi
 	manager.CurrentPort = firstPort
 	manager.input = sessionConn.read
 
-	manager.listeners = make([]*Listener, 0)
+	manager.listeners = make([]*Listener, 1)
 
 }
 
@@ -82,12 +83,21 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	newPlayer := newListener.player
 	//Insert the created listener to listenerList
 	//Insert the created player to Players
-	manager.listeners = append(manager.listeners, newListener)
+	//manager.listeners = append(manager.listeners, newListener)
+	manager.listeners[0] = newListener;
+	//APPEND IS NOT WORKING, STOP USING IT PLEASE
+	
 	manager.Players = append(manager.Players, newPlayer)
 
 	manager.incrementCurrentPlayers()
 
 	return manager.getNextPort(), newPlayer
+}
+
+//TEMP FAKE func 
+func (player *Player) fakeMovePlayer()  {
+	player.XCord = rand.Intn(5)
+	player.YCord = rand.Intn(5)
 }
 
 // collectPlayerPositions collect all player positions and return an array of them
@@ -109,7 +119,7 @@ func (manager *ListenerManager) getPlayers() []*Player {
 }
 
 // SendToClient broadcasts world-info to every listener
-func (manager *ListenerManager) sendToClient(world *World) {
+func (manager *ListenerManager) sendToClient(world /**World*/*World) {
 	for _, listener := range manager.listeners {
 		if listener.ID != "" {
 			go listener.Write(world)
