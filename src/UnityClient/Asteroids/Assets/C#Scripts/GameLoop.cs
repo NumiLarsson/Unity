@@ -53,10 +53,11 @@ public class GameLoop : MonoBehaviour {
         for ( int i = 0; i < threadedUpdate.gameWorld.Players.Length; i++ ) {
             threadedUpdate.gameWorld.Players[i].DrawMe( playerPrefab );
         }
-        /*
+        Debug.Log( threadedUpdate.gameWorld.Asteroids.Length );
+
         for ( int i = 0; i < threadedUpdate.gameWorld.Asteroids.Length; i++ ) {
             threadedUpdate.gameWorld.Asteroids[i].DrawMe( asteroidPrefab );
-        }*/
+        }
         //Need a way to kill or remove old asteroids to make space for the new ones
         //Currently comparing with ID's, but they're never removed, just not sent again
     }
@@ -74,6 +75,7 @@ public class GameLoop : MonoBehaviour {
     }
 }
 
+[System.Serializable]
 class ParallelUpdate {
     public World gameWorld { get; set; }
     private Socket socket { get; set; }
@@ -96,24 +98,38 @@ class ParallelUpdate {
     }
 }
 
+[System.Serializable]
 class World {
     public Player      []Players   { get; set; }
     public Asteroid    []Asteroids { get; set; }
 
     public World Update ( World newWorld ) {
+        for (int i = 0; i < Asteroids.Length; i++) {
+            if ( Asteroids[i].isAlive == false ) {
+                Asteroids[i].ID = -1;
+            }
+        }
+
+        foreach (Asteroid oldAsteroid in Asteroids ) {
+            oldAsteroid.isAlive = false;
+        }
+
         foreach (Player player in newWorld.Players ) {
             UpdatePlayers( player );
         }
 
-        foreach (Asteroid asteroid in newWorld.Asteroids) {
+        foreach //(int i = 0; i < newWorld.Asteroids.Length; i++) {
+            (Asteroid asteroid in newWorld.Asteroids) {
             UpdateAsteroids( asteroid );
         }
         return this;
     }
 
     void UpdateAsteroids ( Asteroid newAsteroid ) {
+        
         foreach(Asteroid oldAsteroid in Asteroids) {
             if (oldAsteroid.ID == newAsteroid.ID) {
+                oldAsteroid.isAlive = true;
                 oldAsteroid.X = newAsteroid.X;
                 oldAsteroid.Y = oldAsteroid.Y;
                 oldAsteroid.Phase = oldAsteroid.Phase;
@@ -147,20 +163,22 @@ class World {
 
     void newPlayer ( Player newPlayer ) {
         for (int i = 0; i < this.Players.Length; i++ ) {
-            if (this.Players[i].Name == "") {
-                this.Players[i] = newPlayer;
+            if (Players[i].Name == "") {
+                Players[i] = newPlayer;
             }
         }
     }
 }
 
+[System.Serializable]
 class playerObject : ScriptableObject {
     public GameObject playObj { get; set; }
 
-    public playerObject( GameObject playPrefab, int XCord, int YCord ) {
+    public void CreateMe( GameObject playPrefab, int XCord, int YCord ) {
         playObj = Instantiate( playPrefab );
         Rigidbody playerBody = playObj.GetComponent < Rigidbody >();
         playerBody.useGravity = false;
+        playerBody.isKinematic = false;
         playObj.transform.position = new Vector3( XCord, YCord, 0 );
         playerBody.freezeRotation = true;
     }
@@ -175,6 +193,7 @@ class playerObject : ScriptableObject {
     }
 }
 
+[System.Serializable]
 class Player {
     public playerObject playObj { get; set; }
     public string       Name    { get; set; }
@@ -189,49 +208,12 @@ class Player {
 
     public void DrawMe(GameObject playerPrefab) {
         if ( !drawn ) {
-            playObj = new playerObject( playerPrefab, XCord, YCord );
+            //playObj = new playerObject( playerPrefab, XCord, YCord );
+            playObj = ScriptableObject.CreateInstance<playerObject> ();
+            playObj.CreateMe( playerPrefab, XCord, YCord );
             drawn = true;
         } else {
             playObj.DrawMe( XCord, YCord );
-        }
-    }
-}
-
-class asteroidObject : MonoBehaviour {
-    public GameObject astObj { get; set; }
-
-    public asteroidObject ( GameObject astPrefab, int XCord, int YCord ) {
-        astObj = Instantiate( astPrefab );
-        Rigidbody playerBody = astObj.GetComponent < Rigidbody >();
-        playerBody.useGravity = false;
-        astObj.transform.position = new Vector3( XCord, YCord, 0 );
-        playerBody.freezeRotation = true;
-    }
-
-    public void DrawMe ( int XCord, int YCord ) {
-        //playerObject = new GameObject( Name );
-        //Rigidbody playerBody = playerObject.AddComponent<Rigidbody>();
-        //playerBody.useGravity = false;
-        //playerObject.transform.position = new Vector3 ( XCord, YCord, 0 );
-        //playerBody.freezeRotation = true;
-        astObj.transform.position = new Vector3( XCord, YCord, 0 );
-    }
-}
-
-class Asteroid {
-    public asteroidObject   astObj { get; set; }
-    public int              X      { get; set; }
-    public int              Y      { get; set; }
-    public int              ID     { get; set; }
-    public int              Phase  { get; set; }
-    public bool             drawn  { get; set; }
-
-    public void DrawMe ( GameObject asteroidPrefab ) {
-        if ( !drawn ) {
-            astObj = new asteroidObject( asteroidPrefab, X, Y );
-            drawn = true;
-        } else {
-            astObj.DrawMe( X / 10, Y / 10 );
         }
     }
 }
