@@ -67,12 +67,12 @@ func (asteroid *Asteroid) init(id int, xMax int, yMax int) {
 
 	asteroid.ID = id
 	asteroid.Alive = true
+
 	asteroid.randowSpawn(xMax, yMax)
 
 	//	asteroid.checkSizeToWorld(xMax, yMax)
 
 	asteroid.input = make(chan Data)
-
 }
 
 // randomSpawn sets the location at which a asteroid is spawned

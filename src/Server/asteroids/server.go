@@ -90,7 +90,8 @@ func (server *Server) Listen(external chan Data) {
 	// Kill the server after 60 seconds of inactivity
 	timeout := time.After(60 * time.Second)
 
-	go server.acceptNewPlayers(external)
+	//newPlayers := make(chan int)
+	//go server.acceptNewPlayers(newPlayers)
 
 	for {
 		select {
@@ -98,6 +99,7 @@ func (server *Server) Listen(external chan Data) {
 			port := server.addPlayer()
 			external <- Data{"port", port}
 			debugPrint(fmt.Sprintln("[SERVER] Port set up for new user", port))
+			// newPlayers <- port
 
 		case <-timeout:
 			fmt.Println("\n========\n[SERVER] Terminated due to 60 seconds of inactivity\n========")
@@ -107,7 +109,8 @@ func (server *Server) Listen(external chan Data) {
 
 }
 
-func (server *Server) acceptNewPlayers(conn chan Data) {
+func (server *Server) acceptNewPlayers(conn chan int) {
+
 	socket, err := CreateSocket(9000)
 	if err != nil {
 		panic(err)
@@ -119,10 +122,11 @@ func (server *Server) acceptNewPlayers(conn chan Data) {
 			panic(err)
 		}
 
-		conn <- Data{"NewUser", 0}
+		conn <- 100
+		fmt.Println("Sent request to server")
 		portData := <-conn
+		jsonPort, err := json.Marshal(&portData)
 
-		jsonPort, err := json.Marshal(&portData.result)
 		if err != nil {
 			panic(err)
 		}

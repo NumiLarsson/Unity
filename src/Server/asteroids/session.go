@@ -32,11 +32,10 @@ type channels struct {
 // session struct stores info regarding players,session managers,
 // read/write channels etc.
 type session struct {
-	worldSize      int
-	currentPlayers int
-	maxPlayers     int
-	world          World
-	//asteroids       []*Asteroid // TODO remove? do we use this anymore
+	worldSize       int
+	currentPlayers  int
+	maxPlayers      int
+	world           *World
 	asteroidManager *asteroidManager
 	listenerManager *ListenerManager
 	// For external communication
@@ -53,12 +52,12 @@ func Session(serverConn *Connection, startPort int, players int, worldSize int) 
 	session.worldSize = worldSize
 	session.write.server = serverConn.write
 	session.read.server = serverConn.read
-	//session.asteroids = make([]*asteroid, 0)
 
 	session.write.server <- Data{"session_created", 200}
+
 	session.createManagers(startPort)
 
-	session.loop()
+	go session.loop()
 
 }
 
@@ -68,10 +67,10 @@ func (session *session) loop() {
 	for {
 
 		tick := time.After(16 * time.Millisecond)
+		//TEMP, tick should be 16 * millisecond
 
 		select {
 		case <-tick:
-
 			// Collect player and asteroid positions
 			session.world.Players = session.listenerManager.getPlayers()
 			session.world.Asteroids = session.asteroidManager.getAsteroids()
@@ -81,12 +80,17 @@ func (session *session) loop() {
 
 			session.world.collisionManager()
 			session.listenerManager.sendToClient(session.world)
+
+			//session.world.Players[0].fakeMovePlayer()
+			//Faking player movement so that I have something to draw
+
 			// Send collision ids back to asteroid manager
 
 			//session.asteroidManager.updateDeathRow(deathRow)
 			//session.listenerManager.handleCollisions(playerCollisions)
 
-			// Broadcast collisions to managers
+			//Empty world {}, something is going wrong.
+			//session.world.players jsons fine, but world just doesn't
 
 			//TEMP BROADCAST TO CLIENTS
 			//session.listenerManager.sendToClient(session.world)
@@ -99,6 +103,7 @@ func (session *session) loop() {
 
 			if data.action == "server.poke" {
 				// Check if theres room inside the session
+				fmt.Println("POKE")
 				if session.currentPlayers < session.maxPlayers {
 					session.write.server <- Data{"session.has_room", 200}
 				} else {
@@ -108,6 +113,7 @@ func (session *session) loop() {
 			} else {
 
 				// Spawn a new player
+				fmt.Println("SPAWN")
 				var port, player = session.listenerManager.newPlayer()
 				session.currentPlayers++
 				session.world.Players = append(session.world.Players, player)
@@ -128,20 +134,20 @@ func (session *session) loop() {
 }
 
 // createManagers sets up managers and their respective connections to/from session
-func (session *session) createManagers(startPort int /*maxPlayers int, maxAsteroids*/) {
+func (session *session) createManagers(startPort int /*maxPlayers int, maxAsteroids int*/) {
 
 	toPlayers := MakeConnection()
 	session.write.players = toPlayers.write
 	session.read.players = toPlayers.read
 
 	toAsteroids := MakeConnection()
-
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
-	session.world.worldSize = 400                             //session.worldSize
-	session.world.Players = make([]*Player, 0 /*maxPlayers*/) // HÄR GJORDES ÄNDRING
-	session.world.Asteroids = make([]*Asteroid, 0 /*maxAsteroids*/)
+	session.world = new(World)
+	session.world.worldSize = 400
+	session.world.Players = make([]*Player, 0)
+	session.world.Asteroids = make([]*Asteroid, 0)
 	session.world.Collisions = make([]*Collision, 0)
 
 	session.asteroidManager = newAsteroidManager()
@@ -154,4 +160,5 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	// Wait for managers to signal that they are ready
 	<-toAsteroids.read
 	<-toPlayers.read
+
 }
