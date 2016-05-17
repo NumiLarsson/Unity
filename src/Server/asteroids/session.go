@@ -46,7 +46,7 @@ func Session(serverConn *Connection, startPort int, players int, worldSize int) 
 	session.worldSize = worldSize
 	session.write.server = serverConn.write
 	session.read.server = serverConn.read
-	//session.asteroids = make([]*asteroid, 0)
+	session.asteroids = make([]*asteroid, 0)
 
 	//session.write.server <- Data{"session_created", 200}
 	//This is not using GO so it's 100000% deadlocked.
@@ -62,7 +62,7 @@ func (session *session) loop() {
 
 	for {
 
-		tick := time.After(16 * time.Millisecond)
+		tick := time.After(50 * time.Millisecond)
 		//TEMP, tick should be 16 * millisecond
 
 		select {
@@ -72,6 +72,7 @@ func (session *session) loop() {
 			session.world.Asteroids = session.asteroidManager.getAsteroids()
 			
 			session.world.Players[0].fakeMovePlayer()
+			//Faking player movement so that I have something to draw
 			
 			session.world.collisionManager()
 			

@@ -147,10 +147,13 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*aster
 	manager.xMax = 100
 	manager.yMax = 100
 	manager.asteroids = asteroids
-	manager.newAsteroid()
-	manager.newAsteroid()
+	var i int = 0;
+	for (i < 20) {
+		manager.newAsteroid()
+		i++
+	}
 	manager.treshold = 20
-	manager.maxRoids = 20
+	manager.maxRoids = 4
 	manager.input = sessionConn.read
 }
 
