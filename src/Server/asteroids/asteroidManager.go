@@ -3,6 +3,7 @@ package asteroids
 import (
 	"fmt"
 	"math/rand"
+	//"math/rand"
 )
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
@@ -66,6 +67,12 @@ func (manager *asteroidManager) spawnAsteroid() {
 
 	}
 
+	/*
+		Infinite spawning new asteroids every tick?
+		if len(manager.asteroids) < manager.maxRoids {
+			manager.newAsteroid()
+		}
+	*/
 }
 
 // resumeAsteroids used to send "tick" to all asteroids
@@ -134,7 +141,6 @@ func (manager *asteroidManager) newAsteroid() {
 
 	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
 	go asteroid.loop()
-
 }
 
 // newAsteroidsManager creates a new asteroid manager
@@ -155,7 +161,6 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*Aster
 	manager.treshold = 0
 	manager.maxRoids = 20
 	manager.input = sessionConn.read
-
 }
 
 // getNextID returns the id to be used and sets the next value
@@ -188,8 +193,8 @@ func (manager *asteroidManager) print() {
 
 	for _, asteroid := range manager.asteroids {
 		list = append(list, asteroid.ID)
-
 	}
+
 	fmt.Println(len(manager.asteroids))
 	fmt.Println(list)
 

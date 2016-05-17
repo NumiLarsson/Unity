@@ -37,6 +37,7 @@ func (world *World) playerCollision() {
 
 		}
 	}
+
 }
 
 // isCollision checks if two objects are located at the same position

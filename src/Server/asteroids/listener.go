@@ -1,17 +1,17 @@
 package asteroids
 
 import (
-	//TEMP
 	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net"
 	"strconv"
-	"time" //TEMP
+	"time"
 )
 
 //Player is used to represent the players in the game world
 type Player struct {
+	Name  string
 	ID    int
 	X     int
 	Y     int
@@ -27,7 +27,7 @@ type Listener struct {
 	port        int
 	player      *Player
 	conn        net.Conn
-	writeBuffer [][]byte
+	writeBuffer chan []byte
 	//Connection
 }
 
@@ -58,6 +58,18 @@ func (listener *Listener) init(port int) {
 
 	listener.port = port
 
+	/*
+		This should be synchronized with listener?
+
+		listener.player = new(Player)
+		listener.player.Name = strconv.Itoa(port)
+		listener.player.X = 0
+		listener.player.Y = 0
+		listener.player.Lives = 3
+	*/
+
+	listener.writeBuffer = make(chan []byte, 60)
+
 }
 
 func newPlayer() *Player {
@@ -80,28 +92,48 @@ func (listener *Listener) startUpListener() {
 	if err != nil {
 		panic(err)
 	}
+	listener.ID = "Hello World"
 
 	listener.idleListener()
 }
 
 func (listener *Listener) idleListener() {
+
+	/*
+		for {
+			if listener.writeBuffer[0] != nil {
+				listener.conn.Write(listener.writeBuffer[0])
+				listener.writeBuffer = listener.writeBuffer[1:]
+			} else {
+				time.Sleep(time.Second)
+			}
+		}
+	*/
+
 	for {
-		if listener.writeBuffer[0] != nil {
-			listener.conn.Write(listener.writeBuffer[0])
-			listener.writeBuffer = listener.writeBuffer[1:]
-		} else {
-			time.Sleep(time.Second)
+		select {
+		case jsonWorld := <-listener.writeBuffer:
+			//sizeWorld := binary.Size(jsonWorld)
+			//jsonSize, err := json.Marshal(sizeWorld)
+			//if err != nil {
+			//	panic(err)
+			//}
+			//listen.conn.Write(jsonSize)
+			listener.conn.Write(jsonWorld)
+		default:
 		}
 	}
 }
 
-func (listener *Listener) Write(world World) {
+//Write writes world to clients
+func (listener *Listener) Write(world *World) {
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
 	}
 
-	listener.writeBuffer = append(listener.writeBuffer, jsonWorld)
+	listener.writeBuffer <- jsonWorld
+	//listener.writeBuffer = append(listener.writeBuffer, jsonWorld)
 }
 
 func (listener *Listener) getPlayer() *Player {
