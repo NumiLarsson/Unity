@@ -28,7 +28,6 @@ type Listener struct {
 	player      *Player
 	conn        net.Conn
 	writeBuffer chan []byte
-	//Connection
 }
 
 //CreateSocket creates a tcp listener at the specified port
@@ -78,11 +77,13 @@ func newPlayer() *Player {
 
 func (player *Player) init(id int, xMax int, yMax int) {
 	player.ID = id
+	seed := time.Now().UnixNano()
+	rand.Seed(seed)
 
-	rand.Seed(time.Now().UnixNano())
+	fmt.Println(seed)
 
 	player.randomSpawn(xMax, yMax)
-	player.Lives = 3
+	player.Lives = 3 // updated
 	player.Alive = true
 }
 

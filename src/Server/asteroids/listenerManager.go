@@ -19,29 +19,21 @@ type ListenerManager struct {
 }
 
 // loop TODO
-func (manager *ListenerManager) loop(sessionConn *Connection,
-	maxPlayers int, startPort int, players []*Player) {
+func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, startPort int) {
 
-	manager.init(sessionConn, maxPlayers, startPort, players)
-	sessionConn.write <- Data{"l.manager_ready", 200}
+	manager.init(sessionConn, maxPlayers, startPort)
 
 	for {
-
 		select {
 
 		case msg := <-manager.input:
 
 			if msg.action == "session.tick" {
-				// Read current values
-				// TODO: Where should input from user be checked
+				//manager.print()
 				manager.handleCollisions()
 				manager.players = manager.collectPlayerPositions()
 
 				// Send update + world to players
-
-			} else {
-				debugPrint(fmt.Sprintln("[LIST.MAN] Collision!! \n ", msg.action))
-				// TODO: remove asteroids who has a collision or hit
 			}
 		}
 	}
@@ -58,32 +50,19 @@ func newListenerManager() *ListenerManager {
 //NewListenerManager does exactly what it says, with a cap on maxPlayers
 //connected and maxPlayers numbers of ports in a row from firstPort
 func (manager *ListenerManager) init(sessionConn *Connection,
-	maxPlayers int, firstPort int, players []*Player) {
+	maxPlayers int, firstPort int) {
 
 	// TODO fix hardcoded variables
 	manager.xMax = 100
 	manager.yMax = 100
-
 	manager.maxPlayers = maxPlayers
-	manager.currentPlayers = 0
 	manager.nextID = 1
 	manager.currentPort = firstPort
 	manager.input = sessionConn.read
-	manager.players = players
 
-	manager.listeners = make([]*Listener, 0)
+	//manager.listeners = make([]*Listener, 0)
 
-}
-
-// getNextID returns the id to be used and sets the next value
-func (manager *ListenerManager) getNextPort() int {
-	defer func() { manager.currentPort++ }()
-	return manager.currentPort
-}
-
-// incrementCurrentPlayers increments currentPlayers
-func (manager *ListenerManager) incrementCurrentPlayers() {
-	manager.currentPlayers++
+	sessionConn.write <- Data{"l.manager_ready", 200}
 }
 
 //NewPlayer creates a new listener for the listener manager, used to connect to a new player.
@@ -95,9 +74,8 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	listener := newListener()
 	listener.init(manager.currentPort)
 
-	player := newPlayer()
-	player.init(manager.getNextID(), manager.xMax, manager.yMax)
-	listener.player = player
+	listener.player = newPlayer()
+	listener.player.init(manager.getNextID(), manager.xMax, manager.yMax)
 
 	//Insert the created listener to listenerList
 	//Insert the created player to Players
@@ -109,6 +87,17 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	go listener.startUpListener()
 
 	return manager.getNextPort(), player
+}
+
+// getNextID returns the id to be used and sets the next value
+func (manager *ListenerManager) getNextPort() int {
+	defer func() { manager.currentPort++ }()
+	return manager.currentPort
+}
+
+// incrementCurrentPlayers increments currentPlayers
+func (manager *ListenerManager) incrementCurrentPlayers() {
+	manager.currentPlayers++
 }
 
 // getNextID returns the id to be used and sets the next value
@@ -150,7 +139,7 @@ func (manager *ListenerManager) sendToClient(world *World) {
 	}
 }
 
-// handleCollisons handles collisons with a player
+// handleCollisions handles collisons with a player
 func (manager *ListenerManager) handleCollisions() {
 
 	for _, player := range manager.players {
@@ -163,5 +152,19 @@ func (manager *ListenerManager) handleCollisions() {
 			}
 		}
 	}
+}
 
+//
+func (manager *ListenerManager) print() {
+
+	var list []int
+
+	for _, player := range manager.players {
+		if !player.isAlive() {
+			list = append(list, player.ID)
+		}
+	}
+	if len(list) > 0 {
+		debugPrint(fmt.Sprintln("[LIST.MAN] Collision:", list))
+	}
 }

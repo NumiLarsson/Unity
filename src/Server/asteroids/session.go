@@ -75,26 +75,17 @@ func (session *session) loop() {
 			session.world.Players = session.listenerManager.getPlayers()
 			session.world.Asteroids = session.asteroidManager.getAsteroids()
 
-			//session.world.collisionManager()
-			//session.detectCollisions()
-
+			// Calculate collisions
 			session.world.collisionManager()
+
+			// BROADCAST TO CLIENTS
 			session.listenerManager.sendToClient(session.world)
 
 			//session.world.Players[0].fakeMovePlayer()
 			//Faking player movement so that I have something to draw
 
-			// Send collision ids back to asteroid manager
-
-			//session.asteroidManager.updateDeathRow(deathRow)
-			//session.listenerManager.handleCollisions(playerCollisions)
-
 			//Empty world {}, something is going wrong.
 			//session.world.players jsons fine, but world just doesn't
-
-			//TEMP BROADCAST TO CLIENTS
-			//session.listenerManager.sendToClient(session.world)
-			//TEMP BROADCAST TO CLIENTS
 
 			session.write.asteroids <- Data{"session.tick", 200}
 			session.write.players <- Data{"session.tick", 200}
@@ -111,7 +102,6 @@ func (session *session) loop() {
 				}
 
 			} else {
-
 				// Spawn a new player
 				fmt.Println("SPAWN")
 				var port, player = session.listenerManager.newPlayer()
@@ -146,16 +136,16 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 
 	session.world = new(World)
 	session.world.worldSize = 400
-	session.world.Players = make([]*Player, 0)
-	session.world.Asteroids = make([]*Asteroid, 0)
-	session.world.Collisions = make([]*Collision, 0)
+	//session.world.Players = make([]*Player, 0)
+	//session.world.Asteroids = make([]*Asteroid, 0)
+	//session.world.Collisions = make([]*Collision, 0)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
 
-	go session.asteroidManager.loop(toAsteroids.FlipConnection(), session.world.Asteroids)
+	go session.asteroidManager.loop(toAsteroids.FlipConnection() /*,session.world.Asteroids*/)
 	go session.listenerManager.loop(toPlayers.FlipConnection(),
-		session.maxPlayers, startPort, session.world.Players)
+		session.maxPlayers, startPort)
 
 	// Wait for managers to signal that they are ready
 	<-toAsteroids.read
