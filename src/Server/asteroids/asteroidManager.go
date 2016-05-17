@@ -39,7 +39,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 				manager.resumeAsteroids()
 
 			} else {
-				fmt.Println("[AST.MAN] Collision!! \n ", msg.action)
+				debugPrint(fmt.Sprintln("[AST.MAN] Collision!! \n ", msg.action))
 				// TODO: remove asteroids who has a collision or hit
 			}
 		}
@@ -132,7 +132,7 @@ func (manager *asteroidManager) newAsteroid() {
 // newAsteroidsManager creates a new asteroid manager
 func newAsteroidManager() *asteroidManager {
 
-	fmt.Println("[AST.MAN] Created")
+	debugPrint(fmt.Sprintln("[AST.MAN] Created"))
 	return new(asteroidManager)
 
 }
@@ -170,7 +170,7 @@ func (manager *asteroidManager) updateDeathRow() {
 	manager.deathRow = deathRow
 
 	if len(manager.deathRow) > 0 {
-		fmt.Println("[AST.MAN] Collision:", manager.deathRow)
+		debugPrint(fmt.Sprintln("[AST.MAN] Collision:", manager.deathRow))
 	}
 }
 
