@@ -9,7 +9,7 @@ import (
 type asteroidManager struct {
 	xMax      int
 	yMax      int
-	nextID    int
+	nextId    int
 	maxRoids  int
 	treshold  int
 	deathRow  []int
@@ -29,6 +29,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 		case msg := <-manager.input:
 
 			if msg.action == "session.tick" {
+				//manager.print()
 				manager.updateDeathRow()
 				manager.removeDeadAsteroids()
 				//manager.print()
@@ -42,16 +43,6 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 				// TODO: remove asteroids who has a collision or hit
 			}
 		}
-
-		// 1. Iterate over each of the asteroids
-		// 		- Check if it's inside the board, otherwise destroy it [remove from "shared" list]
-		// 2. Session reads shared Data
-		// 3. Session sends back any collisions/hits and whom it affects [possibly useful to store the asteroids in a map?]
-		// 4. asteroidManager broadcasts to those affected and tells them to "die"
-		// 5. asteroidManager removes the affected asteroids from the "shared" list
-		// 6. Depending on the outcome and parameters asteroidManager may spawn additional asteroids
-		// 7. REPEAT
-
 	}
 
 }
@@ -96,7 +87,11 @@ func (manager *asteroidManager) removeDeadAsteroids() {
 
 	//	fmt.Println("before",len(manager.asteroids))
 
-	for i, asteroid := range manager.asteroids {
+	var acopy = make([]*Asteroid, len(manager.asteroids))
+	copy(acopy, manager.asteroids)
+
+	for i, asteroid := range acopy {
+
 
 		// Check if inside kill list
 
@@ -130,7 +125,7 @@ func (manager *asteroidManager) newAsteroid() {
 	asteroid := newAsteroid()
 	manager.asteroids = append(manager.asteroids, asteroid)
 
-	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
+	asteroid.init(manager.getNextId(), manager.xMax, manager.yMax)
 	go asteroid.loop()
 
 }
@@ -146,7 +141,7 @@ func newAsteroidManager() *asteroidManager {
 // init initiate the asteroid manager with hardcoded values TODO: input?
 // and sets channels to session and
 func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*Asteroid) {
-
+	// TODO fix hardcoded variables
 	manager.xMax = 100
 	manager.yMax = 100
 	manager.asteroids = asteroids
@@ -157,9 +152,9 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*Aster
 }
 
 // getNextID returns the id to be used and sets the next value
-func (manager *asteroidManager) getNextID() int {
-	var id = manager.nextID
-	manager.nextID++
+func (manager *asteroidManager) getNextId() int {
+	var id = manager.nextId
+	manager.nextId++
 	return id
 }
 
@@ -183,17 +178,13 @@ func (manager *asteroidManager) updateDeathRow() {
 // ONLY FOR TEST
 func (manager *asteroidManager) print() {
 
+	var list []int
+
 	for _, asteroid := range manager.asteroids {
-		fmt.Println("(", asteroid.Id, ",", asteroid.X, ",", asteroid.Y, ")")
+		list = append(list, asteroid.Id)
+
 	}
-	/*
-		fmt.Print("\033[2J\033[;H")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-	*/
+	fmt.Println(len(manager.asteroids))
+	fmt.Println(list)
+
 }

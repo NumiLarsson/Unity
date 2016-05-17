@@ -15,28 +15,22 @@ import "fmt"
 }*/
 
 func (world *World) asteroidAsteroidCollision() {
+
 	for _, a1 := range world.asteroids {
 		for _, a2 := range world.asteroids {
-
-			if isCollisionAsteroidAsteroid(a1, a2) {
-				a1.Alive = false
-			}
+			isCollisionAsteroidAsteroid(a1, a2)	
 		}
 	}
-
+	
 }
 
 //
 func (world *World) playerAsteroidCollision() {
-	//var playerCollisions, asteroidCollisions []int
 
 	for _, p := range world.players {
 		for _, a := range world.asteroids {
-			if isCollisionPlayerAsteroid(p, a) {
-				p.Alive = false
-				a.Alive = false
-			}
 
+			isCollisionPlayerAsteroid(p, a)
 		}
 	}
 }
@@ -45,50 +39,44 @@ func (world *World) playerPlayerCollision() {
 
 	for _, p1 := range world.players {
 		for _, p2 := range world.players {
-			if isCollisionPlayerPlayer(p1, p2) {
-				p1.Alive = false
-
-			}
+			isCollisionPlayerPlayer(p1, p2)
 		}
-
 	}
 }
 
 // isCollisionAsteroidAsteroid checks is if two asteroids are on
 // the same position causing a collision
-func isCollisionAsteroidAsteroid(a1 *Asteroid, a2 *Asteroid) bool {
+func isCollisionAsteroidAsteroid(a1 *Asteroid, a2 *Asteroid) {
 
 	if a1.Id == a2.Id {
-		return false
+		return
 	} else if a1.X == a2.X && a1.Y == a2.Y {
-		return true
+		a1.Alive = false
+		a2.Alive = false
+
 	}
-
-	return false
-
 }
 
 // isCollisionAsteroidPlayer  TODO some sort of interface to take generic input?
-func isCollisionPlayerAsteroid(p *Player, a *Asteroid) bool {
+func isCollisionPlayerAsteroid(p *Player, a *Asteroid) {
 
 	if p.X == a.X && p.Y == a.Y {
-		return true
+		p.Alive = false
+		a.Alive = false
 	}
-
-	return false
 
 }
 
 // TODO some sort of interface to take generic input?
-func isCollisionPlayerPlayer(p1 *Player, p2 *Player) bool {
+func isCollisionPlayerPlayer(p1 *Player, p2 *Player) {
 
 	if p1.Id == p2.Id {
-		return false
+		return
 	} else if p1.X == p2.X && p1.Y == p2.Y {
-		return true
+		p1.Alive = false
+		p2.Alive = false
 	}
 
-	return false
 }
 
 // inList checks if the item is is already in the list
@@ -106,7 +94,7 @@ func inList(list []int, item int) bool {
 
 func (world *World) collisionManager() {
 
-	//deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
+	// First check player vs player
 
 	world.playerPlayerCollision()
 	// second check player vs asteroid
@@ -150,46 +138,6 @@ func (player *Player) checkCoordinates(asteroid *Asteroid) bool {
 	}
 
 	return false
-}
-
-//Checks the collisions during the tick and returns two arrays
-//Of the player and asteroid IDs which were destroyed
-//Could be made to act as a hub for every collision at once
-//Thus becoming the real collisionManager (Consider changing name)
-func checkCollision(world *World) ([]int, []int) {
-	var deadPlayerIDs []int
-	var deadAsteroidIDs []int
-
-	for _, player := range world.players {
-		for _, asteroid := range world.asteroids {
-			if player.checkCoordinates(asteroid) {
-				fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.X, player.Y, ")")
-
-				//Player collision with an asteroid will
-				//Kill the player and the asteroid
-				//It only makes sense... Right?
-
-				deadPlayerIDs = append(deadPlayerIDs, player.Id)
-				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.Id)
-
-				player.death(world)
-
-			}
-		}
-
-		for _, asteroid := range world.asteroids {
-			if player.checkCoordinates(asteroid) {
-				fmt.Println("Player collided with asteroid at coordinates")
-
-				fmt.Println("(", player.X, player.Y, ")")
-
-				player.death(world)
-
-			}
-		}
-	}
-
-	return deadPlayerIDs, deadAsteroidIDs
 }
 
 func (player *Player) death(world *World) {

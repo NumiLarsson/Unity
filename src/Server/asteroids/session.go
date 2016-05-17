@@ -102,9 +102,9 @@ func (session *session) loop() {
 			} else {
 
 				// Spawn a new player
-				var port, newPlayer = session.listenerManager.newPlayer()
+				var port, player = session.listenerManager.newPlayer()
 				session.currentPlayers++
-				session.world.players = append(session.world.players, newPlayer)
+				session.world.players = append(session.world.players, player)
 
 				session.write.server <- Data{"session.player_created", port}
 			}
@@ -141,6 +141,7 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.listenerManager = newListenerManager()
 
 	go session.asteroidManager.loop(toAsteroids.FlipConnection(), session.world.asteroids)
-	go session.listenerManager.loop(toPlayers.FlipConnection(), session.maxPlayers, startPort)
+	go session.listenerManager.loop(toPlayers.FlipConnection(),
+		session.maxPlayers, startPort, session.world.players)
 
 }

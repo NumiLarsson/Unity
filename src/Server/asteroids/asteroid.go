@@ -57,7 +57,6 @@ func (asteroid *Asteroid) inBounds(manager *asteroidManager) bool {
 
 // newAsteroid allocates a new astroid
 func newAsteroid() *Asteroid {
-
 	return new(Asteroid)
 
 }
