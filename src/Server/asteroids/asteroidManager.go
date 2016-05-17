@@ -80,7 +80,7 @@ func (manager *asteroidManager) resumeAsteroids() {
 // onDeathRow TODO: implement! should check if current asteroid is on deathrow and can be removed
 func onDeathRow(a *Asteroid, deathRow []int) bool {
 	for _, dead := range deathRow {
-		if a.Id == dead {
+		if a.ID == dead {
 			return true
 		}
 	}
@@ -170,7 +170,7 @@ func (manager *asteroidManager) updateDeathRow() {
 
 	for _, asteroid := range manager.asteroids {
 		if !asteroid.isAlive() {
-			deathRow = append(deathRow, asteroid.Id)
+			deathRow = append(deathRow, asteroid.ID)
 		}
 	}
 
@@ -187,7 +187,7 @@ func (manager *asteroidManager) print() {
 	var list []int
 
 	for _, asteroid := range manager.asteroids {
-		list = append(list, asteroid.Id)
+		list = append(list, asteroid.ID)
 
 	}
 	fmt.Println(len(manager.asteroids))

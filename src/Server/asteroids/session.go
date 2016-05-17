@@ -15,6 +15,7 @@ type World struct {
 	Collisions []*Collision
 }
 
+// Collision holds the coordinates of a collision
 type Collision struct {
 	X int
 	Y int
@@ -44,7 +45,6 @@ type session struct {
 }
 
 // Session …TODO rename to init?
-
 func Session(serverConn *Connection, startPort int, players int, worldSize int) {
 
 	session := new(session)
@@ -142,6 +142,7 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.world.worldSize = 400                             //session.worldSize
 	session.world.Players = make([]*Player, 0 /*maxPlayers*/) // HÄR GJORDES ÄNDRING
 	session.world.Asteroids = make([]*Asteroid, 0 /*maxAsteroids*/)
+	session.world.Collisions = make([]*Collision, 0)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
