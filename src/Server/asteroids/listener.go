@@ -3,6 +3,7 @@ package asteroids
 import (
 	//TEMP
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net"
 	"strconv"
@@ -67,6 +68,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.Id = id
 
 	rand.Seed(time.Now().UnixNano())
+
 	
 	player.randomSpawn(xMax, yMax)
 	player.Lives = 3
@@ -111,6 +113,8 @@ func (player *Player) randomSpawn(xMax int, yMax int) {
 	
 	player.X = rand.Intn(xMax)
 	player.Y = rand.Intn(yMax)
+
+	fmt.Println(player.Id, player.X, player.Y)
 }
 
 func (player *Player) isAlive() bool {
