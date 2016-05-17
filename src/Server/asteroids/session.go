@@ -144,4 +144,5 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	go session.listenerManager.loop(toPlayers.FlipConnection(),
 		session.maxPlayers, startPort, session.world.players)
 
+	time.Sleep(30 * time.Millisecond)
 }
