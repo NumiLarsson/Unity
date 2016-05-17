@@ -94,8 +94,6 @@ func TestMakeConnection(t *testing.T) {
 func TestAddPlayer(t *testing.T) {
 
 	server := CreateServer(false)
-	// Make sure server is up
-	time.Sleep(100 * time.Millisecond)
 
 	p1port := server.addPlayer()
 	p2port := server.addPlayer()
@@ -106,19 +104,6 @@ func TestAddPlayer(t *testing.T) {
 
 	if p2port != startPort+1 {
 		t.Error("Expected", startPort+1, "\b, got", p2port)
-	}
-
-}
-
-func TestCreateSession(t *testing.T) {
-
-	server := CreateServer(false)
-	// Make sure server is up
-	time.Sleep(100 * time.Millisecond)
-
-	result := server.createSession()
-	if result != startPort {
-		t.Error("Expected result", startPort, "\b, got", result)
 	}
 
 }
