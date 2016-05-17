@@ -136,8 +136,16 @@ Kommunikation av kollisioner mellan session.go och asteroidManager
 ## Vecka 20
 
 ##### Måndag
+**13:00-17:00**
+Ändra hantering av kollisioner, Alive i struct<br>
+**19:00-21:00*
+Refektorering av ListenerManager, random spawn
 
 ##### Tisdag
+**09:00-12:30**
+Refaktorera kollisioner, mer generisk kod. Påbörja större merge<br>
+**15:00-17:00**
+Refaktorera och strukturera listenerManager, ta bort överflödigt kod
 
 ##### Onsdag
 
