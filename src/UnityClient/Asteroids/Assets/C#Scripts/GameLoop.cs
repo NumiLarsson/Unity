@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -19,12 +18,10 @@ public class GameLoop : MonoBehaviour {
     public GameObject asteroidPrefab;
     //GameObject []Players;
     //GameObject []Asteroids;
-
+    
     ParallelUpdate threadedUpdate;
 
     public Text testText1;
-
-    float lastFrameTime;
 
     // Use this for initialization
     void Start () {
@@ -53,14 +50,15 @@ public class GameLoop : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        float time = Time.time;
-        if ( lastFrameTime < time - 20 ) {
-            lastFrameTime = time;
+        for ( int i = 0; i < threadedUpdate.gameWorld.Players.Length; i++ ) {
+            threadedUpdate.gameWorld.Players[i].DrawMe( playerPrefab );
         }
-        threadedUpdate.gameWorld.Players[0].DrawMe(playerPrefab);
+        /*
         for ( int i = 0; i < threadedUpdate.gameWorld.Asteroids.Length; i++ ) {
             threadedUpdate.gameWorld.Asteroids[i].DrawMe( asteroidPrefab );
-        }
+        }*/
+        //Need a way to kill or remove old asteroids to make space for the new ones
+        //Currently comparing with ID's, but they're never removed, just not sent again
     }
 
     int requestPort(IPEndPoint serverIPEP) {
@@ -79,6 +77,7 @@ public class GameLoop : MonoBehaviour {
 class ParallelUpdate {
     public World gameWorld { get; set; }
     private Socket socket { get; set; }
+
     public ParallelUpdate ( World world, Socket socket ) {
         gameWorld = world;
         this.socket = socket;
@@ -89,9 +88,10 @@ class ParallelUpdate {
             byte[] message = new byte[8192];
             int bytesReceived = socket.Receive(message);
             string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
-            //Debug.Log( jsonString );
+            Debug.Log( jsonString );
             World jsonWorld = JsonMapper.ToObject<World> (jsonString);
             gameWorld = gameWorld.Update( jsonWorld );
+            //Doesn't stop looping, asteroids had a function that crashed the thread.
         }
     }
 }
@@ -127,9 +127,10 @@ class World {
         for (int i = 0; i < Asteroids.Length; i++ ) {
             if ( Asteroids[i].ID == -1) { //Change this, isAlive
                 Asteroids[i] = newAsteroid;
+                return;
             }
         }
-        Asteroids[Asteroids.Length] = newAsteroid;
+        Debug.Log( "Array full" );
     }
 
     void UpdatePlayers (Player newPlayer) {
@@ -153,7 +154,7 @@ class World {
     }
 }
 
-class playerObject : MonoBehaviour {
+class playerObject : ScriptableObject {
     public GameObject playObj { get; set; }
 
     public playerObject( GameObject playPrefab, int XCord, int YCord ) {
@@ -230,7 +231,7 @@ class Asteroid {
             astObj = new asteroidObject( asteroidPrefab, X, Y );
             drawn = true;
         } else {
-            astObj.DrawMe( X, Y );
+            astObj.DrawMe( X / 10, Y / 10 );
         }
     }
 }
