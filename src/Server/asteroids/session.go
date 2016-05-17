@@ -112,7 +112,7 @@ func (session *session) loop() {
 		// Send response back to server
 		case userdata := <-session.read.players:
 
-			fmt.Printf("Session: Read from manager %s\n", userdata.action)
+			debugPrint(fmt.Sprintf("Session: Read from manager %s\n", userdata.action))
 			session.write.server <- userdata
 
 		}
