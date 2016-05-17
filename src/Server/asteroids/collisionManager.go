@@ -27,7 +27,7 @@ func (world *World) playerCollision() {
 		}
 
 		for _, p2 := range world.Players {
-			if isCollision(p.X, p.Y, p2.X, p2.Y) && p.Id != p2.Id {
+			if isCollision(p.X, p.Y, p2.X, p2.Y) && p.ID != p2.ID {
 				p.Alive = false
 			}
 
@@ -61,7 +61,7 @@ func (world *World) collisionManager() {
 
 	for _, player := range world.Players {
 		if player.Alive == false {
-			deadPlayerIDs = append(deadPlayerIDs, player.Id)
+			deadPlayerIDs = append(deadPlayerIDs, player.ID)
 		}
 	}
 

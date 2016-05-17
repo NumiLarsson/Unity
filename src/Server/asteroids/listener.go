@@ -12,7 +12,7 @@ import (
 
 //Player is used to represent the players in the game world
 type Player struct {
-	Id    int
+	ID    int
 	X     int
 	Y     int
 	Lives int
@@ -65,7 +65,7 @@ func newPlayer() *Player {
 }
 
 func (player *Player) init(id int, xMax int, yMax int) {
-	player.Id = id
+	player.ID = id
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -74,38 +74,38 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.Alive = true
 }
 
-func (listen *Listener) startUpListener() {
+func (listener *Listener) startUpListener() {
 	var err error
-	listen.conn, err = listen.socket.Accept()
+	listener.conn, err = listener.socket.Accept()
 	if err != nil {
 		panic(err)
 	}
 
-	listen.idleListener()
+	listener.idleListener()
 }
 
-func (listen *Listener) idleListener() {
+func (listener *Listener) idleListener() {
 	for {
-		if listen.writeBuffer[0] != nil {
-			listen.conn.Write(listen.writeBuffer[0])
-			listen.writeBuffer = listen.writeBuffer[1:]
+		if listener.writeBuffer[0] != nil {
+			listener.conn.Write(listener.writeBuffer[0])
+			listener.writeBuffer = listener.writeBuffer[1:]
 		} else {
 			time.Sleep(time.Second)
 		}
 	}
 }
 
-func (listen *Listener) Write(world World) {
+func (listener *Listener) Write(world World) {
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
 	}
 
-	listen.writeBuffer = append(listen.writeBuffer, jsonWorld)
+	listener.writeBuffer = append(listener.writeBuffer, jsonWorld)
 }
 
-func (listen *Listener) getPlayer() *Player {
-	return listen.player
+func (listener *Listener) getPlayer() *Player {
+	return listener.player
 }
 
 func (player *Player) randomSpawn(xMax int, yMax int) {
@@ -113,7 +113,7 @@ func (player *Player) randomSpawn(xMax int, yMax int) {
 	player.X = rand.Intn(xMax)
 	player.Y = rand.Intn(yMax)
 
-	fmt.Println(player.Id, player.X, player.Y)
+	fmt.Println(player.ID, player.X, player.Y)
 }
 
 func (player *Player) isAlive() bool {
@@ -124,6 +124,6 @@ func (player *Player) getLives() int {
 	return player.Lives
 }
 
-func (player *Player) setAlive(){
+func (player *Player) setAlive() {
 	player.Alive = true
 }
