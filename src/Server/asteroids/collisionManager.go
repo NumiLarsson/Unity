@@ -2,105 +2,54 @@ package asteroids
 
 import "fmt"
 
-// ======================= FIX MORE GENERIC =============================================
-// detectCollisions checks each asteroid and stores all asteroids that have collided
-// TODO players and use collision manager?
-/*func (session *session) detectCollisions() ([]int, []int) {
-
-	var asteroidCollisions []int
-	var playerCollisions []int
-
-	// First check player vs player collisions
-
-}*/
-
-func (world *World) asteroidAsteroidCollision() {
+func (world *World) asteroidCollision() {
 
 	for _, a1 := range world.asteroids {
 		for _, a2 := range world.asteroids {
-			isCollisionAsteroidAsteroid(a1, a2)
+			if isCollision(a1.X, a1.Y, a2.X, a2.Y) && a1.Id != a2.Id {
+				a1.Alive = false
+			}
 		}
 	}
 
 }
 
 //
-func (world *World) playerAsteroidCollision() {
+func (world *World) playerCollision() {
 
 	for _, p := range world.players {
 		for _, a := range world.asteroids {
-
-			isCollisionPlayerAsteroid(p, a)
+			if isCollision(p.X, p.Y, a.X, p.Y) {
+				p.Alive = false
+				a.Alive = false
+			}
 		}
-	}
-}
 
-func (world *World) playerPlayerCollision() {
-
-	for _, p1 := range world.players {
 		for _, p2 := range world.players {
-			isCollisionPlayerPlayer(p1, p2)
+			if isCollision(p.X, p.Y, p2.X, p2.Y) && p.Id != p2.Id {
+				p.Alive = false
+			}
+
 		}
 	}
 }
 
-// isCollisionAsteroidAsteroid checks is if two asteroids are on
-// the same position causing a collision
-func isCollisionAsteroidAsteroid(a1 *Asteroid, a2 *Asteroid) {
+// isCollision checks if two objects are located at the same position
+func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 
-	if a1.Id == a2.Id {
-		return
-	} else if a1.X == a2.X && a1.Y == a2.Y {
-		a1.Alive = false
-		a2.Alive = false
-
-	}
-}
-
-// isCollisionAsteroidPlayer  TODO some sort of interface to take generic input?
-func isCollisionPlayerAsteroid(p *Player, a *Asteroid) {
-
-	if p.X == a.X && p.Y == a.Y {
-		p.Alive = false
-		a.Alive = false
-	}
-
-}
-
-// TODO some sort of interface to take generic input?
-func isCollisionPlayerPlayer(p1 *Player, p2 *Player) {
-
-	if p1.Id == p2.Id {
-		return
-	} else if p1.X == p2.X && p1.Y == p2.Y {
-		p1.Alive = false
-		p2.Alive = false
-	}
-
-}
-
-// inList checks if the item is is already in the list
-func inList(list []int, item int) bool {
-	for _, current := range list {
-		if item == current {
-			return true
-		}
+	if x1 == x2 && y1 == y2 {
+		return true
 	}
 	return false
 }
 
-// ======================= FIX MORE GENERIC =============================================
-// detectCollisions checks each asteroid and stores all asteroids that have collided
-
 func (world *World) collisionManager() {
 
-	// First check player vs player
+	// First check player vs player and asteroid
+	world.playerCollision()
 
-	world.playerPlayerCollision()
-	// second check player vs asteroid
-	world.playerAsteroidCollision()
-	// last check asteroid vs asteroid
-	world.asteroidAsteroidCollision()
+	// Second check asteroid vs asteroid
+	world.asteroidCollision()
 
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
