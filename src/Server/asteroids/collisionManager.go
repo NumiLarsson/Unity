@@ -42,10 +42,8 @@ func (world *World) playerCollision() {
 // isCollision checks if two objects are located at the same position
 func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 
-	if x1 == x2 && y1 == y2 {
-		return true
-	}
-	return false
+	return x1 == x2 && y1 == y2
+
 }
 
 // collisionManager used to get all collision that have occured during the last tick
