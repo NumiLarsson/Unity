@@ -1,10 +1,13 @@
 fileFormatVersion: 2
 guid: 25d2951ed11081d47980578851a79765
-timeCreated: 1463151664
+timeCreated: 1463468487
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - playerPrefab: {fileID: 121178, guid: 759745ee984636048ad15b08c5f98b7f, type: 2}
+  - asteroidPrefab: {fileID: 121178, guid: 759745ee984636048ad15b08c5f98b7f, type: 2}
+  - testText1: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -62,7 +62,7 @@ func (session *session) loop() {
 
 	for {
 
-		tick := time.After(50 * time.Millisecond)
+		tick := time.After(16 * time.Millisecond)
 		//TEMP, tick should be 16 * millisecond
 
 		select {
@@ -70,6 +70,11 @@ func (session *session) loop() {
 			// Collect player and asteroid positions
 			session.world.Players = session.listenerManager.getPlayers()
 			session.world.Asteroids = session.asteroidManager.getAsteroids()
+			
+			for _, aster := range session.world.Asteroids {
+				fmt.Print(aster.ID, " ")
+			}
+			fmt.Println("");
 			
 			session.world.Players[0].fakeMovePlayer()
 			//Faking player movement so that I have something to draw
