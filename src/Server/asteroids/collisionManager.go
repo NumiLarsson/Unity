@@ -2,6 +2,7 @@ package asteroids
 
 import "fmt"
 
+// asteroidCollision is used to check if two asteroids have collided
 func (world *World) asteroidCollision() {
 
 	for _, a1 := range world.asteroids {
@@ -14,7 +15,7 @@ func (world *World) asteroidCollision() {
 
 }
 
-//
+// playerCollision is used to check if a player has collided with another player or asteroid
 func (world *World) playerCollision() {
 
 	for _, p := range world.players {
@@ -43,6 +44,7 @@ func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 	return false
 }
 
+// collisionManager used to get all collision that have occured during the last tick
 func (world *World) collisionManager() {
 
 	// First check player vs player and asteroid
@@ -51,6 +53,9 @@ func (world *World) collisionManager() {
 	// Second check asteroid vs asteroid
 	world.asteroidCollision()
 
+	//////////////////////////////////////////////////////////
+	// Below used to have the same prints as before///////////
+	//////////////////////////////////////////////////////////
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
 
@@ -66,7 +71,6 @@ func (world *World) collisionManager() {
 		}
 	}
 
-	//Used to make it compile
 	if len(deadPlayerIDs) > 0 || len(deadAsteroidIDs) > 0 {
 		fmt.Println("[COL.MAN] Collisions, Players:", deadPlayerIDs,
 			"Asteroids:", deadAsteroidIDs)
@@ -74,21 +78,9 @@ func (world *World) collisionManager() {
 
 }
 
-//Check the objects coordinates to see if collision occurs
-//COuld be made more generic using overriding
-func (player *Player) checkCoordinates(asteroid *Asteroid) bool {
-
-	//Size of the objects will alter the collision hitbox
-	//For now every object is only a dot
-
-	if player.X == asteroid.X && player.Y == asteroid.Y {
-
-		return true
-	}
-
-	return false
-}
-
+/////////////////////////////////////////////////////
+/////////////////// below to be removed
+/////////////////////////////////////////////////////
 func (player *Player) death(world *World) {
 	//Make player sleep for a second or two before respawning?
 	player.Lives--
