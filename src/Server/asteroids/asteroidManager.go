@@ -2,7 +2,7 @@ package asteroids
 
 import (
 	"fmt"
-	"math/rand"
+	//"math/rand"
 )
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
@@ -57,14 +57,19 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*aster
 // spawnAsteroid spawns a new asteroid if current asteroids in world below maxValue and
 // if the randomized int that is set has a higher value than the worlds threshold
 func (manager *asteroidManager) spawnAsteroid() {
-
+	/*
 	r := rand.Intn(101)
 
 	if len(manager.asteroids) < manager.maxRoids && r >= manager.treshold {
 		//fmt.Println("SPAWNED NEW DROID")
 		manager.newAsteroid()
 	}
-
+	
+	Infinite spawning new asteroids every tick?
+	*/
+	if len(manager.asteroids) < manager.maxRoids {
+		manager.newAsteroid()
+	}
 }
 
 // resumeAsteroids used to send "tick" to all asteroids
@@ -79,7 +84,7 @@ func (manager *asteroidManager) resumeAsteroids() {
 // onDeathRow TODO: implement! should check if current asteroid is on deathrow and can be removed
 func onDeathRow(a *asteroid, deathRow []int) bool {
 	for _, dead := range deathRow {
-		if a.id == dead {
+		if a.ID == dead {
 			return true
 		}
 	}
@@ -125,7 +130,6 @@ func (manager *asteroidManager) newAsteroid() {
 
 	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
 	go asteroid.loop()
-
 }
 
 // newAsteroidsManager creates a new asteroid manager
@@ -143,10 +147,14 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*aster
 	manager.xMax = 100
 	manager.yMax = 100
 	manager.asteroids = asteroids
+	var i int = 0;
+	for (i < 20) {
+		manager.newAsteroid()
+		i++
+	}
 	manager.treshold = 20
-	manager.maxRoids = 20
+	manager.maxRoids = 4
 	manager.input = sessionConn.read
-
 }
 
 // getNextID returns the id to be used and sets the next value
@@ -169,7 +177,7 @@ func (manager *asteroidManager) updateDeathRow(deathRow []int) {
 func (manager *asteroidManager) print() {
 
 	for _, asteroid := range manager.asteroids {
-		fmt.Println("(", asteroid.id, ",", asteroid.x, ",", asteroid.y, ")")
+		fmt.Println("(", asteroid.ID, ",", asteroid.X, ",", asteroid.Y, ")")
 	}
 	/*
 		fmt.Print("\033[2J\033[;H")

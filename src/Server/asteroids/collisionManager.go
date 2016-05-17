@@ -24,7 +24,7 @@ func (player *Player) checkCoordinates(asteroid *asteroid) bool {
 
 	//Size of the objects will alter the collision hitbox
 	//For now every object is only a dot
-	if player.XCord == asteroid.x && player.YCord == asteroid.y {
+	if player.XCord == asteroid.X && player.YCord == asteroid.Y {
 		return true
 	}
 
@@ -39,16 +39,16 @@ func checkCollision(world *World) ([]int, []int) {
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
 
-	for _, player := range world.players {
-		for _, asteroid := range world.asteroids {
+	for _, player := range world.Players {
+		for _, asteroid := range world.Asteroids {
 			if player.checkCoordinates(asteroid) {
 				fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.XCord, player.YCord, ")")
 
 				//Player collision with an asteroid will
 				//Kill the player and the asteroid
 				//It only makes sense... Right?
-				deadPlayerIDs = append(deadPlayerIDs, player.ID)
-				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.id)
+				deadPlayerIDs = append(deadPlayerIDs, player.id)
+				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.ID)
 
 				player.death(world)
 			}

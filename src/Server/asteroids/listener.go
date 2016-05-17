@@ -1,16 +1,18 @@
 package asteroids
 
 import (
-	//TEMP
+	//"fmt" //TEMP
 	"net"
 	"strconv"
-	"time" //TEMP
+	//"time" //TEMP
 	"encoding/json"
+	//"encoding/binary"
 )
 
 //Player is used to represent the players in the game world
 type Player struct {
-	ID int
+	Name string
+	id int
 	XCord int
 	YCord int
 	Lives int
@@ -24,7 +26,7 @@ type Listener struct {
 	Port        int
 	player      *Player
 	conn        net.Conn
-	writeBuffer [][]byte
+	writeBuffer chan []byte
 	//Connection
 }
 
@@ -51,9 +53,12 @@ func NewListener(port int /*, conn *Connection*/) (*Listener) {
 
 	listener.Port = port
 	listener.player = new(Player)
+	listener.player.Name = strconv.Itoa(port);
 	listener.player.XCord = 0
 	listener.player.YCord = 0
 	listener.player.Lives = 3
+	
+	listener.writeBuffer = make(chan []byte, 60)
 
 	//listener.write = conn.read //Fan in to manager
 	//listener.read = conn.write //Fan out from manager
@@ -69,28 +74,35 @@ func (listen *Listener) startUpListener() {
 	if err != nil {
 		panic(err)
 	}
+	listen.ID = "Hello World"
 
 	listen.idleListener()
 }
 
 func (listen *Listener) idleListener() {
-	for {		
-		if (listen.writeBuffer[0] != nil) {
-			listen.conn.Write(listen.writeBuffer[0])
-			listen.writeBuffer = listen.writeBuffer[1:]
-		} else {
-			time.Sleep(time.Second)	
-		}
+	for {
+		select{
+			case jsonWorld := <- listen.writeBuffer:
+				//sizeWorld := binary.Size(jsonWorld)
+				//jsonSize, err := json.Marshal(sizeWorld)
+				//if err != nil {
+				//	panic(err)
+				//}
+				//listen.conn.Write(jsonSize)
+				listen.conn.Write(jsonWorld)
+			default:
+		}		 
 	}
 }
 
+//Write writes world to clients
 func (listen *Listener) Write(world *World) {
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
 	}
 	
-	listen.writeBuffer = append(listen.writeBuffer, jsonWorld)
+	listen.writeBuffer <- jsonWorld
 }
 
 func (listen *Listener) getPlayer() *Player {
