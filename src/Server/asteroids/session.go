@@ -9,9 +9,15 @@ import (
 //type World int
 // TODO: CHANGE THIS
 type World struct {
-	worldSize int
-	players   []*Player
-	asteroids []*Asteroid
+	worldSize  int
+	Players    []*Player
+	Asteroids  []*Asteroid
+	Collisions []*Collision
+}
+
+type Collision struct {
+	X int
+	Y int
 }
 
 // channels struct used to implement a structured way to handle multiple
@@ -67,10 +73,10 @@ func (session *session) loop() {
 		case <-tick:
 
 			// Collect player and asteroid positions
-			session.world.players = session.listenerManager.getPlayers()
-			session.world.asteroids = session.asteroidManager.getAsteroids()
+			session.world.Players = session.listenerManager.getPlayers()
+			session.world.Asteroids = session.asteroidManager.getAsteroids()
 
-			//	session.world.collisionManager()
+			//session.world.collisionManager()
 			//session.detectCollisions()
 
 			session.world.collisionManager()
@@ -104,7 +110,7 @@ func (session *session) loop() {
 				// Spawn a new player
 				var port, player = session.listenerManager.newPlayer()
 				session.currentPlayers++
-				session.world.players = append(session.world.players, player)
+				session.world.Players = append(session.world.Players, player)
 
 				session.write.server <- Data{"session.player_created", port}
 			}
@@ -134,15 +140,15 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.read.asteroids = toAsteroids.read
 
 	session.world.worldSize = 400                             //session.worldSize
-	session.world.players = make([]*Player, 0 /*maxPlayers*/) // HÄR GJORDES ÄNDRING
-	session.world.asteroids = make([]*Asteroid, 0 /*maxAsteroids*/)
+	session.world.Players = make([]*Player, 0 /*maxPlayers*/) // HÄR GJORDES ÄNDRING
+	session.world.Asteroids = make([]*Asteroid, 0 /*maxAsteroids*/)
 
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
 
-	go session.asteroidManager.loop(toAsteroids.FlipConnection(), session.world.asteroids)
+	go session.asteroidManager.loop(toAsteroids.FlipConnection(), session.world.Asteroids)
 	go session.listenerManager.loop(toPlayers.FlipConnection(),
-		session.maxPlayers, startPort, session.world.players)
+		session.maxPlayers, startPort, session.world.Players)
 
 	time.Sleep(30 * time.Millisecond)
 }
