@@ -95,7 +95,7 @@ func (listen *Listener) idleListener() {
 	}
 }
 
-func (listen *Listener) Write(world *World) {
+func (listen *Listener) Write(world World) {
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
@@ -118,4 +118,12 @@ func (player *Player) randomSpawn(xMax int, yMax int) {
 
 func (player *Player) isAlive() bool {
 	return player.Alive
+}
+
+func (player *Player) getLives() int {
+	return player.Lives
+}
+
+func (player *Player) setAlive(){
+	player.Alive = true
 }

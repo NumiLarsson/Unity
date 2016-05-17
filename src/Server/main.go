@@ -1,10 +1,9 @@
 package main
 
 import (
+	"./asteroids"
 	"fmt"
 	"os"
-
-	"./asteroids"
 )
 
 func main() {

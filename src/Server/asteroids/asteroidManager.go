@@ -24,7 +24,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 	sessionConn.write <- Data{"a.manager_ready", 200}
 
 	for {
-		//manager.print()
+		//		manager.print()
 		select {
 
 		case msg := <-manager.input:

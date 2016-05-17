@@ -33,8 +33,9 @@ func (manager *ListenerManager) loop(sessionConn *Connection,
 			if msg.action == "session.tick" {
 				// Read current values
 				// TODO: Where should input from user be checked
+				manager.handleCollisions()
 				manager.players = manager.collectPlayerPositions()
-
+				
 				// Send update + world to players
 
 			} else {
@@ -136,7 +137,7 @@ func (manager *ListenerManager) getPlayers() []*Player {
 }
 
 // SendToClient broadcasts world-info to every listener
-func (manager *ListenerManager) sendToClient(world *World) {
+func (manager *ListenerManager) sendToClient(world World) {
 	for _, listener := range manager.listeners {
 		if listener.ID != "" {
 			go listener.Write(world)
@@ -144,7 +145,18 @@ func (manager *ListenerManager) sendToClient(world *World) {
 	}
 }
 
-// TODO to implement
-func (manager *ListenerManager) handleCollisions(list []int) {
+// handleCollisons handles collisons with a player
+func (manager *ListenerManager) handleCollisions() {
 
+	for _,player := range manager.players{
+		if !player.isAlive(){
+			if player.getLives() > 1 {
+				player.setAlive()
+				player.Lives --
+			}else {
+				// TODO : remove player
+			}
+		}
+	}
+	
 }
