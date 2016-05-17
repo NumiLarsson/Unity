@@ -23,7 +23,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 	manager.init(sessionConn, asteroids)
 
 	for {
-		//manager.print()
+		manager.print()
 		select {
 
 		case msg := <-manager.input:
