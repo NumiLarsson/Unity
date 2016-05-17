@@ -32,7 +32,7 @@ type Listener struct {
 
 //CreateSocket creates a tcp listener at the specified port
 func CreateSocket(port int) (net.Listener, error) {
-
+	
 	connection, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func CreateSocket(port int) (net.Listener, error) {
 
 //NewListener creates a new socket then runs this socket as a go routine
 func newListener() *Listener {
-
+	
 	return new(Listener)
 }
 
@@ -66,8 +66,8 @@ func newPlayer() *Player {
 func (player *Player) init(id int, xMax int, yMax int) {
 	player.Id = id
 
-	rand.Seed(time.Now().UTC().UnixNano())
-
+	rand.Seed(time.Now().UnixNano())
+	
 	player.randomSpawn(xMax, yMax)
 	player.Lives = 3
 	player.Alive = true
@@ -108,7 +108,7 @@ func (listen *Listener) getPlayer() *Player {
 }
 
 func (player *Player) randomSpawn(xMax int, yMax int) {
-
+	
 	player.X = rand.Intn(xMax)
 	player.Y = rand.Intn(yMax)
 }
@@ -116,3 +116,5 @@ func (player *Player) randomSpawn(xMax int, yMax int) {
 func (player *Player) isAlive() bool {
 	return player.Alive
 }
+
+
