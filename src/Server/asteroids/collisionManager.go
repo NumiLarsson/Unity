@@ -72,8 +72,8 @@ func (world *World) collisionManager() {
 	}
 
 	if len(deadPlayerIDs) > 0 || len(deadAsteroidIDs) > 0 {
-		fmt.Println("[COL.MAN] Collisions, Players:", deadPlayerIDs,
-			"Asteroids:", deadAsteroidIDs)
+		debugPrint(fmt.Sprintln("[COL.MAN] Collisions, Players:", deadPlayerIDs,
+			"Asteroids:", deadAsteroidIDs))
 	}
 
 }

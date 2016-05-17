@@ -38,7 +38,7 @@ var inDebugMode = true
 func debugPrint(str string) {
 
 	if inDebugMode {
-		fmt.Print("DEBUG: ", str)
+		fmt.Print("* ", str)
 	}
 
 }
