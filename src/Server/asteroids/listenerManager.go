@@ -11,7 +11,7 @@ type ListenerManager struct {
 	maxPlayers     int
 	currentPlayers int
 	currentPort    int
-	nextId         int
+	nextID         int
 	input          chan (Data)
 	listeners      []*Listener
 	players        []*Player
@@ -35,7 +35,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection,
 				// TODO: Where should input from user be checked
 				manager.handleCollisions()
 				manager.players = manager.collectPlayerPositions()
-				
+
 				// Send update + world to players
 
 			} else {
@@ -65,7 +65,7 @@ func (manager *ListenerManager) init(sessionConn *Connection,
 
 	manager.maxPlayers = maxPlayers
 	manager.currentPlayers = 0
-	manager.nextId = 1
+	manager.nextID = 1
 	manager.currentPort = firstPort
 	manager.input = sessionConn.read
 	manager.players = players
@@ -96,7 +96,7 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	listener.init(manager.currentPort)
 
 	player := newPlayer()
-	player.init(manager.getNextId(), manager.xMax, manager.yMax)
+	player.init(manager.getNextID(), manager.xMax, manager.yMax)
 	listener.player = player
 
 	//Insert the created listener to listenerList
@@ -112,10 +112,9 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 }
 
 // getNextID returns the id to be used and sets the next value
-func (manager *ListenerManager) getNextId() int {
-	var id = manager.nextId
-	manager.nextId++
-	return id
+func (manager *ListenerManager) getNextID() int {
+	defer func() { manager.nextID++ }()
+	return manager.nextID
 }
 
 // collectPlayerPositions collect all player positions and return an array of them
@@ -148,15 +147,15 @@ func (manager *ListenerManager) sendToClient(world World) {
 // handleCollisons handles collisons with a player
 func (manager *ListenerManager) handleCollisions() {
 
-	for _,player := range manager.players{
-		if !player.isAlive(){
+	for _, player := range manager.players {
+		if !player.isAlive() {
 			if player.getLives() > 1 {
 				player.setAlive()
-				player.Lives --
-			}else {
+				player.Lives--
+			} else {
 				// TODO : remove player
 			}
 		}
 	}
-	
+
 }
