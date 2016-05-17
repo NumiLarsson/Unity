@@ -78,6 +78,7 @@ func inList(list []int, item int) bool {
 func (world *World) collisionManager() {
 
 	// First check player vs player
+
 	world.playerPlayerCollision()
 	// second check player vs asteroid
 	world.playerAsteroidCollision()

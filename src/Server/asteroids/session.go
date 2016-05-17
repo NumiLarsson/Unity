@@ -92,7 +92,6 @@ func (session *session) loop() {
 		case data := <-session.read.server:
 
 			if data.action == "server.poke" {
-
 				// Check if theres room inside the session
 				if session.currentPlayers < session.maxPlayers {
 					session.write.server <- Data{"session.has_room", 200}
@@ -130,6 +129,7 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.read.players = toPlayers.read
 
 	toAsteroids := MakeConnection()
+
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
