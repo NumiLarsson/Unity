@@ -2,19 +2,7 @@ package asteroids
 
 import "fmt"
 
-// ======================= FIX MORE GENERIC =============================================
-// detectCollisions checks each asteroid and stores all asteroids that have collided
-// TODO players and use collision manager?
-/*func (session *session) detectCollisions() ([]int, []int) {
-
-	var asteroidCollisions []int
-	var playerCollisions []int
-
-	// First check player vs player collisions
-
-}*/
-
-func (world *World) asteroidAsteroidCollision() {
+func (world *World) asteroidCollision() {
 
 	for _, a1 := range world.asteroids {
 		for _, a2 := range world.asteroids {
@@ -27,7 +15,7 @@ func (world *World) asteroidAsteroidCollision() {
 }
 
 //
-func (world *World) playerAsteroidCollision() {
+func (world *World) playerCollision() {
 
 	for _, p := range world.players {
 		for _, a := range world.asteroids {
@@ -36,15 +24,10 @@ func (world *World) playerAsteroidCollision() {
 				a.Alive = false
 			}
 		}
-	}
-}
 
-func (world *World) playerPlayerCollision() {
-
-	for _, p1 := range world.players {
 		for _, p2 := range world.players {
-			if isCollision(p1.X, p1.Y, p2.X, p2.Y) && p1.Id != p2.Id {
-				p1.Alive = false
+			if isCollision(p.X, p.Y, p2.X, p2.Y) && p.Id != p2.Id {
+				p.Alive = false
 			}
 
 		}
@@ -60,28 +43,13 @@ func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 	return false
 }
 
-// inList checks if the item is is already in the list
-func inList(list []int, item int) bool {
-	for _, current := range list {
-		if item == current {
-			return true
-		}
-	}
-	return false
-}
-
-// ======================= FIX MORE GENERIC =============================================
-// detectCollisions checks each asteroid and stores all asteroids that have collided
-
 func (world *World) collisionManager() {
 
-	// First check player vs player
+	// First check player vs player and asteroid
+	world.playerCollision()
 
-	world.playerPlayerCollision()
-	// second check player vs asteroid
-	world.playerAsteroidCollision()
-	// last check asteroid vs asteroid
-	world.asteroidAsteroidCollision()
+	// Second check asteroid vs asteroid
+	world.asteroidCollision()
 
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
