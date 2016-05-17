@@ -80,13 +80,13 @@ func (manager *ListenerManager) newPlayer() (int, *Player) {
 	//Insert the created listener to listenerList
 	//Insert the created player to Players
 	manager.listeners = append(manager.listeners, listener)
-	manager.players = append(manager.players, player)
+	manager.players = append(manager.players, listener.player)
 
 	manager.incrementCurrentPlayers()
 
 	go listener.startUpListener()
 
-	return manager.getNextPort(), player
+	return manager.getNextPort(), listener.player
 }
 
 // getNextID returns the id to be used and sets the next value
@@ -114,7 +114,7 @@ func (player *Player) fakeMovePlayer() {
 
 // collectPlayerPositions collect all player positions and return an array of them
 func (manager *ListenerManager) collectPlayerPositions() []*Player {
-	//playerList := make([]Player, 0)
+
 	var playerList []*Player
 	for _, listener := range manager.listeners {
 
