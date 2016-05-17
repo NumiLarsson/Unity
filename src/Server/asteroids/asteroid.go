@@ -2,8 +2,9 @@ package asteroids
 
 import "math/rand"
 
+// Asteroid represents a single asteroid
 type Asteroid struct {
-	Id    int
+	ID    int
 	X     int
 	Y     int
 	Phase int
@@ -64,7 +65,7 @@ func newAsteroid() *Asteroid {
 // init sets the asteroids values, id,channel and spawn location
 func (asteroid *Asteroid) init(id int, xMax int, yMax int) {
 
-	asteroid.Id = id
+	asteroid.ID = id
 	asteroid.Alive = true
 	asteroid.randowSpawn(xMax, yMax)
 
