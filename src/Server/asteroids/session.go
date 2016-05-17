@@ -80,7 +80,7 @@ func (session *session) loop() {
 			//session.detectCollisions()
 
 			session.world.collisionManager()
-
+			session.listenerManager.sendToClient(session.world)
 			// Send collision ids back to asteroid manager
 
 			//session.asteroidManager.updateDeathRow(deathRow)
