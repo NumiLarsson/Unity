@@ -9,7 +9,7 @@ import (
 type asteroidManager struct {
 	xMax      int
 	yMax      int
-	nextId    int
+	nextID    int
 	maxRoids  int
 	treshold  int
 	deathRow  []int
@@ -53,10 +53,17 @@ func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*Aster
 func (manager *asteroidManager) spawnAsteroid() {
 
 	r := rand.Intn(101)
+	scalar := 100 / manager.maxRoids
 
-	if len(manager.asteroids) < manager.maxRoids && r >= manager.treshold {
-		//fmt.Println("SPAWNED NEW DROID")
+	if r > manager.treshold {
 		manager.newAsteroid()
+
+		if len(manager.asteroids) > 0 {
+			manager.treshold = len(manager.asteroids) * scalar
+		} else {
+			manager.treshold = scalar
+		}
+
 	}
 
 }
@@ -125,7 +132,7 @@ func (manager *asteroidManager) newAsteroid() {
 	asteroid := newAsteroid()
 	manager.asteroids = append(manager.asteroids, asteroid)
 
-	asteroid.init(manager.getNextId(), manager.xMax, manager.yMax)
+	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
 	go asteroid.loop()
 
 }
@@ -145,17 +152,16 @@ func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*Aster
 	manager.xMax = 100
 	manager.yMax = 100
 	manager.asteroids = asteroids
-	manager.treshold = 20
+	manager.treshold = 0
 	manager.maxRoids = 20
 	manager.input = sessionConn.read
 
 }
 
 // getNextID returns the id to be used and sets the next value
-func (manager *asteroidManager) getNextId() int {
-	var id = manager.nextId
-	manager.nextId++
-	return id
+func (manager *asteroidManager) getNextID() int {
+	defer func() { manager.nextID++ }()
+	return manager.nextID
 }
 
 func (manager *asteroidManager) updateDeathRow() {
