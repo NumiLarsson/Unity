@@ -22,6 +22,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection,
 	maxPlayers int, startPort int, players []*Player) {
 
 	manager.init(sessionConn, maxPlayers, startPort, players)
+	sessionConn.write <- Data{"l.manager_ready", 200}
 
 	for {
 
