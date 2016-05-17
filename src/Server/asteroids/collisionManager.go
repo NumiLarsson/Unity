@@ -18,9 +18,8 @@ func (world *World) asteroidAsteroidCollision() {
 
 	for _, a1 := range world.asteroids {
 		for _, a2 := range world.asteroids {
-			if isCollision(a1.X, a1.Y, a2.X, a2.Y) {
+			if isCollision(a1.X, a1.Y, a2.X, a2.Y) && a1.Id != a2.Id {
 				a1.Alive = false
-				a2.Alive = false
 			}
 		}
 	}
@@ -44,9 +43,8 @@ func (world *World) playerPlayerCollision() {
 
 	for _, p1 := range world.players {
 		for _, p2 := range world.players {
-			if isCollision(p1.X, p1.Y, p2.X, p2.Y) {
+			if isCollision(p1.X, p1.Y, p2.X, p2.Y) && p1.Id != p2.Id {
 				p1.Alive = false
-				p2.Alive = false
 			}
 
 		}
