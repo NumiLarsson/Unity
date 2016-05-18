@@ -47,6 +47,7 @@ func newListener() *Listener {
 	return new(Listener)
 }
 
+// init initiates the listeners values
 func (listener *Listener) init(port int) {
 
 	var err error
@@ -76,7 +77,7 @@ func newPlayer() *Player {
 	return new(Player)
 }
 
-//init creates a new player
+//init initiates a new players values
 func (player *Player) init(id int, xMax int, yMax int) {
 	player.ID = id
 	seed := time.Now().UnixNano()
@@ -89,6 +90,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.Alive = true
 }
 
+// startUpListener
 func (listener *Listener) startUpListener() {
 	var err error
 	listener.conn, err = listener.socket.Accept()
@@ -128,7 +130,7 @@ func (listener *Listener) idleListener() {
 	}
 }
 
-//Write writes world to clients
+//write writes game world to clients
 func (listener *Listener) Write(world *World) {
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
@@ -139,6 +141,7 @@ func (listener *Listener) Write(world *World) {
 	//listener.writeBuffer = append(listener.writeBuffer, jsonWorld)
 }
 
+// getPlayer returns a listeners player
 func (listener *Listener) getPlayer() *Player {
 	return listener.player
 }
