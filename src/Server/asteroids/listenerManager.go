@@ -7,34 +7,35 @@ import (
 
 //ListenerManager is used as a struct to basically emulate an object
 type ListenerManager struct {
-	MaxPlayers     int
-	CurrentPlayers int
-	CurrentPort    int
+	xMax           int
+	yMax           int
+	maxPlayers     int
+	currentPlayers int
+	currentPort    int
+	nextID         int
 	input          chan (Data)
 	listeners      []*Listener
-	Players        []*Player
+	players        []*Player
 }
 
-// loop TODO
+// loop is where the listenerManager spinns waiting for tick message from session,
+// once received it handles collisions from last tick and collect all new positions
 func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, startPort int) {
+
 	manager.init(sessionConn, maxPlayers, startPort)
 
 	for {
-
 		select {
 
 		case msg := <-manager.input:
 
 			if msg.action == "session.tick" {
-				// Read current values
-				// TODO: Where should input from user be checked
-				manager.Players = manager.collectPlayerPositions()
+				//manager.print()
+				manager.handleCollisions()
+				// TODO: below correct way to use handle ??
+				manager.players = manager.collectPlayerPositions()
 
 				// Send update + world to players
-
-			} else {
-				fmt.Println("[LIST.MAN] Collision!! \n ", msg.action)
-				// TODO: remove asteroids who has a collision or hit
 			}
 		}
 	}
@@ -43,66 +44,72 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 // newAsteroidsManager creates a new asteroid manager
 func newListenerManager() *ListenerManager {
 
-	fmt.Println("[LIST.MAN] Created")
+	debugPrint(fmt.Sprintln("[LIST.MAN] Created"))
 	return new(ListenerManager)
 
 }
 
-//NewListenerManager does exactly what it says, with a cap on maxPlayers
-//connected and maxPlayers numbers of ports in a row from firstPort
-func (manager *ListenerManager) init(sessionConn *Connection, maxPlayers int, firstPort int) {
+// init initiates the listenerManager with a cap on maxPlayers
+// connected and maxPlayers numbers of ports in a row from firstPort
+func (manager *ListenerManager) init(sessionConn *Connection,
+	maxPlayers int, firstPort int) {
 
-	manager.MaxPlayers = maxPlayers
-	manager.CurrentPlayers = 0
-	manager.CurrentPort = firstPort
+	// TODO fix hardcoded variables
+	manager.xMax = 100
+	manager.yMax = 100
+	manager.maxPlayers = maxPlayers
+	manager.nextID = 1
+	manager.currentPort = firstPort
 	manager.input = sessionConn.read
 
-	manager.listeners = make([]*Listener, 1)
+	//manager.listeners = make([]*Listener, 0)
 
+	sessionConn.write <- Data{"l.manager_ready", 200}
 }
 
-// getNextPort calculates the next start port to be used by a session
+// newPlayer creates a new listener for the listener manager, used to connect to a new player.
+func (manager *ListenerManager) newPlayer() (int, *Player) {
+
+	debugPrint(fmt.Sprintln("[LIST.MAN] Creating new object in listener manager"))
+
+	//Creation of the listener and listener-player
+	listener := newListener()
+	listener.init(manager.currentPort)
+
+	listener.player = newPlayer()
+	listener.player.init(manager.getNextID(), manager.xMax, manager.yMax)
+
+	//Insert in the managers lists
+	manager.listeners = append(manager.listeners, listener)
+	manager.players = append(manager.players, listener.player)
+
+	manager.incrementCurrentPlayers()
+
+	go listener.startUpListener()
+
+	return manager.getNextPort(), listener.player
+}
+
+// getNextID returns the id to be used and sets the next value
 func (manager *ListenerManager) getNextPort() int {
-	var port = manager.CurrentPort
-	manager.CurrentPort++
-	return port
+	defer func() { manager.currentPort++ }()
+	return manager.currentPort
 }
 
 // incrementCurrentPlayers increments currentPlayers
 func (manager *ListenerManager) incrementCurrentPlayers() {
-	manager.CurrentPlayers++
+	manager.currentPlayers++
 }
 
-//NewPlayer creates a new listener for the listener manager, used to connect to a new player.
-func (manager *ListenerManager) newPlayer() (int, *Player) {
-
-	fmt.Println("[LIST.MAN] Creating new object in listener manager")
-	//Creation of the listener and listener-player
-	newListener := NewListener(manager.CurrentPort)
-
-	newPlayer := newListener.player
-	//Insert the created listener to listenerList
-	//Insert the created player to Players
-	//manager.listeners = append(manager.listeners, newListener)
-	manager.listeners[0] = newListener;
-	//APPEND IS NOT WORKING, STOP USING IT PLEASE
-	
-	manager.Players = append(manager.Players, newPlayer)
-
-	manager.incrementCurrentPlayers()
-
-	return manager.getNextPort(), newPlayer
-}
-
-//TEMP FAKE func 
-func (player *Player) fakeMovePlayer()  {
-	player.XCord = rand.Intn(5)
-	player.YCord = rand.Intn(5)
+// getNextID returns the id to be used and sets the next value
+func (manager *ListenerManager) getNextID() int {
+	defer func() { manager.nextID++ }()
+	return manager.nextID
 }
 
 // collectPlayerPositions collect all player positions and return an array of them
 func (manager *ListenerManager) collectPlayerPositions() []*Player {
-	//playerList := make([]Player, 0)
+
 	var playerList []*Player
 	for _, listener := range manager.listeners {
 
@@ -113,16 +120,53 @@ func (manager *ListenerManager) collectPlayerPositions() []*Player {
 	return playerList
 }
 
-// getPlayers returns an array of playerpositions
+// getPlayers returns an array of players
 func (manager *ListenerManager) getPlayers() []*Player {
-	return manager.Players
+	return manager.players
 }
 
-// SendToClient broadcasts world-info to every listener
-func (manager *ListenerManager) sendToClient(world /**World*/*World) {
+// sendToClient broadcasts world-info to every listener
+func (manager *ListenerManager) sendToClient(world *World) {
 	for _, listener := range manager.listeners {
 		if listener.ID != "" {
 			go listener.Write(world)
 		}
 	}
+}
+
+// handleCollisions is used to check if any player has been in a collision
+// and needs to get updated
+func (manager *ListenerManager) handleCollisions() {
+
+	for _, player := range manager.players {
+		if !player.isAlive() {
+			if player.getLives() > 1 {
+				player.setAlive()
+				player.Lives--
+			} else {
+				// TODO : remove player
+			}
+		}
+	}
+}
+
+// print is used to print all players that have been in a collision
+func (manager *ListenerManager) print() {
+
+	var list []int
+
+	for _, player := range manager.players {
+		if !player.isAlive() {
+			list = append(list, player.ID)
+		}
+	}
+	if len(list) > 0 {
+		debugPrint(fmt.Sprintln("[LIST.MAN] Collision:", list))
+	}
+}
+
+//TEMP FAKE func
+func (player *Player) fakeMovePlayer() {
+	player.X = rand.Intn(5)
+	player.Y = rand.Intn(5)
 }

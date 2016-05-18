@@ -1,10 +1,24 @@
 package main
 
-import "github.com/numilarsson/ospp-2016-group-08/src/server/asteroids"
+import (
+	"fmt"
+	"os"
+
+	"./asteroids"
+)
 
 func main() {
 
-	var server = asteroids.CreateServer()
-	server.Listen()/*server.CreateFakeUser()*/
+	argsWithoutProg := os.Args[1:]
+	var inDebugMode = true
+
+	if len(argsWithoutProg) > 0 && argsWithoutProg[0] == "-s" {
+		inDebugMode = false
+		fmt.Println("\nServer starting in silent mode\n======")
+	}
+
+	var server = asteroids.CreateServer(inDebugMode)
+	//server.Listen(make(chan asteroids.Data) /*server.CreateFakeUser()*/)
+	server.Listen(server.CreateFakeUser())
 
 }
