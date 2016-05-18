@@ -12,7 +12,7 @@ OSPP (1DT096) 2016 - Grupp 08
 
 ##### Onsdag
 **08:00-15:00**
-Muntlig projektpresentation
+Muntlig projektpresentation.
 
 ##### Torsdag
 **10:00-12:00**
@@ -72,11 +72,11 @@ Slutförande av projektförslag v.2. Förberedelse och gemensam genomgång av mi
 
 ##### Måndag
 **13:00-16:00**
-Specade systemarkitekturen på riktigt och bröt ner programmet i mindre beståndsdelar
+Specade systemarkitekturen på riktigt och bröt ner programmet i mindre beståndsdelar.
 
 ##### Onsdag
 **13:00-17:00**
-Började att skriva om koden ifrån scratch med hänsyn till den nya arkitekturen
+Började att skriva om koden ifrån scratch med hänsyn till den nya arkitekturen.
 
 ##### Fredag
 **10:00-14:30**
@@ -84,31 +84,39 @@ Förbättrade, kommenterade och rensade upp Session & Server.
 
 ##### Söndag
 **10:00-12:30**
-Refaktorerade Session, påbörjade Asteroids
+Refaktorerade Session, påbörjade Asteroids.
 
 ## Vecka 19
 
 ##### Måndag
 **10:00-12:30**
-Initial implementation av asteroider<br>
+Initial implementation av asteroider.<br>
 **15:00-17:00**
-Gjorde om vår kod så att den blev mer "objektorienterad"
+Gjorde om vår kod så att den blev mer "objektorienterad".
 
 ##### Tisdag
 **13:00-17:00**
-Ihopsättning av all kod. Tittade också på automation (testning, dokumentation)
+Ihopsättning av all kod. Tittade också på automation (testning, dokumentation).
 
 ##### Onsdag
-
-##### Torsdag
+**10:00-17:00**
+Förberedelse inför milstolpe 2, uppdaterade keynote och mergeade våra olika forks.
 
 ##### Fredag
+**10:00-15:00**
+Initial kollisionshantering och relaterad kommunikation mellan Session och AsteroidManager.
 
 ## Vecka 20
 
 ##### Måndag
+**13:00-17:00**
+Diverse förbättringar och förenklingar i koden. Skrev även dokumentation och tester.
 
 ##### Tisdag
+**10:00-13:00**
+Fortsatte med att skriva tester och refaktorera. Mergeade ihop server (Go) och klient (Unity).<br>
+**15:00-17:00**
+Random spawn av asteroider och allmänn refaktorering,
 
 ##### Onsdag
 
