@@ -16,7 +16,8 @@ type Asteroid struct {
 	input chan (Data)
 }
 
-func (asteroid *Asteroid) loop() { //loop(id int, xMax int, yMax int) {
+// loop runs an asteroid until an kill message is sent
+func (asteroid *Asteroid) loop() {
 
 	for {
 
@@ -35,6 +36,7 @@ func (asteroid *Asteroid) loop() { //loop(id int, xMax int, yMax int) {
 
 }
 
+// IsAlive checks if an asteroid still is alive
 func (asteroid *Asteroid) isAlive() bool {
 	return asteroid.Alive
 }

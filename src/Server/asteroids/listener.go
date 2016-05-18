@@ -71,10 +71,12 @@ func (listener *Listener) init(port int) {
 
 }
 
+//newPlayer returns a new player
 func newPlayer() *Player {
 	return new(Player)
 }
 
+//init creates a new player
 func (player *Player) init(id int, xMax int, yMax int) {
 	player.ID = id
 	seed := time.Now().UnixNano()
@@ -141,6 +143,7 @@ func (listener *Listener) getPlayer() *Player {
 	return listener.player
 }
 
+// randomSpawn spawn a player on a random location
 func (player *Player) randomSpawn(xMax int, yMax int) {
 
 	player.X = rand.Intn(xMax)
@@ -149,14 +152,17 @@ func (player *Player) randomSpawn(xMax int, yMax int) {
 	fmt.Println(player.ID, player.X, player.Y)
 }
 
+//isAlive return if the player is alive or not
 func (player *Player) isAlive() bool {
 	return player.Alive
 }
 
+//getLives returns the amount of lives the player has left
 func (player *Player) getLives() int {
 	return player.Lives
 }
 
+//setAlive sets the Alive state to true
 func (player *Player) setAlive() {
 	player.Alive = true
 }
