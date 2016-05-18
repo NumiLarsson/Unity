@@ -2,70 +2,99 @@ package asteroids
 
 import "fmt"
 
-func (world *World) collisionManager() *World {
-	var deadPlayerIDs []int
-	var deadAsteroidIDs []int
+// collisionManager used to get all collision that have occured during the last tick
+func (world *World) collisionManager() {
 
-	deadPlayerIDs, deadAsteroidIDs = checkCollision(world)
+	// removes old collisions
+	world.removeCollisions()
 
-	//Used to make it compile
-	if len(deadPlayerIDs) > 0 || len(deadAsteroidIDs) > 0 {
-		fmt.Println("[COL.MAN] Collisions, Players:", deadPlayerIDs, "Asteroids:", deadAsteroidIDs)
-	}
+	// First check player vs player and asteroid
+	world.playerCollision()
 
-	//TODO
-	//enter similar ranges with every object destructible
-	return world
+	// Second check asteroid vs asteroid
+	world.asteroidCollision()
+
+	world.print()
 }
 
-//Check the objects coordinates to see if collision occurs
-//COuld be made more generic using overriding
-func (player *Player) checkCoordinates(asteroid *asteroid) bool {
+// asteroidCollision is used to check if two asteroids have collided
+func (world *World) asteroidCollision() {
 
-	//Size of the objects will alter the collision hitbox
-	//For now every object is only a dot
-	if player.XCord == asteroid.X && player.YCord == asteroid.Y {
-		return true
-	}
-
-	return false
-}
-
-//Checks the collisions during the tick and returns two arrays
-//Of the player and asteroid IDs which were destroyed
-//Could be made to act as a hub for every collision at once
-//Thus becoming the real collisionManager (Consider changing name)
-func checkCollision(world *World) ([]int, []int) {
-	var deadPlayerIDs []int
-	var deadAsteroidIDs []int
-
-	for _, player := range world.Players {
-		for _, asteroid := range world.Asteroids {
-			if player.checkCoordinates(asteroid) {
-				fmt.Println("[COL.MAN] Player collided with asteroid at coordinates (", player.XCord, player.YCord, ")")
-
-				//Player collision with an asteroid will
-				//Kill the player and the asteroid
-				//It only makes sense... Right?
-				deadPlayerIDs = append(deadPlayerIDs, player.id)
-				deadAsteroidIDs = append(deadAsteroidIDs, asteroid.ID)
-
-				player.death(world)
+	for _, a1 := range world.Asteroids {
+		for _, a2 := range world.Asteroids {
+			if isCollision(a1.X, a1.Y, a2.X, a2.Y) && a1.ID != a2.ID {
+				world.appendCollision(a1.X, a1.Y)
+				a1.Alive = false
 			}
 		}
 	}
 
-	return deadPlayerIDs, deadAsteroidIDs
 }
 
-func (player *Player) death(world *World) {
-	//Make player sleep for a second or two before respawning?
-	player.Lives--
-	player.respawn(world)
+// playerCollision is used to check if a player has collided with another player or asteroid
+func (world *World) playerCollision() {
+
+	for _, p := range world.Players {
+		for _, a := range world.Asteroids {
+			if isCollision(p.X, p.Y, a.X, p.Y) {
+				world.appendCollision(p.X, p.Y)
+				p.Alive = false
+				a.Alive = false
+			}
+		}
+
+		for _, p2 := range world.Players {
+
+			if isCollision(p.X, p.Y, p2.X, p2.Y) && p.ID != p2.ID {
+				world.appendCollision(p.X, p.Y)
+				p.Alive = false
+			}
+
+		}
+	}
+
 }
 
-//Very primitive respawn, put the dead player back at start-position (0,0)
-func (player *Player) respawn(world *World) {
-	player.XCord = 0
-	player.YCord = 0
+// isCollision checks if two objects are located at the same position
+func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
+
+	return x1 == x2 && y1 == y2
+
+}
+
+// appendCollision appends the coordinates from a collison to a collison-list
+func (world *World) appendCollision(x int, y int) {
+	collision := new(Collision)
+	collision.X = x
+	collision.Y = y
+
+	world.Collisions = append(world.Collisions, collision)
+}
+
+//removeCollisons removes all collisons from the collison-list
+func (world *World) removeCollisions() {
+	world.Collisions = make([]*Collision, 0)
+}
+
+// print all players and asteroid that has collided
+func (world *World) print() {
+	var deadPlayerIDs []int
+	var deadAsteroidIDs []int
+
+	for _, player := range world.Players {
+		if player.Alive == false {
+			deadPlayerIDs = append(deadPlayerIDs, player.ID)
+		}
+	}
+
+	for _, asteroid := range world.Asteroids {
+		if asteroid.Alive == false {
+			deadAsteroidIDs = append(deadAsteroidIDs, asteroid.ID)
+		}
+	}
+
+	if len(deadPlayerIDs) > 2 || len(deadAsteroidIDs) > 0 {
+		debugPrint(fmt.Sprintln("[COL.MAN] Collisions, Players:", deadPlayerIDs,
+			"Asteroids:", deadAsteroidIDs))
+	}
 }
