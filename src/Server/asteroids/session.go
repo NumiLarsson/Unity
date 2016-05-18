@@ -43,7 +43,7 @@ type session struct {
 	read  channels
 }
 
-// Session …TODO rename to init?
+// Session initiates the sessions values and creates a new go-routine for the session
 func Session(serverConn *Connection, startPort int, players int, worldSize int) {
 
 	session := new(session)
@@ -61,7 +61,8 @@ func Session(serverConn *Connection, startPort int, players int, worldSize int) 
 
 }
 
-// loop is the sessions ....TODO
+// loop is the sessions game loop, sending ticks to it's managers and collecting data and
+// calculating collisions and distribute the new world
 func (session *session) loop() {
 
 	for {
@@ -90,9 +91,9 @@ func (session *session) loop() {
 			session.write.asteroids <- Data{"session.tick", 200}
 			session.write.players <- Data{"session.tick", 200}
 
-		case data := <-session.read.server:
+		case input := <-session.read.server:
 
-			if data.action == "server.poke" {
+			if input.action == "server.poke" {
 				// Check if theres room inside the session
 				fmt.Println("POKE")
 				if session.currentPlayers < session.maxPlayers {
@@ -110,17 +111,8 @@ func (session *session) loop() {
 
 				session.write.server <- Data{"session.player_created", port}
 			}
-
-		// Send response back to server
-		case userdata := <-session.read.players:
-
-			debugPrint(fmt.Sprintf("Session: Read from manager %s\n", userdata.action))
-			session.write.server <- userdata
-
 		}
-
 	}
-
 }
 
 // createManagers sets up managers and their respective connections to/from session

@@ -33,8 +33,10 @@ type Server struct {
 	sessions     []*gameSession
 }
 
+// inDebugMode used when running program with prints
 var inDebugMode = true
 
+//debugPrint prints the argument string, used to have same output in complete program
 func debugPrint(str string) {
 
 	if inDebugMode {
@@ -109,6 +111,9 @@ func (server *Server) Listen(external chan Data) {
 
 }
 
+// TODO check this function, right now no call from listen to this one
+// acceptNewPlayers is used with a seperate go-routine waiting/ checking if any
+// new users want to connect
 func (server *Server) acceptNewPlayers(conn chan int) {
 
 	socket, err := CreateSocket(9000)
