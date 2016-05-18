@@ -45,7 +45,7 @@ func (manager *asteroidManager) loop(sessionConn *Connection) {
 
 }
 
-// newAsteroidsManager creates a new asteroid manager
+// newAsteroidManager creates a new asteroid manager
 func newAsteroidManager() *asteroidManager {
 
 	debugPrint(fmt.Sprintln("[AST.MAN] Created"))
