@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"./asteroids"
+	"github.com/numilarsson/ospp-2016-group-08/src/server/asteroids"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	}
 
 	var server = asteroids.CreateServer(inDebugMode)
-	//server.Listen(make(chan asteroids.Data) /*server.CreateFakeUser()*/)
-	server.Listen(server.CreateFakeUser())
+	server.Listen(make(chan asteroids.Data) /*server.CreateFakeUser()*/)
+	//server.Listen(server.CreateFakeUser())
 
 }
