@@ -65,3 +65,11 @@ func TestMovementDiagonal(t *testing.T) {
 		t.Error("Expected position (x,y) = (2,2), got (", roid2.X, ",", roid2.Y, ")")
 	}
 }
+
+//TestInBounds tests if an asteroid is inside the gameboard
+func TestInBounds(t *testing.T){
+	a := newAsteroid()
+	manager = newAsteroidManager()
+	manager.xMax = 10
+	manager.yMax = 10	
+}
