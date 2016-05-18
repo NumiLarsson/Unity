@@ -26,7 +26,7 @@ func CreateFakePlayer() (p1 *Player, p2 *Player) {
 }
 
 // CreateFakeAsteroid creates two asteroids for testing
-func CreateFakeAsteroid() (a1 *Asteroid, a2 *Asteroid) {
+func CreateFakeAsteroids() (a1 *Asteroid, a2 *Asteroid) {
 
 	a1 = newAsteroid()
 	a2 = newAsteroid()
@@ -48,7 +48,7 @@ func CreateFakeAsteroid() (a1 *Asteroid, a2 *Asteroid) {
 
 //TestAsteroidCollision tests when an asteroid collide with a asteroid
 func TestAsteroidCollision(t *testing.T) {
-	var a1, a2 = CreateFakeAsteroid()
+	var a1, a2 = CreateFakeAsteroids()
 	world := new(World)
 
 	world.Asteroids = append(world.Asteroids, a1)
@@ -69,7 +69,7 @@ func TestPLayerCollision(t *testing.T) {
 	var p1, p2 = CreateFakePlayer()
 	world := new(World)
 
-	var a1, a2 = CreateFakeAsteroid()
+	var a1, a2 = CreateFakeAsteroids()
 
 	world.Players = append(world.Players, p1)
 	world.Players = append(world.Players, p2)
