@@ -2,6 +2,7 @@ package asteroids
 
 import (
 	"fmt"
+	"math/rand"
 	//"math/rand"
 )
 
@@ -14,62 +15,84 @@ type asteroidManager struct {
 	treshold  int
 	deathRow  []int
 	input     chan (Data)
-	asteroids []*asteroid // Accessible from session.go
+	asteroids []*Asteroid
 }
 
-// loop …
-func (manager *asteroidManager) loop(sessionConn *Connection, asteroids []*asteroid) {
+// loop is where the asteroidManagers spinns waiting for tick message from the session,
+// once tick received it handle collisions from last tick, spawn new asteroids and
+// send the tick to all asteroids
+func (manager *asteroidManager) loop(sessionConn *Connection) {
 
-	manager.init(sessionConn, asteroids)
+	manager.init(sessionConn)
 
 	for {
-
 		select {
 
 		case msg := <-manager.input:
 
 			if msg.action == "session.tick" {
-				manager.removeDeadAsteroids()
-				//manager.print()
-				//TODO spawn on correct x/y
-				manager.spawnAsteroid()
-				manager.resumeAsteroids()
+				manager.print()
+				manager.handleCollisions()
 
-			} else {
-				fmt.Println("[AST.MAN] Collision!! \n ", msg.action)
-				// TODO: remove asteroids who has a collision or hit
+				if manager.shouldSpawn() {
+					manager.newAsteroid()
+				}
+
+				manager.resumeAsteroids()
 			}
 		}
-
-		// 1. Iterate over each of the asteroids
-		// 		- Check if it's inside the board, otherwise destroy it [remove from "shared" list]
-		// 2. Session reads shared Data
-		// 3. Session sends back any collisions/hits and whom it affects [possibly useful to store the asteroids in a map?]
-		// 4. asteroidManager broadcasts to those affected and tells them to "die"
-		// 5. asteroidManager removes the affected asteroids from the "shared" list
-		// 6. Depending on the outcome and parameters asteroidManager may spawn additional asteroids
-		// 7. REPEAT
-
 	}
 
 }
 
+// newAsteroidsManager creates a new asteroid manager
+func newAsteroidManager() *asteroidManager {
+
+	debugPrint(fmt.Sprintln("[AST.MAN] Created"))
+	return new(asteroidManager)
+
+}
+
+// init initiate the asteroid manager with hardcoded values TODO: input?
+// and sets channels to session and
+func (manager *asteroidManager) init(sessionConn *Connection) {
+	// TODO fix hardcoded variables
+	manager.xMax = 100
+	manager.yMax = 100
+	manager.maxRoids = 20
+	manager.input = sessionConn.read
+
+	sessionConn.write <- Data{"a.manager_ready", 200}
+}
+
+// newAsteroid creates a new asteroid, appends it to the asteroidmanagers array
+// and creates a new go-routine that will handle the asteroid
+func (manager *asteroidManager) newAsteroid() {
+
+	asteroid := newAsteroid()
+	manager.asteroids = append(manager.asteroids, asteroid)
+
+	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
+	go asteroid.loop()
+}
+
 // spawnAsteroid spawns a new asteroid if current asteroids in world below maxValue and
 // if the randomized int that is set has a higher value than the worlds threshold
-func (manager *asteroidManager) spawnAsteroid() {
-	/*
-	r := rand.Intn(101)
+func (manager *asteroidManager) shouldSpawn() bool {
 
-	if len(manager.asteroids) < manager.maxRoids && r >= manager.treshold {
-		//fmt.Println("SPAWNED NEW DROID")
-		manager.newAsteroid()
+	r := rand.Intn(101)
+	scalar := 100 / manager.maxRoids
+
+	if r > manager.treshold {
+
+		if len(manager.asteroids) > 0 {
+			manager.treshold = len(manager.asteroids) * scalar
+		} else {
+			manager.treshold = scalar
+		}
+		return true
 	}
-	
-	Infinite spawning new asteroids every tick?
-	*/
-	if len(manager.asteroids) < manager.maxRoids {
-		manager.newAsteroid()
-	}
+	return false
 }
 
 // resumeAsteroids used to send "tick" to all asteroids
@@ -81,112 +104,55 @@ func (manager *asteroidManager) resumeAsteroids() {
 
 }
 
-// onDeathRow TODO: implement! should check if current asteroid is on deathrow and can be removed
-func onDeathRow(a *asteroid, deathRow []int) bool {
-	for _, dead := range deathRow {
-		if a.ID == dead {
-			return true
-		}
-	}
-	return false
-}
-
-// removeDeadAsteroids used to check if any asteroid has been in a collision
+// handleCollisions used to check if any asteroid has been in a collision
 // or if it's out of bounds
-func (manager *asteroidManager) removeDeadAsteroids() {
+func (manager *asteroidManager) handleCollisions() {
 
 	var offset = 0
-	for i, asteroid := range manager.asteroids {
 
-		// Check if inside kill list
+	var acopy = make([]*Asteroid, len(manager.asteroids))
+	copy(acopy, manager.asteroids)
 
-		if onDeathRow(asteroid, manager.deathRow) || !asteroid.inBounds(manager) {
+	for i, asteroid := range acopy {
+
+		if !asteroid.isAlive() || !asteroid.inBounds(manager) {
 			manager.removeAsteroid(i + offset)
 			offset--
 		}
-
 	}
-
 }
 
 // getAsteroids return the array containing the current asteroids
-func (manager *asteroidManager) getAsteroids() []*asteroid {
+func (manager *asteroidManager) getAsteroids() []*Asteroid {
 
 	return manager.asteroids
 }
 
 // removeAsteroid removes specific asteroid from manager asteroid array
 func (manager *asteroidManager) removeAsteroid(i int) {
+	//fmt.Println("i:",i)
 
 	manager.asteroids = append(manager.asteroids[:i], manager.asteroids[i+1:]...)
-}
 
-// newObject creates a new asteroid, appends it to the asteroidmanagers array
-// and creates a new go-routine that ......TODO
-func (manager *asteroidManager) newAsteroid() {
-
-	asteroid := newAsteroid()
-	manager.asteroids = append(manager.asteroids, asteroid)
-
-	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
-	go asteroid.loop()
-}
-
-// newAsteroidsManager creates a new asteroid manager
-func newAsteroidManager() *asteroidManager {
-
-	fmt.Println("[AST.MAN] Created")
-	return new(asteroidManager)
-
-}
-
-// init initiate the asteroid manager with hardcoded values TODO: input?
-// and sets channels to session and
-func (manager *asteroidManager) init(sessionConn *Connection, asteroids []*asteroid) {
-
-	manager.xMax = 100
-	manager.yMax = 100
-	manager.asteroids = asteroids
-	var i int = 0;
-	for (i < 20) {
-		manager.newAsteroid()
-		i++
-	}
-	manager.treshold = 20
-	manager.maxRoids = 4
-	manager.input = sessionConn.read
 }
 
 // getNextID returns the id to be used and sets the next value
 func (manager *asteroidManager) getNextID() int {
-	var id = manager.nextID
-	manager.nextID++
-	return id
+	defer func() { manager.nextID++ }()
+	return manager.nextID
 }
 
-func (manager *asteroidManager) updateDeathRow(deathRow []int) {
-	manager.deathRow = deathRow
-
-	if len(manager.deathRow) > 0 {
-		fmt.Println("[AST.MAN] Collision:", manager.deathRow)
-	}
-
-}
-
-// ONLY FOR TEST
+// print is used to print all asteroids that have collided
 func (manager *asteroidManager) print() {
 
+	var list []int
+
 	for _, asteroid := range manager.asteroids {
-		fmt.Println("(", asteroid.ID, ",", asteroid.X, ",", asteroid.Y, ")")
+		if !asteroid.isAlive() {
+			list = append(list, asteroid.ID)
+		}
 	}
-	/*
-		fmt.Print("\033[2J\033[;H")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-		fmt.Println(". . . . . . . . . .")
-	*/
+	if len(list) > 0 {
+		debugPrint(fmt.Sprintln("[AST.MAN] Collision:", list))
+	}
 }

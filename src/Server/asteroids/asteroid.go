@@ -2,46 +2,49 @@ package asteroids
 
 import "math/rand"
 
-type asteroid struct {
+// Asteroid represents a single asteroid
+type Asteroid struct {
+	ID    int
 	X     int
 	Y     int
-	ID    int
 	Phase int
+	Alive bool
 	xStep int
 	yStep int
 	size  int
+
 	input chan (Data)
 }
 
-
-
-func (asteroid *asteroid) loop() { //loop(id int, XMax int, yMax int) {
+// loop runs an asteroid until an kill message is sent
+func (asteroid *Asteroid) loop() {
 
 	for {
-
 		select {
 		case msg := <-asteroid.input:
 
 			if msg.action == "kill" {
 				return
 			}
-
 			asteroid.move()
-
 		}
-
 	}
-
 }
 
-func (asteroid *asteroid) move() {
+// IsAlive checks if an asteroid still is alive
+func (asteroid *Asteroid) isAlive() bool {
+	return asteroid.Alive
+}
+
+// move updates the asteroids location with each tick
+func (asteroid *Asteroid) move() {
 
 	asteroid.X += asteroid.xStep
 	asteroid.Y += asteroid.yStep
 }
 
 // inBounds checks if a given asteroid a is inside the bounds
-func (asteroid *asteroid) inBounds(manager *asteroidManager) bool {
+func (asteroid *Asteroid) inBounds(manager *asteroidManager) bool {
 
 	return asteroid.X >= 0 &&
 		asteroid.Y >= 0 &&
@@ -50,15 +53,18 @@ func (asteroid *asteroid) inBounds(manager *asteroidManager) bool {
 
 }
 
-func newAsteroid() *asteroid {
-
-	return new(asteroid)
+// newAsteroid allocates a new astroid
+func newAsteroid() *Asteroid {
+	return new(Asteroid)
 
 }
 
-func (asteroid *asteroid) init(id int, xMax int, yMax int) {
+// init sets the asteroids values, id,channel and spawn location
+func (asteroid *Asteroid) init(id int, xMax int, yMax int) {
 
 	asteroid.ID = id
+	asteroid.Alive = true
+
 	asteroid.randowSpawn(xMax, yMax)
 
 	//	asteroid.checkSizeToWorld(xMax, yMax)
@@ -66,7 +72,8 @@ func (asteroid *asteroid) init(id int, xMax int, yMax int) {
 	asteroid.input = make(chan Data)
 }
 
-func (asteroid *asteroid) randowSpawn(xMax int, yMax int) {
+// randomSpawn sets the location at which a asteroid is spawned
+func (asteroid *Asteroid) randowSpawn(xMax int, yMax int) {
 
 	randomDir := rand.Intn(4)
 
