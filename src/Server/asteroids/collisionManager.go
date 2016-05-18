@@ -76,6 +76,7 @@ func (world *World) removeCollisions() {
 	world.Collisions = make([]*Collision, 0)
 }
 
+// print all players and asteroid that has collided
 func (world *World) print() {
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int
@@ -96,19 +97,4 @@ func (world *World) print() {
 		debugPrint(fmt.Sprintln("[COL.MAN] Collisions, Players:", deadPlayerIDs,
 			"Asteroids:", deadAsteroidIDs))
 	}
-}
-
-/////////////////////////////////////////////////////
-/////////////////// below to be removed
-/////////////////////////////////////////////////////
-func (player *Player) death(world *World) {
-	//Make player sleep for a second or two before respawning?
-	player.Lives--
-	player.respawn(world)
-}
-
-//Very primitive respawn, put the dead player back at start-position (0,0)
-func (player *Player) respawn(world *World) {
-	player.X = 0
-	player.Y = 0
 }
