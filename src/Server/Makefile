@@ -1,8 +1,8 @@
 all:
-	go run main.go
-
-silent:
 	go run main.go -s
+
+verbose:
+	go run main.go 
 
 race:
 	go run -race main.go
@@ -14,7 +14,7 @@ doc:
 
 test:
 	@cd asteroids && \
-	go test *.go -v
+	go test *.go -v -coverprofile=coverage.out
 
 openatom:
 	@cd ../../.. && \
