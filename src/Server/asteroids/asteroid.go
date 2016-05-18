@@ -20,20 +20,15 @@ type Asteroid struct {
 func (asteroid *Asteroid) loop() {
 
 	for {
-
 		select {
 		case msg := <-asteroid.input:
 
 			if msg.action == "kill" {
 				return
 			}
-
 			asteroid.move()
-
 		}
-
 	}
-
 }
 
 // IsAlive checks if an asteroid still is alive

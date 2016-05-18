@@ -18,7 +18,9 @@ type asteroidManager struct {
 	asteroids []*Asteroid
 }
 
-// loop …
+// loop is where the asteroidManagers spinns waiting for tick message from the session,
+// once tick received it handle collisions from last tick, spawn new asteroids and
+// send the tick to all asteroids
 func (manager *asteroidManager) loop(sessionConn *Connection) {
 
 	manager.init(sessionConn)
@@ -64,7 +66,7 @@ func (manager *asteroidManager) init(sessionConn *Connection) {
 }
 
 // newAsteroid creates a new asteroid, appends it to the asteroidmanagers array
-// and creates a new go-routine that ......TODO
+// and creates a new go-routine that will handle the asteroid
 func (manager *asteroidManager) newAsteroid() {
 
 	asteroid := newAsteroid()
@@ -140,7 +142,7 @@ func (manager *asteroidManager) getNextID() int {
 	return manager.nextID
 }
 
-//
+// print is used to print all asteroids that have collided
 func (manager *asteroidManager) print() {
 
 	var list []int
