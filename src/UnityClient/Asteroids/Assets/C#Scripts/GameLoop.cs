@@ -50,14 +50,14 @@ public class GameLoop : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        for ( int i = 0; i < threadedUpdate.gameWorld.Players.Length; i++ ) {
+        /*for ( int i = 0; i < threadedUpdate.gameWorld.Players.Length; i++ ) {
             threadedUpdate.gameWorld.Players[i].DrawMe( playerPrefab );
         }
         Debug.Log( threadedUpdate.gameWorld.Asteroids.Length );
 
         for ( int i = 0; i < threadedUpdate.gameWorld.Asteroids.Length; i++ ) {
             threadedUpdate.gameWorld.Asteroids[i].DrawMe( asteroidPrefab );
-        }
+        }*/
         //Need a way to kill or remove old asteroids to make space for the new ones
         //Currently comparing with ID's, but they're never removed, just not sent again
     }
@@ -92,6 +92,7 @@ class ParallelUpdate {
             string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
             Debug.Log( jsonString );
             World jsonWorld = JsonMapper.ToObject<World> (jsonString);
+            
             gameWorld = gameWorld.Update( jsonWorld );
             //Doesn't stop looping, asteroids had a function that crashed the thread.
         }
