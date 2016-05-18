@@ -12,7 +12,6 @@ type Asteroid struct {
 	xStep int
 	yStep int
 	size  int
-
 	input chan (Data)
 }
 
