@@ -34,7 +34,7 @@ type Server struct {
 }
 
 // inDebugMode used when running program with prints
-var inDebugMode = true
+var inDebugMode = false
 
 //debugPrint prints the argument string, used to have same output in complete program
 func debugPrint(str string) {
