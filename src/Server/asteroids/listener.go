@@ -1,21 +1,22 @@
 package asteroids
 
 import (
-	//"fmt" //TEMP
+	"encoding/json"
+	"fmt"
+	"math/rand"
 	"net"
 	"strconv"
-	//"time" //TEMP
-	"encoding/json"
-	//"encoding/binary"
+	"time"
 )
 
 //Player is used to represent the players in the game world
 type Player struct {
-	Name string
-	id int
-	XCord int
-	YCord int
+	Name  string
+	ID    int
+	X     int
+	Y     int
 	Lives int
+	Alive bool
 }
 
 //Listener is responsible for a client each
@@ -23,15 +24,15 @@ type Player struct {
 type Listener struct {
 	socket      net.Listener
 	ID          string
-	Port        int
+	port        int
 	player      *Player
 	conn        net.Conn
 	writeBuffer chan []byte
-	//Connection
 }
 
 //CreateSocket creates a tcp listener at the specified port
 func CreateSocket(port int) (net.Listener, error) {
+
 	connection, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		return nil, err
@@ -41,9 +42,13 @@ func CreateSocket(port int) (net.Listener, error) {
 }
 
 //NewListener creates a new socket then runs this socket as a go routine
-func NewListener(port int /*, conn *Connection*/) (*Listener) {
+func newListener() *Listener {
 
-	listener := new(Listener)
+	return new(Listener)
+}
+
+// init initiates the listeners values
+func (listener *Listener) init(port int) {
 
 	var err error
 	listener.socket, err = CreateSocket(port)
@@ -51,60 +56,116 @@ func NewListener(port int /*, conn *Connection*/) (*Listener) {
 		panic(err)
 	}
 
-	listener.Port = port
-	listener.player = new(Player)
-	listener.player.Name = strconv.Itoa(port);
-	listener.player.XCord = 0
-	listener.player.YCord = 0
-	listener.player.Lives = 3
-	
+	listener.port = port
+
+	/*
+		This should be synchronized with listener?
+
+		listener.player = new(Player)
+		listener.player.Name = strconv.Itoa(port)
+		listener.player.X = 0
+		listener.player.Y = 0
+		listener.player.Lives = 3
+	*/
+
 	listener.writeBuffer = make(chan []byte, 60)
 
-	//listener.write = conn.read //Fan in to manager
-	//listener.read = conn.write //Fan out from manager
-
-	go listener.startUpListener()
-
-	return listener //Listener has player in it!
 }
 
-func (listen *Listener) startUpListener() {
+//newPlayer returns a new player
+func newPlayer() *Player {
+	return new(Player)
+}
+
+//init initiates a new players values
+func (player *Player) init(id int, xMax int, yMax int) {
+	player.ID = id
+	seed := time.Now().UnixNano()
+	rand.Seed(seed)
+
+	fmt.Println(seed)
+
+	player.randomSpawn(xMax, yMax)
+	player.Lives = 3 // updated
+	player.Alive = true
+}
+
+// startUpListener
+func (listener *Listener) startUpListener() {
 	var err error
-	listen.conn, err = listen.socket.Accept()
+	listener.conn, err = listener.socket.Accept()
 	if err != nil {
 		panic(err)
 	}
-	listen.ID = "Hello World"
+	listener.ID = "Hello World"
 
-	listen.idleListener()
+	listener.idleListener()
 }
 
-func (listen *Listener) idleListener() {
+func (listener *Listener) idleListener() {
+
+	/*
+		for {
+			if listener.writeBuffer[0] != nil {
+				listener.conn.Write(listener.writeBuffer[0])
+				listener.writeBuffer = listener.writeBuffer[1:]
+			} else {
+				time.Sleep(time.Second)
+			}
+		}
+	*/
+
 	for {
-		select{
-			case jsonWorld := <- listen.writeBuffer:
-				//sizeWorld := binary.Size(jsonWorld)
-				//jsonSize, err := json.Marshal(sizeWorld)
-				//if err != nil {
-				//	panic(err)
-				//}
-				//listen.conn.Write(jsonSize)
-				listen.conn.Write(jsonWorld)
-			default:
-		}		 
+		select {
+		case jsonWorld := <-listener.writeBuffer:
+			//sizeWorld := binary.Size(jsonWorld)
+			//jsonSize, err := json.Marshal(sizeWorld)
+			//if err != nil {
+			//	panic(err)
+			//}
+			//listen.conn.Write(jsonSize)
+			listener.conn.Write(jsonWorld)
+		default:
+		}
 	}
 }
 
-//Write writes world to clients
-func (listen *Listener) Write(world *World) {
+//write writes game world to clients
+func (listener *Listener) Write(world *World) {
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
 	}
-	
-	listen.writeBuffer <- jsonWorld
+
+	listener.writeBuffer <- jsonWorld
+	//listener.writeBuffer = append(listener.writeBuffer, jsonWorld)
 }
 
-func (listen *Listener) getPlayer() *Player {
-	return listen.player
+// getPlayer returns a listeners player
+func (listener *Listener) getPlayer() *Player {
+	return listener.player
+}
+
+// randomSpawn spawn a player on a random location
+func (player *Player) randomSpawn(xMax int, yMax int) {
+
+	player.X = rand.Intn(xMax)
+	player.Y = rand.Intn(yMax)
+
+	fmt.Println(player.ID, player.X, player.Y)
+}
+
+//isAlive return if the player is alive or not
+func (player *Player) isAlive() bool {
+	return player.Alive
+}
+
+//getLives returns the amount of lives the player has left
+func (player *Player) getLives() int {
+	return player.Lives
+}
+
+//setAlive sets the Alive state to true
+func (player *Player) setAlive() {
+	player.Alive = true
 }
