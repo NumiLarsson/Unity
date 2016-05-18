@@ -62,7 +62,7 @@ func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 
 }
 
-// appendCollision
+// appendCollision appends the coordinates from a collison to a collison-list
 func (world *World) appendCollision(x int, y int) {
 	collision := new(Collision)
 	collision.X = x
@@ -71,6 +71,7 @@ func (world *World) appendCollision(x int, y int) {
 	world.Collisions = append(world.Collisions, collision)
 }
 
+//removeCollisons removes all collisons from the collison-list
 func (world *World) removeCollisions() {
 	world.Collisions = make([]*Collision, 0)
 }
