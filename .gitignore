@@ -29,7 +29,8 @@ sysinfo.txt
 *.o
 *.a
 *.so
-
+*.out
+*.bin
 
 # Folders
 _obj
