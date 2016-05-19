@@ -128,9 +128,10 @@ func (manager *ListenerManager) getPlayers() []*Player {
 // sendToClient broadcasts world-info to every listener
 func (manager *ListenerManager) sendToClient(world *World) {
 	for _, listener := range manager.listeners {
-		if listener.ID != "" {
+		go listener.Write(world)
+		/*if listener.ID != "" {
 			go listener.Write(world)
-		}
+		}*/
 	}
 }
 
