@@ -100,13 +100,14 @@ Trivial genomläsning av koden som skrivits av de andra i gruppen för ökad fö
 ## Vecka 20
 
 ##### Måndag
+Pga utbildning kommer med största sannolikhet veckan se mager ut från min sida. Kommer försöka göra så gott jag kan genom att motta recaps och förhoppningsvis krav på saker jag kan göra. Spenderade ca 1h med genomläsning av koden skriven av gruppen.
 
 ##### Tisdag
-
+1h genomläsning av koden skriven av gruppen
 ##### Onsdag
-
+1h genomläsning av koden skriven av gruppen
 ##### Torsdag
-
+1h genomläsning av koden skriven av gruppen
 ##### Fredag
 
 ## Vecka 21
