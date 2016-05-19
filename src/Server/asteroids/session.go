@@ -80,6 +80,13 @@ func (session *session) loop() {
 			session.world.collisionManager()
 
 			// BROADCAST TO CLIENTS
+			/*var list []int
+			for _, ass := range session.world.Asteroids {
+				list = append(list, ass.ID)
+			}*/
+
+			//fmt.Println("SES:", session.world.Asteroids)
+			//fmt.Println("SES:", list)
 			session.listenerManager.sendToClient(session.world)
 
 			//session.world.Players[0].fakeMovePlayer()
