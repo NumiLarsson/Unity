@@ -160,6 +160,7 @@ func TestRemoveAsteroid(t *testing.T) {
 }
 
 func TestResumeAsteroid(t *testing.T) {
+
 	manager := startAsteroidManagerForTest()
 	asteroid := newAsteroid()
 	manager.asteroids = append(manager.asteroids, asteroid)
@@ -178,8 +179,8 @@ func TestResumeAsteroid(t *testing.T) {
 }
 
 func TestGetNextID(t *testing.T) {
-	manager := startAsteroidManagerForTest()
 
+	manager := startAsteroidManagerForTest()
 	ID := manager.nextID
 
 	if manager.getNextID() != ID {
@@ -188,5 +189,94 @@ func TestGetNextID(t *testing.T) {
 
 	if manager.getNextID() != ID+1 {
 		t.Error("Next ID incorrect")
+	}
+}
+
+func TestHandleCollisions(t *testing.T) {
+	manager := startAsteroidManagerForTest()
+
+	a1 := newAsteroid()
+	a1.X = 1
+	a1.Y = 1
+	a1.Alive = true
+	manager.asteroids = append(manager.asteroids, a1)
+
+	a2 := newAsteroid()
+	a2.X = 2
+	a2.Y = 2
+	a2.Alive = true
+	manager.asteroids = append(manager.asteroids, a2)
+
+	length := len(manager.asteroids)
+
+	manager.handleCollisions()
+
+	if len(manager.asteroids) != length {
+		t.Error("No collission occured yet")
+	}
+
+	// Update to asteroid not alive anymore
+	a2.Alive = false
+	manager.handleCollisions()
+
+	if len(manager.asteroids) != length-1 {
+		t.Error("a2 has collided")
+	}
+
+	// Test if remove if out of bounds
+	a1.X = manager.xMax + 1
+	a1.Y = 1
+	manager.handleCollisions()
+
+	if len(manager.asteroids) != length-2 {
+		t.Error("a1 out of bounds")
+	}
+
+}
+
+// name ...
+func TestAsteroidLoop(t *testing.T) {
+
+	manager := newAsteroidManager()
+	conn := MakeConnection()
+
+	go manager.loop(conn.FlipConnection())
+
+	response := <-conn.read
+
+	if manager.input != conn.write {
+		t.Error("Channels incorrect")
+	}
+
+	if response.action != "a.manager_ready" || response.result != 200 {
+		t.Error("Response incorrect")
+	}
+
+	// create asteroid to be removed
+	a1 := newAsteroid()
+	a1.X = 1
+	a1.Y = 1
+	a1.Alive = true
+	a1.input = conn.read
+	manager.asteroids = append(manager.asteroids, a1)
+
+	//length := len(manager.asteroids)
+
+	msg := Data{"session.tick", 100}
+
+	conn.write <- msg
+
+	if manager.input != conn.write {
+		t.Error("Channels incorrect")
+	}
+
+	if len(manager.asteroids) != 1 {
+		t.Error("Removed incorrect")
+	}
+
+	response = <-conn.read
+
+	if response.action != "a.manager_ok" || response.result != 0 {
+		t.Error("Response incorrect")
 	}
 }
