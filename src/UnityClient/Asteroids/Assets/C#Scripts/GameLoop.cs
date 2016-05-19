@@ -100,9 +100,8 @@ public class GameLoop : MonoBehaviour {
                 int offset = 0;
                 tempAsteroid = asteroids[i];
                 if (tempAsteroid != null) { 
-                    bool temp = tempAsteroid.GetComponent<AsteroidObject>().drawnLastFrame;
+                    bool temp = tempAsteroid.GetComponent<astObj>().drawnLastFrame;
                     if ( !temp ) {
-                        //Debug.Log( "Killing asteroid" + tempAsteroid.name );
                         //Destroy( asteroids[i + offset].GetComponent<Rigidbody>() );
                         asteroids[i].name = (-1).ToString();
                         asteroids.RemoveAt( i + offset );
