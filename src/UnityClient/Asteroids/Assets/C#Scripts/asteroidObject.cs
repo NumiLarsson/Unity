@@ -40,7 +40,7 @@ public class AsteroidObject : MonoBehaviour {
         body = this.GetComponent<Rigidbody>();
         body.useGravity = false;
         body.isKinematic = false;
-        body.transform.position = new Vector3( ( X  / 2 ) - 3.25f, ( Y / 15.38f ) - 3.25f, 0 );
+        body.transform.position = new Vector3( ( X  / 15.38f ) - 3.25f, ( Y / 15.38f ) - 3.25f, 0 );
         //asteroidBody.transform.position = new Vector3( X, Y, 0 ); //Set position
         body.freezeRotation = true;
         body.velocity = Vector3.zero; //Stop moving!
@@ -57,7 +57,7 @@ public class AsteroidObject : MonoBehaviour {
         } else if (this.gameObject.name == "-1") {
             Destroy( this.gameObject );
         } else {
-            body.transform.position = new Vector3( ( X / 2 - 3.25f ), ( Y / 15.38f - 3.25f ) );
+            body.transform.position = new Vector3( ( X / 15.38f) - 3.25f , ( Y / 15.38f) - 3.25f  );
         }
     }
 }
