@@ -60,6 +60,11 @@ func (manager *asteroidManager) init(sessionConn *Connection) {
 	manager.xMax = 100
 	manager.yMax = 100
 	manager.maxRoids = 20
+	/*i := 0;
+	for (i < manager.maxRoids){
+		manager.newAsteroid();
+		i++;
+	}*/
 	manager.input = sessionConn.read
 
 	sessionConn.write <- Data{"a.manager_ready", 200}
@@ -83,7 +88,7 @@ func (manager *asteroidManager) shouldSpawn() bool {
 	r := rand.Intn(101)
 	scalar := 100 / manager.maxRoids
 
-	if r > manager.treshold {
+	if r > manager.treshold && len(manager.asteroids) < 20 {
 
 		if len(manager.asteroids) > 0 {
 			manager.treshold = len(manager.asteroids) * scalar

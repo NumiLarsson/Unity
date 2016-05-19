@@ -84,7 +84,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	rand.Seed(seed)
 
 	fmt.Println(seed)
-
+	player.Name = "Hello World"
 	player.randomSpawn(xMax, yMax)
 	player.Lives = 3 // updated
 	player.Alive = true
@@ -103,28 +103,11 @@ func (listener *Listener) startUpListener() {
 }
 
 func (listener *Listener) idleListener() {
-
-	/*
-		for {
-			if listener.writeBuffer[0] != nil {
-				listener.conn.Write(listener.writeBuffer[0])
-				listener.writeBuffer = listener.writeBuffer[1:]
-			} else {
-				time.Sleep(time.Second)
-			}
-		}
-	*/
-
 	for {
 		select {
 		case jsonWorld := <-listener.writeBuffer:
-			//sizeWorld := binary.Size(jsonWorld)
-			//jsonSize, err := json.Marshal(sizeWorld)
-			//if err != nil {
-			//	panic(err)
-			//}
-			//listen.conn.Write(jsonSize)
 			listener.conn.Write(jsonWorld)
+			//fmt.Println(string(jsonWorld))
 		default:
 		}
 	}
