@@ -9,7 +9,7 @@ import (
 //type World int
 // TODO: CHANGE THIS
 type World struct {
-	worldSize  int
+	WorldSize  int
 	Players    []*Player
 	Asteroids  []*Asteroid
 	Collisions []*Collision
@@ -75,10 +75,10 @@ func (session *session) loop() {
 			// Collect player and asteroid positions
 			session.world.Players = session.listenerManager.getPlayers()
 			session.world.Asteroids = session.asteroidManager.getAsteroids()
-
+			session.world.Players[0].fakeMovePlayer();
 			// Calculate collisions
 			session.world.collisionManager()
-
+			
 			// BROADCAST TO CLIENTS
 			session.listenerManager.sendToClient(session.world)
 
@@ -127,7 +127,7 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.read.asteroids = toAsteroids.read
 
 	session.world = new(World)
-	session.world.worldSize = 400
+	session.world.WorldSize = 400
 	//session.world.Players = make([]*Player, 0)
 	//session.world.Asteroids = make([]*Asteroid, 0)
 	//session.world.Collisions = make([]*Collision, 0)

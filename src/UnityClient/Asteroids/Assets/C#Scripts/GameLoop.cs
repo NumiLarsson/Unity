@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,202 +10,167 @@ using LitJson;
 
 public class GameLoop : MonoBehaviour {
     IPAddress ipAddress;
-    IPEndPoint listenerIPEP;
     Socket socket = new Socket ( AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-    Socket listenerSocket = new Socket ( AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    public IPEndPoint listenerIPEP = null;
+    public Socket listenerSocket = new Socket ( AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
     public GameObject playerPrefab;
     public GameObject asteroidPrefab;
-    //GameObject []Players;
-    //GameObject []Asteroids;
-    
-    ParallelUpdate threadedUpdate;
 
-    public Text testText1;
+    GameObject tempPlayer;
+    GameObject tempAsteroid;
+
+    List<GameObject> players;
+    List<GameObject> asteroids;
+
+    ParallelUpdate threadedUpdate;
 
     // Use this for initialization
     void Start () {
-        testText1.text = "Startup Intialized, please stand by";
-        ipAddress = IPAddress.Parse("127.0.0.1");
+        ipAddress = IPAddress.Parse( "127.0.0.1" );
         IPEndPoint serverIPEP = new IPEndPoint(ipAddress, 9000);
         int listenerPort = requestPort(serverIPEP);
-
         listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
         listenerSocket.Connect( listenerIPEP );
-        Debug.Log( "Socket connected to the port received from server" );
-        testText1.text = "Startup completed";
+        //Connect to the specific listenerport
 
-        byte[] message = new byte[8192];
-        int bytesReceived = listenerSocket.Receive(message);
-        string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
-        testText1.text = jsonString;
-        Debug.Log( jsonString );
-        World gameWorld = JsonMapper.ToObject<World>(jsonString);
+        //byte[] message = new byte[8192];
+        //int bytesReceived = listenerSocket.Receive(message);
+        //string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
 
-        threadedUpdate = new ParallelUpdate(gameWorld, listenerSocket);
+        threadedUpdate = new ParallelUpdate( listenerSocket );
 
         Thread oThread = new Thread(new ThreadStart(threadedUpdate.threadedUpdate));
         oThread.Start();
-    }
-	
-	// Update is called once per frame
-	void Update () {
-        Debug.Log( "Frame" );
+
+        players = new List<GameObject>();
+        asteroids = new List<GameObject>();
     }
 
-    int requestPort(IPEndPoint serverIPEP) {
+    // Update is called once per frame
+    void Update () {
+        if ( threadedUpdate.live ) {
+            //Update worldObject with threadedUpdate.gameWorld
+            World gameWorld = threadedUpdate.gameWorld;
+            foreach (Player newPlayer in gameWorld.Players ) {
+                bool isDrawn = false;
+                foreach (GameObject oldPlayer in players) {
+                    if ( oldPlayer.name == newPlayer.Name) {
+                        oldPlayer.SendMessage( "UpdateMe", newPlayer );
+                        isDrawn = true;
+                    }
+                }
+                if ( !isDrawn ) {
+                    tempPlayer = Instantiate( playerPrefab ) as GameObject;
+                    this.tempPlayer.SendMessage( "InitMe", newPlayer.Name );
+                    players.Add( tempPlayer );
+                }
+            }
+            foreach ( GameObject oldAsteroid in asteroids) {
+                if ( oldAsteroid != null ) {
+                    tempAsteroid = oldAsteroid;
+                    tempAsteroid.SendMessage( "FlagFalse" );
+                }
+            }
+            if (gameWorld.Asteroids != null ) { 
+                foreach ( Asteroid newAsteroid in gameWorld.Asteroids ) {
+                    if ( newAsteroid != null && newAsteroid.ID != -1 ) {
+                        if (newAsteroid.ID != 1) { 
+                            bool isDrawn = false;
+                            foreach ( GameObject oldAsteroid in asteroids ) {
+                                if (oldAsteroid != null ) {
+                                    if ( oldAsteroid.name == newAsteroid.ID.ToString() ) {
+                                        oldAsteroid.SendMessage( "UpdateMe", newAsteroid );
+                                        isDrawn = true;
+                                    }
+                                }
+                            }
+                            if ( !isDrawn ) {
+                                tempAsteroid = Instantiate( asteroidPrefab ) as GameObject;
+                                //this.tempAsteroid.GetComponent<AsteroidObject>().InitMe( newAsteroid.ID );
+                                this.tempAsteroid.SendMessage( "InitMe", newAsteroid.ID );
+                                asteroids.Add( tempAsteroid );
+                            }
+                        }
+                    }
+                }
+            }
+
+            for ( int i = 0; i < asteroids.Count; i++ ) {
+                int offset = 0;
+                tempAsteroid = asteroids[i];
+                if (tempAsteroid != null) { 
+                    bool temp = tempAsteroid.GetComponent<AsteroidObject>().drawnLastFrame;
+                    if ( !temp ) {
+                        //Debug.Log( "Killing asteroid" + tempAsteroid.name );
+                        //Destroy( asteroids[i + offset].GetComponent<Rigidbody>() );
+                        asteroids[i].name = (-1).ToString();
+                        asteroids.RemoveAt( i + offset );
+                        offset--;
+                    }
+                }
+            }
+        }
+    }
+
+    int requestPort ( IPEndPoint serverIPEP ) {
         socket.Connect( serverIPEP );
         byte[] message = new byte[1024];
         int bytesReceived = socket.Receive(message);
         string jsonPort = Encoding.UTF8.GetString( message, 0, bytesReceived );
-
         //Close the active connection to the server so that we can create a new one with the port
-        socket.Shutdown(SocketShutdown.Both);
+        socket.Shutdown( SocketShutdown.Both );
         socket.Close();
         return int.Parse( jsonPort );
     }
-}
 
-[System.Serializable]
-class ParallelUpdate {
-    public World gameWorld { get; set; }
-    private Socket socket { get; set; }
+    class ParallelUpdate {
+        public World gameWorld;
+        public bool live = false;
+        //public List<Player> Players { get; set; }
+        //public List<AsteroidData> Asteroids { get; set; }
+        private Socket socket { get; set; }
 
-    public ParallelUpdate ( World world, Socket socket ) {
-        gameWorld = world;
-        this.socket = socket;
-    }
+        public ParallelUpdate ( Socket socket /*, int Players, int Asteroids*/ ) {
+            this.socket = socket;
 
-    public void threadedUpdate () {
-        while ( true ) {
             byte[] message = new byte[8192];
             int bytesReceived = socket.Receive(message);
             string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
-            Debug.Log( jsonString );
-            World jsonWorld = JsonMapper.ToObject<World> (jsonString);
-            
-            gameWorld = gameWorld.Update( jsonWorld );
-            //Doesn't stop looping, asteroids had a function that crashed the thread.
-        }
-    }
-}
-
-[System.Serializable]
-class World {
-    public Player      []Players   { get; set; }
-    public Asteroid    []Asteroids { get; set; }
-
-    public World Update ( World newWorld ) {
-        for (int i = 0; i < Asteroids.Length; i++) {
-            if ( Asteroids[i].isAlive == false ) {
-                Asteroids[i].ID = -1;
-            }
+            gameWorld = JsonMapper.ToObject<World>( jsonString );
+            live = true;
         }
 
-        foreach (Asteroid oldAsteroid in Asteroids ) {
-            oldAsteroid.isAlive = false;
-        }
+        public void threadedUpdate () {
+            while ( true ) {
+                //Queue<Player> newPlayers;
 
-        foreach (Player player in newWorld.Players ) {
-            UpdatePlayers( player );
-        }
+                //Read from server
+                byte[] message = new byte[8192];
+                int bytesReceived = socket.Receive(message);
+                string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
 
-        foreach //(int i = 0; i < newWorld.Asteroids.Length; i++) {
-            (Asteroid asteroid in newWorld.Asteroids) {
-            UpdateAsteroids( asteroid );
-        }
-        return this;
-    }
+                World testWorld = JsonMapper.ToObject<World>(jsonString);
+                //gameWorld.flagOldPlayers();
+                //newPlayers = gameWorld.updatePlayers(testWorld);
 
-    void UpdateAsteroids ( Asteroid newAsteroid ) {
-        
-        foreach(Asteroid oldAsteroid in Asteroids) {
-            if (oldAsteroid.ID == newAsteroid.ID) {
-                oldAsteroid.isAlive = true;
-                oldAsteroid.X = newAsteroid.X;
-                oldAsteroid.Y = oldAsteroid.Y;
-                oldAsteroid.Phase = oldAsteroid.Phase;
-                return;
-            }
-        }
-        this.newAsteroid( newAsteroid );
-    }
+                //int amountOfNewPlayers = newPlayers.Count;
+                //for ( int x = 0; x < amountOfNewPlayers; x++ ) {
+                //    for ( int i = 0; i < gameWorld.Players.Length; i++ ) {
+                //        if ( gameWorld.Players[i] == null ) {
+                //            gameWorld.Players[i] = newPlayers.Dequeue();
+                //            break;
+                //        } else if ( !gameWorld.Players[i].Alive ) {
+                //            gameWorld.Players[i] = newPlayers.Dequeue();
+                //            break;
+                //        }
+                //    }
+                //}
 
-    void newAsteroid( Asteroid newAsteroid) {
-        for (int i = 0; i < Asteroids.Length; i++ ) {
-            if ( Asteroids[i].ID == -1) { //Change this, isAlive
-                Asteroids[i] = newAsteroid;
-                return;
-            }
-        }
-        Debug.Log( "Array full" );
-    }
-
-    void UpdatePlayers (Player newPlayer) {
-        foreach (Player oldPlayer in Players ) {
-            if (oldPlayer.Name == newPlayer.Name ) {
-                oldPlayer.XCord = newPlayer.XCord;
-                oldPlayer.YCord = newPlayer.YCord;
-                oldPlayer.Lives = newPlayer.Lives;
-                return;
-            }
-        }
-        this.newPlayer( newPlayer );
-    }
-
-    void newPlayer ( Player newPlayer ) {
-        for (int i = 0; i < this.Players.Length; i++ ) {
-            if (Players[i].Name == "") {
-                Players[i] = newPlayer;
-            }
-        }
-    }
-}
-
-[System.Serializable]
-class playerObject : ScriptableObject {
-    public GameObject playObj { get; set; }
-
-    public void CreateMe( GameObject playPrefab, int XCord, int YCord ) {
-        playObj = Instantiate( playPrefab );
-        Rigidbody playerBody = playObj.GetComponent < Rigidbody >();
-        playerBody.useGravity = false;
-        playerBody.isKinematic = false;
-        playObj.transform.position = new Vector3( XCord, YCord, 0 );
-        playerBody.freezeRotation = true;
-    }
-
-    public void DrawMe(int XCord, int YCord) {
-        //playerObject = new GameObject( Name );
-        //Rigidbody playerBody = playerObject.AddComponent<Rigidbody>();
-        //playerBody.useGravity = false;
-        //playerObject.transform.position = new Vector3 ( XCord, YCord, 0 );
-        //playerBody.freezeRotation = true;
-        playObj.transform.position = new Vector3( XCord, YCord, 0 );
-    }
-}
-
-[System.Serializable]
-class Player {
-    public playerObject playObj { get; set; }
-    public string       Name    { get; set; }
-    public int          XCord   { get; set; }
-    public int          YCord   { get; set; }
-    public int          Lives   { get; set; }
-    public bool         drawn   { get; set; }
-
-    public Player () {
-        drawn = false;
-    }
-
-    public void DrawMe(GameObject playerPrefab) {
-        if ( !drawn ) {
-            //playObj = new playerObject( playerPrefab, XCord, YCord );
-            playObj = ScriptableObject.CreateInstance<playerObject> ();
-            playObj.CreateMe( playerPrefab, XCord, YCord );
-            drawn = true;
-        } else {
-            playObj.DrawMe( XCord, YCord );
+                //gameWorld.Asteroids = testWorld.Asteroids;
+                gameWorld = testWorld;
+            }//End While (true)
+            //threadedUpdate();
         }
     }
 }
