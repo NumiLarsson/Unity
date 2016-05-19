@@ -9,7 +9,8 @@ import (
 //type World int
 // TODO: CHANGE THIS
 type World struct {
-	worldSize  int
+	width      int
+	height     int
 	Players    []*Player
 	Asteroids  []*Asteroid
 	Collisions []*Collision
@@ -44,12 +45,14 @@ type session struct {
 }
 
 // Session initiates the sessions values and creates a new go-routine for the session
-func Session(serverConn *Connection, startPort int, players int, worldSize int) {
+func Session(serverConn *Connection, startPort int, players int, worldHeight int, worldWidth int) {
 
 	session := new(session)
 	session.maxPlayers = players
 
-	session.worldSize = worldSize
+	session.world = new(World)
+	session.world.height = worldHeight
+	session.world.width = worldWidth
 	session.write.server = serverConn.write
 	session.read.server = serverConn.read
 
@@ -133,16 +136,10 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
-	session.world = new(World)
-	session.world.worldSize = 400
-	//session.world.Players = make([]*Player, 0)
-	//session.world.Asteroids = make([]*Asteroid, 0)
-	//session.world.Collisions = make([]*Collision, 0)
-
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
 
-	go session.asteroidManager.loop(toAsteroids.FlipConnection() /*,session.world.Asteroids*/)
+	go session.asteroidManager.loop(toAsteroids.FlipConnection(), session.world.height, session.world.width)
 	go session.listenerManager.loop(toPlayers.FlipConnection(),
 		session.maxPlayers, startPort)
 
