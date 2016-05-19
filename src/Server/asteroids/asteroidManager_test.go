@@ -5,12 +5,19 @@ import (
 	"testing"
 )
 
+//Just to keep fmt package imported
+var fakeFmtPrint bool = false
+
 func startAsteroidManagerForTest() *asteroidManager {
 	manager := newAsteroidManager()
 	conn := MakeConnection()
 
 	// Go-routine to be able to read confirmation
 	go manager.init(conn.FlipConnection())
+
+	if fakeFmtPrint != false {
+		fmt.Println("Just to keep fmt package imported")
+	}
 
 	<-conn.read
 
@@ -34,7 +41,6 @@ func TestInitAsteroidManager(t *testing.T) {
 	// Go-routine to be able to read confirmation
 	go manager.init(conn.FlipConnection())
 
-	fmt.Println("innan response")
 	response := <-conn.read
 
 	if manager.input != conn.write {
@@ -150,5 +156,37 @@ func TestRemoveAsteroid(t *testing.T) {
 			t.Error("Remove incorrect")
 		}
 		i--
+	}
+}
+
+func TestResumeAsteroid(t *testing.T) {
+	manager := startAsteroidManagerForTest()
+	asteroid := newAsteroid()
+	manager.asteroids = append(manager.asteroids, asteroid)
+	conn := MakeConnection()
+
+	asteroid.input = conn.read
+
+	go manager.resumeAsteroids()
+
+	response := <-conn.read
+
+	if response.action != "a.manager_ok" || response.result != 0 {
+		t.Error("Response incorrect")
+	}
+
+}
+
+func TestGetNextID(t *testing.T) {
+	manager := startAsteroidManagerForTest()
+
+	ID := manager.nextID
+
+	if manager.getNextID() != ID {
+		t.Error("Next ID incorrect")
+	}
+
+	if manager.getNextID() != ID+1 {
+		t.Error("Next ID incorrect")
 	}
 }

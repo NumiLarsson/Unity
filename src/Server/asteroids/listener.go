@@ -2,7 +2,7 @@ package asteroids
 
 import (
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"math/rand"
 	"net"
 	"strconv"
@@ -132,11 +132,11 @@ func (listener *Listener) idleListener() {
 func (listener *Listener) Write(world *World) {
 
 	//fmt.Println(world.Asteroids)
-	var list []int
+	/*var list []int
 	for _, ass := range world.Asteroids {
 		list = append(list, ass.ID)
 	}
-	fmt.Println("LIST:", list)
+	fmt.Println("LIST:", list)*/
 
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
