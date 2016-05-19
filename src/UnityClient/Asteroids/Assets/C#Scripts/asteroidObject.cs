@@ -51,7 +51,6 @@ public class AsteroidObject : MonoBehaviour {
 	void Update () {
         framesSinceDrawn++;
         if ( framesSinceDrawn > 10) {
-            Debug.Log( "Killing myself" + this.name );
             Destroy( this.gameObject );
             Destroy( body );
             Destroy( this );
