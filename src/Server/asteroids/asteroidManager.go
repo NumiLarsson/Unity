@@ -57,8 +57,8 @@ func newAsteroidManager() *asteroidManager {
 // and sets channels to session and
 func (manager *asteroidManager) init(sessionConn *Connection) {
 	// TODO fix hardcoded variables
-	manager.xMax = 100
-	manager.yMax = 100
+	manager.xMax = 400
+	manager.yMax = 225
 	manager.maxRoids = 20
 	/*i := 0;
 	for (i < manager.maxRoids){
