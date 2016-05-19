@@ -16,11 +16,13 @@ func TestCreateSocket(t *testing.T) {
 func TestListenerInit(t *testing.T) {
 	listener := newListener()
 
-	listener.init(9002)
+	listener.init(8000)
 
-	if listener.port != 9002 {
-		t.Error("Listener.port is wrong! Expected: 9001, Got : ", listener.port)
+	if listener.port != 8000 {
+		t.Error("Listener.port is wrong! Expected: 9002, Got : ", listener.port)
 	}
+
+
 }
 
 func TestPlayerInit(t *testing.T) {
