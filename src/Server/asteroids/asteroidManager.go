@@ -60,7 +60,7 @@ func (manager *asteroidManager) init(sessionConn *Connection, height int, width 
 	// TODO fix hardcoded variables
 	manager.yMax = height
 	manager.xMax = width
-	manager.maxRoids = 20
+	manager.maxRoids = 50
 	manager.input = sessionConn.read
 
 	sessionConn.write <- Data{"a.manager_ready", 200}
