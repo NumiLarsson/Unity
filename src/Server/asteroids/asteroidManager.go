@@ -84,7 +84,7 @@ func (manager *asteroidManager) shouldSpawn() bool {
 	r := rand.Intn(101)
 	scalar := 100 / manager.maxRoids
 
-	if r > manager.treshold && len(manager.asteroids) < 20 {
+	if r > manager.treshold && len(manager.asteroids) < manager.maxRoids {
 
 		if len(manager.asteroids) > 0 {
 			manager.treshold = len(manager.asteroids) * scalar
