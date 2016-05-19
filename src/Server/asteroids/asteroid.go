@@ -75,32 +75,37 @@ func (asteroid *Asteroid) init(id int, xMax int, yMax int) {
 // randomSpawn sets the location at which a asteroid is spawned
 func (asteroid *Asteroid) randowSpawn(xMax int, yMax int) {
 
-	randomDir := rand.Intn(4)
+	randomSpot := rand.Intn(4)
+	randomDir := rand.Intn(5) - 2
 
-	switch randomDir {
+	switch randomSpot {
 	case 0:
+		// Spawn top edge
 		asteroid.X = rand.Intn(xMax)
 		asteroid.Y = 0 - asteroid.size
-		asteroid.xStep = 0
-		asteroid.yStep = 1
+		asteroid.xStep = randomDir
+		asteroid.yStep = 2
 
 	case 1:
+		// Spawn right edge
 		asteroid.X = xMax
 		asteroid.Y = rand.Intn(yMax)
-		asteroid.xStep = -1
-		asteroid.yStep = 0
+		asteroid.xStep = -2
+		asteroid.yStep = randomDir
 
 	case 2:
+		// Spawn bottom edge
 		asteroid.X = rand.Intn(xMax)
 		asteroid.Y = yMax
-		asteroid.xStep = 0
-		asteroid.yStep = -1
+		asteroid.xStep = randomDir
+		asteroid.yStep = -2
 
 	case 3:
+		// Spawn left edge
 		asteroid.X = 0 - asteroid.size
 		asteroid.Y = rand.Intn(yMax)
-		asteroid.xStep = 1
-		asteroid.yStep = 0
+		asteroid.xStep = 2
+		asteroid.yStep = randomDir
 	}
 
 }

@@ -21,9 +21,9 @@ type asteroidManager struct {
 // loop is where the asteroidManagers spinns waiting for tick message from the session,
 // once tick received it handle collisions from last tick, spawn new asteroids and
 // send the tick to all asteroids
-func (manager *asteroidManager) loop(sessionConn *Connection) {
+func (manager *asteroidManager) loop(sessionConn *Connection, height int, width int) {
 
-	manager.init(sessionConn)
+	manager.init(sessionConn, height, width)
 
 	for {
 		select {
@@ -56,11 +56,11 @@ func newAsteroidManager() *asteroidManager {
 
 // init initiate the asteroid manager with hardcoded values TODO: input?
 // and sets channels to session and
-func (manager *asteroidManager) init(sessionConn *Connection) {
+func (manager *asteroidManager) init(sessionConn *Connection, height int, width int) {
 	// TODO fix hardcoded variables
-	manager.xMax = 100
-	manager.yMax = 100
-	manager.maxRoids = 20
+	manager.yMax = height
+	manager.xMax = width
+	manager.maxRoids = 50
 	manager.input = sessionConn.read
 
 	sessionConn.write <- Data{"a.manager_ready", 200}

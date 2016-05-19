@@ -185,7 +185,7 @@ func (server *Server) createSession() int {
 	nextPort := server.getNextPort()
 
 	// Start a session and wait for it to send confirmation
-	go Session(sessConn.FlipConnection(), nextPort, server.maxPlayers, 400)
+	go Session(sessConn.FlipConnection(), nextPort, server.maxPlayers, 1080, 1920)
 	<-sessConn.read
 
 	debugPrint(fmt.Sprintln("[SERVER] Session created"))
