@@ -82,7 +82,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.ID = id
 	seed := time.Now().UnixNano()
 	rand.Seed(seed)
-	
+
 	player.randomSpawn(xMax, yMax)
 	player.Lives = 3 // updated
 	player.Alive = true
