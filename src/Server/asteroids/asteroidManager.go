@@ -100,7 +100,7 @@ func (manager *asteroidManager) shouldSpawn() bool {
 func (manager *asteroidManager) resumeAsteroids() {
 
 	for _, asteroid := range manager.asteroids {
-		asteroid.input <- Data{"a_manager.ok", 0}
+		asteroid.input <- Data{"a.manager_ok", 0}
 	}
 
 }

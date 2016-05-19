@@ -2,7 +2,7 @@ package asteroids
 
 import (
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"math/rand"
 	"net"
 	"strconv"
@@ -82,7 +82,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.ID = id
 	seed := time.Now().UnixNano()
 	rand.Seed(seed)
-	
+
 	player.randomSpawn(xMax, yMax)
 	player.Lives = 3 // updated
 	player.Alive = true
@@ -132,11 +132,11 @@ func (listener *Listener) idleListener() {
 func (listener *Listener) Write(world *World) {
 
 	//fmt.Println(world.Asteroids)
-	var list []int
+	/*var list []int
 	for _, ass := range world.Asteroids {
 		list = append(list, ass.ID)
 	}
-	fmt.Println("LIST:", list)
+	fmt.Println("LIST:", list)*/
 
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
