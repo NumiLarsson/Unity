@@ -14,7 +14,8 @@ type asteroidManager struct {
 	maxRoids  int
 	treshold  int
 	deathRow  []int
-	input     chan (Data)
+	input     chan Data
+	output    chan Data
 	asteroids []*Asteroid
 }
 
@@ -41,15 +42,46 @@ func (manager *asteroidManager) loop(sessionConn *Connection, height int, width 
 
 				manager.resumeAsteroids()
 			}
+
+			if msg.action == terminate {
+
+				roidKills := manager.killAsteroids()
+				DebugPrint(fmt.Sprintln("[AST.MAN] Dead,", roidKills, "asteroids killed"))
+				manager.output <- Data{terminated, ok}
+				return
+
+			}
+
 		}
 	}
+
+}
+
+func (manager *asteroidManager) kill() {
+
+	go func() {
+		manager.input <- Data{terminate, request}
+	}()
+
+}
+
+func (manager *asteroidManager) killAsteroids() int {
+
+	count := 0
+	for _, asteroid := range manager.asteroids {
+
+		asteroid.input <- Data{terminate, request}
+		<-asteroid.input
+		count++
+	}
+	return count
 
 }
 
 // newAsteroidManager creates a new asteroid manager
 func newAsteroidManager() *asteroidManager {
 
-	debugPrint(fmt.Sprintln("[AST.MAN] Created"))
+	DebugPrint(fmt.Sprintln("[AST.MAN] Created"))
 	return new(asteroidManager)
 
 }
@@ -62,8 +94,9 @@ func (manager *asteroidManager) init(sessionConn *Connection, height int, width 
 	manager.xMax = width
 	manager.maxRoids = 50
 	manager.input = sessionConn.read
+	manager.output = sessionConn.write
 
-	sessionConn.write <- Data{"a.manager_ready", 200}
+	sessionConn.write <- Data{"a.manager_ready", ok}
 }
 
 // newAsteroid creates a new asteroid, appends it to the asteroidmanagers array
@@ -75,6 +108,7 @@ func (manager *asteroidManager) newAsteroid() {
 
 	asteroid.init(manager.getNextID(), manager.xMax, manager.yMax)
 	go asteroid.loop()
+
 }
 
 // spawnAsteroid spawns a new asteroid if current asteroids in world below maxValue and
@@ -92,15 +126,18 @@ func (manager *asteroidManager) shouldSpawn() bool {
 			manager.treshold = scalar
 		}
 		return true
+
 	}
+
 	return false
+
 }
 
 // resumeAsteroids used to send "tick" to all asteroids
 func (manager *asteroidManager) resumeAsteroids() {
 
 	for _, asteroid := range manager.asteroids {
-		asteroid.input <- Data{"a.manager_ok", 0}
+		asteroid.input <- Data{"a.manager_tick", ok}
 	}
 
 }
@@ -121,20 +158,17 @@ func (manager *asteroidManager) handleCollisions() {
 			offset--
 		}
 	}
+
 }
 
 // getAsteroids return the array containing the current asteroids
 func (manager *asteroidManager) getAsteroids() []*Asteroid {
-
 	return manager.asteroids
 }
 
 // removeAsteroid removes specific asteroid from manager asteroid array
 func (manager *asteroidManager) removeAsteroid(i int) {
-	//fmt.Println("i:",i)
-
 	manager.asteroids = append(manager.asteroids[:i], manager.asteroids[i+1:]...)
-
 }
 
 // getNextID returns the id to be used and sets the next value
@@ -153,7 +187,9 @@ func (manager *asteroidManager) print() {
 			list = append(list, asteroid.ID)
 		}
 	}
+
 	if len(list) > 0 {
-		debugPrint(fmt.Sprintln("[AST.MAN] Collision:", list))
+		DebugPrint(fmt.Sprintln("[AST.MAN] Collision:", list))
 	}
+
 }

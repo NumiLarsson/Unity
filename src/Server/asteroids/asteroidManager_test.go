@@ -6,14 +6,14 @@ import (
 )
 
 //Just to keep fmt package imported
-var fakeFmtPrint bool = false
+var fakeFmtPrint = false
 
 func startAsteroidManagerForTest() *asteroidManager {
 	manager := newAsteroidManager()
 	conn := MakeConnection()
 
 	// Go-routine to be able to read confirmation
-	go manager.init(conn.FlipConnection())
+	go manager.init(conn.FlipConnection(), 100, 100)
 
 	if fakeFmtPrint != false {
 		fmt.Println("Just to keep fmt package imported")
@@ -39,7 +39,7 @@ func TestInitAsteroidManager(t *testing.T) {
 	conn := MakeConnection()
 
 	// Go-routine to be able to read confirmation
-	go manager.init(conn.FlipConnection())
+	go manager.init(conn.FlipConnection(), 100, 100)
 
 	response := <-conn.read
 
@@ -240,7 +240,7 @@ func TestAsteroidLoop(t *testing.T) {
 	manager := newAsteroidManager()
 	conn := MakeConnection()
 
-	go manager.loop(conn.FlipConnection())
+	go manager.loop(conn.FlipConnection(), 100, 100)
 
 	response := <-conn.read
 

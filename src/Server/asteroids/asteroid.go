@@ -23,12 +23,15 @@ func (asteroid *Asteroid) loop() {
 		select {
 		case msg := <-asteroid.input:
 
-			if msg.action == "kill" {
+			if msg.action == terminate {
+				asteroid.input <- Data{terminated, ok}
 				return
 			}
+
 			asteroid.move()
 		}
 	}
+
 }
 
 // IsAlive checks if an asteroid still is alive
@@ -38,7 +41,6 @@ func (asteroid *Asteroid) isAlive() bool {
 
 // move updates the asteroids location with each tick
 func (asteroid *Asteroid) move() {
-
 	asteroid.X += asteroid.xStep
 	asteroid.Y += asteroid.yStep
 }
@@ -56,7 +58,6 @@ func (asteroid *Asteroid) inBounds(manager *asteroidManager) bool {
 // newAsteroid allocates a new astroid
 func newAsteroid() *Asteroid {
 	return new(Asteroid)
-
 }
 
 // init sets the asteroids values, id,channel and spawn location
@@ -67,9 +68,7 @@ func (asteroid *Asteroid) init(id int, xMax int, yMax int) {
 	asteroid.Alive = true
 
 	asteroid.randowSpawn(xMax, yMax)
-
-	//	asteroid.checkSizeToWorld(xMax, yMax)
-
+	//asteroid.checkSizeToWorld(xMax, yMax)
 	asteroid.input = make(chan Data)
 }
 

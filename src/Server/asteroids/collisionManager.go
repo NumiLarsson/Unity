@@ -7,14 +7,12 @@ func (world *World) collisionManager() {
 
 	// removes old collisions
 	world.removeCollisions()
-
 	// First check player vs player and asteroid
 	world.playerCollision()
-
 	// Second check asteroid vs asteroid
 	world.asteroidCollision()
-
 	world.print()
+
 }
 
 // asteroidCollision is used to check if two asteroids have collided
@@ -57,9 +55,7 @@ func (world *World) playerCollision() {
 
 // isCollision checks if two objects are located at the same position
 func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
-
 	return x1 == x2 && y1 == y2
-
 }
 
 // Abs returns the absolute value of x.
@@ -76,9 +72,8 @@ func Abs(x int) int {
 //
 // source: http://gamedev.stackexchange.com/questions/586/what-is-the-fastest-way-to-work-out-2d-bounding-box-intersection
 func isCollisionSize(aX int, aY int, aSize int, bX int, bY int, bSize int) bool {
-
-	return (Abs(aX-bX)*2 < (aSize + bSize)) && (Abs(aY-bY)*2 < (aSize + bSize))
-
+	return (Abs(aX-bX)*2 < (aSize + bSize)) &&
+		(Abs(aY-bY)*2 < (aSize + bSize))
 }
 
 // appendCollision appends the coordinates from a collison to a collison-list
@@ -113,7 +108,7 @@ func (world *World) print() {
 	}
 
 	if len(deadPlayerIDs) > 2 || len(deadAsteroidIDs) > 0 {
-		debugPrint(fmt.Sprintln("[COL.MAN] Collisions, Players:", deadPlayerIDs,
+		DebugPrint(fmt.Sprintln("[COL.MAN] Collisions, Players:", deadPlayerIDs,
 			"Asteroids:", deadAsteroidIDs))
 	}
 }
