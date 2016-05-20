@@ -11,17 +11,27 @@ import (
 
 //Player is used to represent the players in the game world
 type Player struct {
+	worldX	int
+	worldY	int
 	Name  string
 	ID    int
 	X     int
 	Y     int
 	Lives int
 	Alive bool
+	step  int
+}
+
+type playerMessage struct {
+	action string
+	value  string
 }
 
 //Listener is responsible for a client each
 //Contains a tcp socket, with the specified port at creation
 type Listener struct {
+	worldX 		int
+	worldY		int
 	socket      net.Listener
 	ID          string
 	port        int
@@ -69,7 +79,7 @@ func (listener *Listener) init(port int) {
 	*/
 
 	listener.writeBuffer = make(chan []byte, 60)
-
+	//1 second worth of writes
 }
 
 //newPlayer returns a new player
@@ -85,7 +95,10 @@ func (player *Player) init(id int, xMax int, yMax int) {
 
 	fmt.Println(seed)
 	player.Name = "Hello World"
-	player.randomSpawn(xMax, yMax)
+	player.worldX = xMax
+	player.worldY = yMax
+	player.step = 1;
+	player.randomSpawn(player.worldX, player.worldY)
 	player.Lives = 3 // updated
 	player.Alive = true
 }
@@ -103,13 +116,35 @@ func (listener *Listener) startUpListener() {
 }
 
 func (listener *Listener) idleListener() {
+	clientChan := make(chan *playerMessage)
+	go listener.readFromClient(clientChan)
+	
 	for {
 		select {
 		case jsonWorld := <-listener.writeBuffer:
 			listener.conn.Write(jsonWorld)
 			//fmt.Println(string(jsonWorld))
-		default:
+		case message := <- clientChan :
+			if ( !listener.player.newInput(message) ) {
+				fmt.Println("Input from player was invalid")
+			}
 		}
+	}
+}
+
+func (listener *Listener) readFromClient(channel chan *playerMessage) {
+	for {
+		bytes := make([]byte, 1024)
+		bytesRead, err := listener.conn.Read(bytes)
+		if err != nil {
+			panic(err)
+		}
+		message := new(playerMessage)
+		err = json.Unmarshal(bytes[:bytesRead], &message)
+		if err != nil {
+			panic(err)
+		}
+		channel <- message
 	}
 }
 
@@ -151,4 +186,53 @@ func (player *Player) getLives() int {
 //setAlive sets the Alive state to true
 func (player *Player) setAlive() {
 	player.Alive = true
+}
+
+func (player *Player) tryMove(value string) bool {
+	switch (value) {
+	case "North": //North
+		if (player.X + 1 > player.worldX) {
+			return false
+		} 
+		//Else
+		player.X += player.step
+		return true
+		
+	case "East": //East
+		if (player.Y + 1 > player.worldY) {
+			return false
+		} 
+		//Else
+		player.Y += player.step
+		return true
+		
+	case "South": //South
+		if (player.X < 0) {
+			return false
+		} 
+		//Else
+		player.X -= player.step
+		return true
+		
+	case "West": //West
+		if (player.Y - 1 < 0) {
+			return false
+		} 
+		//Else
+		player.Y -= player.step
+		return true
+	}
+	return false;
+}
+
+//newInput returns true if the input was valid.
+func (player *Player) newInput(playMessage *playerMessage) bool {
+	switch playMessage.action {
+	case "Move":
+		return player.tryMove(playMessage.value)
+	case "Name":
+		player.Name = playMessage.value
+		return true;
+	}
+	return false;
 }
