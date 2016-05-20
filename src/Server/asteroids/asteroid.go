@@ -63,6 +63,7 @@ func newAsteroid() *Asteroid {
 func (asteroid *Asteroid) init(id int, xMax int, yMax int) {
 
 	asteroid.ID = id
+	asteroid.size = 30
 	asteroid.Alive = true
 
 	asteroid.randowSpawn(xMax, yMax)

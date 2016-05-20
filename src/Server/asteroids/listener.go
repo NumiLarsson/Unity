@@ -15,6 +15,7 @@ type Player struct {
 	ID    int
 	X     int
 	Y     int
+	size  int
 	Lives int
 	Alive bool
 }
@@ -84,6 +85,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	rand.Seed(seed)
 
 	player.randomSpawn(xMax, yMax)
+	player.size = 30
 	player.Lives = 3 // updated
 	player.Alive = true
 }
