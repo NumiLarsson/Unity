@@ -33,9 +33,11 @@ func CreateFakeAsteroids() (a1 *Asteroid, a2 *Asteroid) {
 
 	a1.X = 5
 	a1.Y = 5
+	a1.size = 30
 
 	a2.X = 5
 	a2.Y = 5
+	a2.size = 30
 
 	a1.Alive = true
 	a2.Alive = true
