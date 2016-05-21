@@ -53,6 +53,7 @@ func (world *World) playerCollision() {
 
 }
 
+// TODO is this function in use anymore?
 // isCollision checks if two objects are located at the same position
 func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 	return x1 == x2 && y1 == y2

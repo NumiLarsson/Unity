@@ -99,12 +99,85 @@ func TestPLayerCollision(t *testing.T) {
 
 }
 
+// TODO  isCollision still in use??
 //TestIsCollision test the isCollision function in collisionmanager.go
 func TestIsCollision(t *testing.T) {
 	var t1 = isCollision(1, 1, 1, 1)
 
 	if !t1 {
 		t.Error("Collision not detected")
+	}
+
+}
+
+//
+func TestIsCollisionSize(t *testing.T) {
+
+	// A = (1,1) size 30
+	// B = (2,2) size 30
+	// equal collision
+	if isCollisionSize(1, 1, 30, 2, 2, 30) != true {
+		t.Error("Collision incorrect")
+	}
+
+	// A = (1,1) size 30
+	// B = (30,30) size 30
+	// equal collision
+	if isCollisionSize(1, 1, 30, 30, 30, 30) != true {
+		t.Error("Collision incorrect")
+	}
+
+	// A = (1,1) size 30
+	// B = (31,31) size 30
+	// equal  NO collision
+	if isCollisionSize(1, 1, 30, 31, 31, 30) == true {
+		t.Error("Should not be a collision")
+	}
+}
+
+func TestAbs(t *testing.T) {
+
+	if Abs(1) != 1 {
+		t.Error("Abs positive incorrect")
+	}
+
+	if Abs(0) != 0 {
+		t.Error("Abs zero incorrect")
+	}
+
+	if Abs(-1) != 1 {
+		t.Error("Abs negative incorrect")
+	}
+}
+
+// TestAppendCollision ...
+func TestAppendCollision(t *testing.T) {
+	world := new(World)
+	if len(world.Collisions) != 0 {
+		t.Error("length incorrect")
+	}
+
+	world.appendCollision(99, 22)
+
+	if len(world.Collisions) != 1 {
+		t.Error("Collision not appended")
+	}
+
+	if world.Collisions[0].X != 99 && world.Collisions[0].Y != 22 {
+		t.Error("Collision not appended")
+	}
+
+	world.appendCollision(77, 88)
+
+	if len(world.Collisions) != 2 {
+		t.Error("Collision not appended")
+	}
+	if world.Collisions[0].X != 99 && world.Collisions[0].Y != 22 {
+		t.Error("Collision not appended")
+	}
+
+	if world.Collisions[1].X != 77 && world.Collisions[1].Y != 88 {
+		t.Error("Collision not appended")
 	}
 
 }
