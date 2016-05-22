@@ -149,6 +149,7 @@ func (listener *Listener) readFromClient(clientChan chan *playerMessage) {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("Message: ", message.action, message.value)
 		clientChan <- message
 	}
 }
