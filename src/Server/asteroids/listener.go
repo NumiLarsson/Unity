@@ -20,7 +20,6 @@ type Player struct {
 	Lives int
 	Alive bool
 	step  int
-	isMyClient bool
 }
 
 type playerMessage struct {
@@ -99,7 +98,6 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.worldX = xMax
 	player.worldY = yMax
 	player.step = 1;
-	player.isMyClient = false;
 	player.randomSpawn(player.worldX, player.worldY)
 	player.Lives = 3 // updated
 	player.Alive = true
@@ -130,7 +128,7 @@ func (listener *Listener) idleListener() {
 			if ( !listener.player.newInput(message) ) {
 				fmt.Println("Input from player was invalid")
 			} else {
-				fmt.Println("Input from client", listener.ID, "WAS VALID!");
+				fmt.Println("Look at me:", listener.ID, listener.player.X, listener.player.Y);
 			}
 		}
 	}
@@ -143,29 +141,20 @@ func (listener *Listener) readFromClient(clientChan chan *playerMessage) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("CLIENT SENT A MESSAGE!")
+		fmt.Println("CLIENT SENT A MESSAGE!", string(bytes[:bytesRead]))
 		message := new(playerMessage)
 		err = json.Unmarshal(bytes[:bytesRead], &message)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("Message: ", message.action, message.value)
+		fmt.Println("Message: ", message.Action, message.Value)
 		clientChan <- message
 	}
 }
 
 //write writes game world to clients
 func (listener *Listener) Write(world *World) {
-
-	tempWorld := new(World);
-	tempWorld = world
-	
-	for _, player := range tempWorld.Players {
-		if player.Name == listener.player.Name {
-			player.isMyClient = true;
-		}
-	}
-	jsonWorld, err := json.Marshal(tempWorld)
+	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
 	}
@@ -232,10 +221,10 @@ func (player *Player) tryMove(value string) bool {
 	case "West": //West
 		fmt.Println(player.Name, "Trying to move west");
 		if (player.Y - 1 < 0) {
-			//return false
+			return false
 		} 
 		//Else
-		//player.Y -= player.step
+		player.Y -= player.step
 		return true
 	}
 	return false;
@@ -243,11 +232,11 @@ func (player *Player) tryMove(value string) bool {
 
 //newInput returns true if the input was valid.
 func (player *Player) newInput(playMessage *playerMessage) bool {
-	switch playMessage.action {
+	switch playMessage.Action {
 	case "Move":
-		return player.tryMove(playMessage.value)
+		return player.tryMove(playMessage.Value)
 	case "Name":
-		player.Name = playMessage.value
+		player.Name = playMessage.Value
 		return true;
 	}
 	return false;

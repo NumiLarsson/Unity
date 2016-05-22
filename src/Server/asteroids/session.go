@@ -75,7 +75,7 @@ func (session *session) loop() {
 			// Collect player and asteroid positions
 			session.world.Players = session.listenerManager.getPlayers()
 			session.world.Asteroids = session.asteroidManager.getAsteroids()
-			session.world.Players[0].fakeMovePlayer();
+			//session.world.Players[0].fakeMovePlayer();
 			// Calculate collisions
 			session.world.collisionManager()
 			
