@@ -18,12 +18,19 @@ public class GameLoop : MonoBehaviour {
     public GameObject asteroidPrefab;
 
     GameObject tempPlayer;
+    PlayerObject tempPlayObj; 
     GameObject tempAsteroid;
 
     List<GameObject> players;
     List<GameObject> asteroids;
 
     ParallelUpdate threadedUpdate;
+
+    float lastMovement;
+
+    //Temp?
+    public ShipControls shipScript { get; set; }
+    //Temp?
 
     // Use this for initialization
     void Start () {
@@ -32,7 +39,6 @@ public class GameLoop : MonoBehaviour {
         int listenerPort = requestPort(serverIPEP);
         listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
         listenerSocket.Connect( listenerIPEP );
-        
 
         threadedUpdate = new ParallelUpdate( listenerSocket );
         Thread oThread = new Thread(new ThreadStart(threadedUpdate.threadedUpdate));
@@ -40,6 +46,38 @@ public class GameLoop : MonoBehaviour {
 
         players = new List<GameObject>();
         asteroids = new List<GameObject>();
+    }
+
+    void FixedUpdate() {
+        if ( Time.time - 0.1f < lastMovement) {
+            return;
+        }
+        lastMovement = Time.time;
+        if ( Input.GetKey( KeyCode.A ) ) {
+            //West
+            playerMessage message = new playerMessage("Move", "West");
+            string jsonMessage = JsonMapper.ToJson(message);
+            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+            listenerSocket.Send( msg );
+        } else if ( Input.GetKey( KeyCode.D ) ) {
+            //East
+            playerMessage message = new playerMessage( "Move", "East" );
+            string jsonMessage = JsonMapper.ToJson(message);
+            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+            listenerSocket.Send( msg );
+        } else if ( Input.GetKey( KeyCode.W ) ) {
+            //North
+            playerMessage message = new playerMessage( "Move", "North" );
+            string jsonMessage = JsonMapper.ToJson(message);
+            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+            listenerSocket.Send( msg );
+        } else if ( Input.GetKey( KeyCode.S ) ) {
+            //South
+            playerMessage message = new playerMessage( "Move", "South" );
+            string jsonMessage = JsonMapper.ToJson(message);
+            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+            listenerSocket.Send( msg );
+        }
     }
 
     // Update is called once per frame
@@ -57,7 +95,8 @@ public class GameLoop : MonoBehaviour {
                 }
                 if ( !isDrawn ) {
                     tempPlayer = Instantiate( playerPrefab ) as GameObject;
-                    this.tempPlayer.SendMessage( "InitMe", newPlayer.Name );
+                    tempPlayObj = tempPlayer.GetComponent<PlayerObject>();
+                    this.tempPlayObj.SendMessage( "InitializeMe", newPlayer.Name );
                     players.Add( tempPlayer );
                 }
             }
@@ -82,7 +121,6 @@ public class GameLoop : MonoBehaviour {
                             }
                             if ( !isDrawn ) {
                                 tempAsteroid = Instantiate( asteroidPrefab ) as GameObject;
-                                //this.tempAsteroid.GetComponent<AsteroidObject>().InitMe( newAsteroid.ID );
                                 this.tempAsteroid.SendMessage( "InitMe", newAsteroid.ID );
                                 asteroids.Add( tempAsteroid );
                             }
@@ -97,7 +135,6 @@ public class GameLoop : MonoBehaviour {
                 if (tempAsteroid != null) { 
                     bool temp = tempAsteroid.GetComponent<astObj>().drawnLastFrame;
                     if ( !temp ) {
-                        //Destroy( asteroids[i + offset].GetComponent<Rigidbody>() );
                         asteroids[i].name = (-1).ToString();
                         asteroids.RemoveAt( i + offset );
                         offset--;
@@ -121,11 +158,9 @@ public class GameLoop : MonoBehaviour {
     class ParallelUpdate {
         public World gameWorld;
         public bool live = false;
-        //public List<Player> Players { get; set; }
-        //public List<AsteroidData> Asteroids { get; set; }
         private Socket socket { get; set; }
 
-        public ParallelUpdate ( Socket socket /*, int Players, int Asteroids*/ ) {
+        public ParallelUpdate ( Socket socket ) {
             this.socket = socket;
 
             byte[] message = new byte[8192];
@@ -137,34 +172,14 @@ public class GameLoop : MonoBehaviour {
 
         public void threadedUpdate () {
             while ( true ) {
-                //Queue<Player> newPlayers;
-
                 //Read from server
                 byte[] message = new byte[8192];
                 int bytesReceived = socket.Receive(message);
                 string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
 
                 World testWorld = JsonMapper.ToObject<World>(jsonString);
-                //gameWorld.flagOldPlayers();
-                //newPlayers = gameWorld.updatePlayers(testWorld);
-
-                //int amountOfNewPlayers = newPlayers.Count;
-                //for ( int x = 0; x < amountOfNewPlayers; x++ ) {
-                //    for ( int i = 0; i < gameWorld.Players.Length; i++ ) {
-                //        if ( gameWorld.Players[i] == null ) {
-                //            gameWorld.Players[i] = newPlayers.Dequeue();
-                //            break;
-                //        } else if ( !gameWorld.Players[i].Alive ) {
-                //            gameWorld.Players[i] = newPlayers.Dequeue();
-                //            break;
-                //        }
-                //    }
-                //}
-
-                //gameWorld.Asteroids = testWorld.Asteroids;
                 gameWorld = testWorld;
-            }//End While (true)
-            //threadedUpdate();
+            }
         }
     }
 }

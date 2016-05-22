@@ -1,25 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Net.Sockets;
 
 public class PlayerObject : MonoBehaviour {
     public Rigidbody2D shipBody { get; set; }
-    //public ShipControls shipScript { get; set; }
     public string Name { get; set; }
     public int XCord { get; set; }
     public int YCord { get; set; }
     public int Lives { get; set; }
     public int framesSinceDrawn = 0;
 
-    public void UpdateMe (Player newPlayer) {
-        this.XCord = newPlayer.XCord;
-        this.YCord = newPlayer.YCord;
+    public void UpdateMe ( Player newPlayer ) {
+        this.XCord = newPlayer.X;
+        this.YCord = newPlayer.Y;
         this.Lives = newPlayer.Lives;
         this.framesSinceDrawn = 0;
         //shipScript.X = XCord;
         //shipScript.Y = YCord;
     }
 
-    public void InitMe (string playerName) {
+    public void InitializeMe ( string playerName ) {
         this.Name = playerName;
         this.name = playerName;
     }
