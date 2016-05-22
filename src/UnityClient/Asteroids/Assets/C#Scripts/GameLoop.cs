@@ -27,7 +27,7 @@ public class GameLoop : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        ipAddress = IPAddress.Parse( "127.0.0.1" );
+        ipAddress = IPAddress.Parse( "192.168.1.57" );
         IPEndPoint serverIPEP = new IPEndPoint(ipAddress, 9000);
         int listenerPort = requestPort(serverIPEP);
         listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
