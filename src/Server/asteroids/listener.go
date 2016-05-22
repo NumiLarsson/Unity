@@ -231,10 +231,10 @@ func (player *Player) tryMove(value string) bool {
 	case "West": //West
 		fmt.Println(player.Name, "Trying to move west");
 		if (player.Y - 1 < 0) {
-			return false
+			//return false
 		} 
 		//Else
-		player.Y -= player.step
+		//player.Y -= player.step
 		return true
 	}
 	return false;
