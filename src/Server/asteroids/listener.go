@@ -24,8 +24,8 @@ type Player struct {
 }
 
 type playerMessage struct {
-	action string
-	value  string
+	Action string
+	Value  string
 }
 
 //Listener is responsible for a client each
