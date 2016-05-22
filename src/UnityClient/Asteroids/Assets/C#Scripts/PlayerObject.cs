@@ -9,6 +9,7 @@ public class PlayerObject : MonoBehaviour {
     public int YCord { get; set; }
     public int Lives { get; set; }
     public int framesSinceDrawn = 0;
+    private static float scaling = 1.25f;
 
     public void UpdateMe ( Player newPlayer ) {
         this.XCord = newPlayer.X;
@@ -29,7 +30,7 @@ public class PlayerObject : MonoBehaviour {
         //shipScript = ScriptableObject.CreateInstance("ShipControls") as ShipControls;
         shipBody = this.GetComponent<Rigidbody2D>();
         shipBody.isKinematic = false;
-        shipBody.transform.position = new Vector3( ( XCord ), ( YCord ) );
+        shipBody.transform.position = new Vector3( ( XCord / (scaling) ), ( YCord / (scaling)) );
         //shipScript.X = XCord;
         //shipScript.Y = YCord;
         shipBody.freezeRotation = true;
@@ -46,7 +47,7 @@ public class PlayerObject : MonoBehaviour {
             Destroy( this ); 
         } else {
             if ( Lives > 0 ) {
-                shipBody.transform.position = new Vector3( ( XCord ), ( YCord ) );
+                shipBody.transform.position = new Vector3( ( XCord/(scaling)  - 160f), ( YCord/(scaling) - 90f ));
             }
         }
     }

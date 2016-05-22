@@ -54,8 +54,8 @@ func (manager *ListenerManager) init(sessionConn *Connection,
 	maxPlayers int, firstPort int) {
 
 	// TODO fix hardcoded variables
-	manager.xMax = 100
-	manager.yMax = 100
+	manager.xMax = 400
+	manager.yMax = 225
 	manager.maxPlayers = maxPlayers
 	manager.nextID = 1
 	manager.currentPort = firstPort

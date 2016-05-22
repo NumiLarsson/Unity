@@ -195,7 +195,7 @@ func (player *Player) setAlive() {
 func (player *Player) tryMove(value string) bool {
 	switch (value) {
 	case "North": //North
-		if (player.Y + 1 > player.worldX) {
+		if (player.Y + 1 > player.worldY) {
 			return false
 		} 
 		//Else
@@ -203,7 +203,7 @@ func (player *Player) tryMove(value string) bool {
 		return true
 		
 	case "East": //East
-		if (player.X + 1 > player.worldY) {
+		if (player.X + 1 > player.worldX) {
 			return false
 		} 
 		//Else
