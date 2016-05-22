@@ -129,24 +129,27 @@ func (listener *Listener) idleListener() {
 		case message := <- clientChan :
 			if ( !listener.player.newInput(message) ) {
 				fmt.Println("Input from player was invalid")
+			} else {
+				fmt.Println("Input from client", listener.ID, "WAS VALID!");
 			}
 		}
 	}
 }
 
-func (listener *Listener) readFromClient(channel chan *playerMessage) {
+func (listener *Listener) readFromClient(clientChan chan *playerMessage) {
 	for {
 		bytes := make([]byte, 1024)
 		bytesRead, err := listener.conn.Read(bytes)
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("CLIENT SENT A MESSAGE!")
 		message := new(playerMessage)
 		err = json.Unmarshal(bytes[:bytesRead], &message)
 		if err != nil {
 			panic(err)
 		}
-		channel <- message
+		clientChan <- message
 	}
 }
 
