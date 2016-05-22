@@ -31,7 +31,7 @@ sysinfo.txt
 *.o
 *.a
 *.so
-*.dll
+*/*.dll
 
 # Folders
 _obj
