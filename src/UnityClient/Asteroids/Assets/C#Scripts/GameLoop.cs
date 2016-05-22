@@ -32,14 +32,9 @@ public class GameLoop : MonoBehaviour {
         int listenerPort = requestPort(serverIPEP);
         listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
         listenerSocket.Connect( listenerIPEP );
-        //Connect to the specific listenerport
-
-        //byte[] message = new byte[8192];
-        //int bytesReceived = listenerSocket.Receive(message);
-        //string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
+        
 
         threadedUpdate = new ParallelUpdate( listenerSocket );
-
         Thread oThread = new Thread(new ThreadStart(threadedUpdate.threadedUpdate));
         oThread.Start();
 

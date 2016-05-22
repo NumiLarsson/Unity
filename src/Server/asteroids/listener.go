@@ -20,6 +20,7 @@ type Player struct {
 	Lives int
 	Alive bool
 	step  int
+	isMyClient bool
 }
 
 type playerMessage struct {
@@ -98,6 +99,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.worldX = xMax
 	player.worldY = yMax
 	player.step = 1;
+	player.isMyClient = false;
 	player.randomSpawn(player.worldX, player.worldY)
 	player.Lives = 3 // updated
 	player.Alive = true
@@ -123,7 +125,7 @@ func (listener *Listener) idleListener() {
 		select {
 		case jsonWorld := <-listener.writeBuffer:
 			listener.conn.Write(jsonWorld)
-			//fmt.Println(string(jsonWorld))
+			fmt.Println(string(jsonWorld))
 		case message := <- clientChan :
 			if ( !listener.player.newInput(message) ) {
 				fmt.Println("Input from player was invalid")
@@ -150,7 +152,16 @@ func (listener *Listener) readFromClient(channel chan *playerMessage) {
 
 //write writes game world to clients
 func (listener *Listener) Write(world *World) {
-	jsonWorld, err := json.Marshal(world)
+
+	tempWorld := new(World);
+	tempWorld = world
+	
+	for _, player := range tempWorld.Players {
+		if player.Name == listener.player.Name {
+			player.isMyClient = true;
+		}
+	}
+	jsonWorld, err := json.Marshal(tempWorld)
 	if err != nil {
 		panic(err)
 	}
