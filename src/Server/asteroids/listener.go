@@ -229,6 +229,7 @@ func (player *Player) tryMove(value string) bool {
 		return true
 		
 	case "West": //West
+		fmt.Println(player.Name, "Trying to move west");
 		if (player.Y - 1 < 0) {
 			return false
 		} 
