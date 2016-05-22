@@ -125,7 +125,7 @@ func (listener *Listener) idleListener() {
 		select {
 		case jsonWorld := <-listener.writeBuffer:
 			listener.conn.Write(jsonWorld)
-			fmt.Println(string(jsonWorld))
+			//fmt.Println(string(jsonWorld))
 		case message := <- clientChan :
 			if ( !listener.player.newInput(message) ) {
 				fmt.Println("Input from player was invalid")

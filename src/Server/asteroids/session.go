@@ -67,7 +67,7 @@ func (session *session) loop() {
 
 	for {
 
-		tick := time.After(2000 * time.Millisecond)
+		tick := time.After(16 * time.Millisecond)
 		//TEMP, tick should be 16 * millisecond
 
 		select {
