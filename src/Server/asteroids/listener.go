@@ -95,7 +95,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	rand.Seed(seed)
 
 	fmt.Println(seed)
-	player.Name = "Hello World"
+	player.Name = strconv.Itoa(id);
 	player.worldX = xMax
 	player.worldY = yMax
 	player.step = 1;
@@ -112,7 +112,7 @@ func (listener *Listener) startUpListener() {
 	if err != nil {
 		panic(err)
 	}
-	listener.ID = "Hello World"
+	listener.ID = "Hello World" 
 
 	listener.idleListener()
 }
