@@ -3,7 +3,7 @@ src/UnityClient/Asteroids/[Tt]emp/
 */[Oo]bj/
 */[Bb]uild/
 */[Bb]uilds/
-src/UnityClient/Asteroids/Assets/AssetStoreTools*
+src/UnityClient/Asteroids/
 */Library/
 src/UnityClient/Asteroids/Library/*
 
@@ -31,7 +31,7 @@ sysinfo.txt
 *.o
 *.a
 *.so
-
+*.dll
 
 # Folders
 _obj
