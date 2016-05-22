@@ -34,7 +34,7 @@ public class GameLoop : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        ipAddress = IPAddress.Parse( "192.168.1.57" );
+        ipAddress = IPAddress.Parse( "127.0.0.1" );//"192.168.1.57" ); //
         IPEndPoint serverIPEP = new IPEndPoint(ipAddress, 9000);
         int listenerPort = requestPort(serverIPEP);
         listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
@@ -49,7 +49,7 @@ public class GameLoop : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if ( Time.time - 0.1f < lastMovement) {
+        if ( Time.time - 0.05f < lastMovement) {
             return;
         }
         lastMovement = Time.time;
