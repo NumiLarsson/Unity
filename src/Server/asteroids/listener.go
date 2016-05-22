@@ -97,7 +97,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.Name = strconv.Itoa(id);
 	player.worldX = xMax
 	player.worldY = yMax
-	player.step = 1;
+	player.step = 2;
 	player.randomSpawn(player.worldX, player.worldY)
 	player.Lives = 3 // updated
 	player.Alive = true
@@ -195,36 +195,36 @@ func (player *Player) setAlive() {
 func (player *Player) tryMove(value string) bool {
 	switch (value) {
 	case "North": //North
-		if (player.X + 1 > player.worldX) {
-			return false
-		} 
-		//Else
-		player.X += player.step
-		return true
-		
-	case "East": //East
-		if (player.Y + 1 > player.worldY) {
+		if (player.Y + 1 > player.worldX) {
 			return false
 		} 
 		//Else
 		player.Y += player.step
 		return true
 		
-	case "South": //South
-		if (player.X < 0) {
+	case "East": //East
+		if (player.X + 1 > player.worldY) {
 			return false
 		} 
 		//Else
-		player.X -= player.step
+		player.X += player.step
 		return true
 		
-	case "West": //West
-		fmt.Println(player.Name, "Trying to move west");
-		if (player.Y - 1 < 0) {
+	case "South": //South
+		if (player.Y < 0) {
 			return false
 		} 
 		//Else
 		player.Y -= player.step
+		return true
+		
+	case "West": //West
+		fmt.Println(player.Name, "Trying to move west");
+		if (player.X - 1 < 0) {
+			return false
+		} 
+		//Else
+		player.X -= player.step
 		return true
 	}
 	return false;
