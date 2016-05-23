@@ -97,7 +97,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.Name = strconv.Itoa(id);
 	player.worldX = xMax
 	player.worldY = yMax
-	player.step = 2;
+	player.step = 1;
 	player.randomSpawn(player.worldX, player.worldY)
 	player.Lives = 3 // updated
 	player.Alive = true
@@ -126,30 +126,51 @@ func (listener *Listener) idleListener() {
 			//fmt.Println(string(jsonWorld))
 		case message := <- clientChan :
 			if ( !listener.player.newInput(message) ) {
-				fmt.Println("Input from player was invalid")
+				//fmt.Println("Input from player was invalid")
 			} else {
-				fmt.Println("Look at me:", listener.ID, listener.player.X, listener.player.Y);
+				//fmt.Println("Look at me:", listener.ID, listener.player.X, listener.player.Y);
 			}
 		}
 	}
 }
 
 func (listener *Listener) readFromClient(clientChan chan *playerMessage) {
+	defer listener.panicCatcher(clientChan)
 	for {
 		bytes := make([]byte, 1024)
 		bytesRead, err := listener.conn.Read(bytes)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("CLIENT SENT A MESSAGE!", string(bytes[:bytesRead]))
+		//fmt.Println("CLIENT SENT A MESSAGE!", string(bytes[:bytesRead]))
 		message := new(playerMessage)
 		err = json.Unmarshal(bytes[:bytesRead], &message)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("Message: ", message.Action, message.Value)
 		clientChan <- message
 	}
+}
+
+func (listener *Listener) panicCatcher(clientChan chan *playerMessage) {
+	fmt.Println(recover())
+	err := listener.conn.Close()
+	if (err != nil) {
+		panic(err)
+	}
+	err = listener.socket.Close()
+	if (err != nil) {
+		panic(err)
+	}
+	listener.socket, err = CreateSocket(listener.port)
+	if err != nil {
+		panic(err)
+	}
+	listener.conn, err = listener.socket.Accept()
+	if err != nil {
+		panic(err)
+	}
+	listener.readFromClient(clientChan)
 }
 
 //write writes game world to clients
@@ -219,7 +240,6 @@ func (player *Player) tryMove(value string) bool {
 		return true
 		
 	case "West": //West
-		fmt.Println(player.Name, "Trying to move west");
 		if (player.X - 1 < 0) {
 			return false
 		} 

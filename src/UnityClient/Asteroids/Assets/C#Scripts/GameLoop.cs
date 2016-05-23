@@ -49,7 +49,7 @@ public class GameLoop : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if ( Time.time - 0.05f < lastMovement) {
+        if ( Time.time - 0.01f < lastMovement) {
             return;
         }
         lastMovement = Time.time;
