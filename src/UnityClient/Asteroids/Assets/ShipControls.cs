@@ -1,35 +1,43 @@
 ﻿using UnityEngine;
+
+using System.Net.Sockets;
+using System.Text;
+
+using LitJson;
 using System.Collections;
 
-public class ShipControls : MonoBehaviour {
+public class ShipControls : ScriptableObject {
 
-	public Rigidbody2D ship;
-	public float RotationSpeed;
-	public float ThrustForce;
+    public Socket listenerSocket;
 
-	// Use this for initialization
-	void Start () {
-		
+    // Use this for initialization
+    void Start () {
+        Debug.Log( "ShipControls started" );
 	}
 
-	void FixedUpdate() {
-		ship = GetComponent<Rigidbody2D> ();
-
+	void Update() {
+        if (listenerSocket == null ) {
+            Debug.Log( "Socket is null" );
+            return;
+        }
 		if (Input.GetKey (KeyCode.A)) {
-			//rotate ship left
-			ship.angularVelocity = RotationSpeed;
-		
-		} else if (Input.GetKey (KeyCode.D)) {
-			//rotate ship right
-			ship.angularVelocity = -RotationSpeed;
+            //West
+            Debug.Log( "West" );
+            playerMessage message = new playerMessage("MoveMe", "West");
+            string jsonMessage = JsonUtility.ToJson( message );
+            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+            listenerSocket.Send( msg );
+            Debug.Log( "Sent to server" );
+        } else if (Input.GetKey (KeyCode.D)) {
+            //East
+            Debug.Log( "East" );
 
-		} else {
-			ship.angularVelocity = 0f; 
-		}
-
-		if (Input.GetKey (KeyCode.W)) {
-			//Move forward
-			ship.AddForce(transform.up * ThrustForce);
-		}
+        } else if (Input.GetKey (KeyCode.W )){
+            //North
+            Debug.Log( "North" );
+        } else if (Input.GetKey (KeyCode.S)) {
+            //South
+            Debug.Log( "South" );
+        }
 	}
 }

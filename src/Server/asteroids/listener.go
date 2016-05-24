@@ -11,17 +11,27 @@ import (
 
 //Player is used to represent the players in the game world
 type Player struct {
+	worldX	int
+	worldY	int
 	Name  string
 	ID    int
 	X     int
 	Y     int
 	Lives int
 	Alive bool
+	step  int
+}
+
+type playerMessage struct {
+	Action string
+	Value  string
 }
 
 //Listener is responsible for a client each
 //Contains a tcp socket, with the specified port at creation
 type Listener struct {
+	worldX 		int
+	worldY		int
 	socket      net.Listener
 	ID          string
 	port        int
@@ -69,7 +79,7 @@ func (listener *Listener) init(port int) {
 	*/
 
 	listener.writeBuffer = make(chan []byte, 60)
-
+	//1 second worth of writes
 }
 
 //newPlayer returns a new player
@@ -84,8 +94,11 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	rand.Seed(seed)
 
 	fmt.Println(seed)
-
-	player.randomSpawn(xMax, yMax)
+	player.Name = strconv.Itoa(id);
+	player.worldX = xMax
+	player.worldY = yMax
+	player.step = 1;
+	player.randomSpawn(player.worldX, player.worldY)
 	player.Lives = 3 // updated
 	player.Alive = true
 }
@@ -97,37 +110,67 @@ func (listener *Listener) startUpListener() {
 	if err != nil {
 		panic(err)
 	}
-	listener.ID = "Hello World"
+	listener.ID = "Hello World" 
 
 	listener.idleListener()
 }
 
 func (listener *Listener) idleListener() {
-
-	/*
-		for {
-			if listener.writeBuffer[0] != nil {
-				listener.conn.Write(listener.writeBuffer[0])
-				listener.writeBuffer = listener.writeBuffer[1:]
-			} else {
-				time.Sleep(time.Second)
-			}
-		}
-	*/
-
+	clientChan := make(chan *playerMessage)
+	go listener.readFromClient(clientChan)
+	
 	for {
 		select {
 		case jsonWorld := <-listener.writeBuffer:
-			//sizeWorld := binary.Size(jsonWorld)
-			//jsonSize, err := json.Marshal(sizeWorld)
-			//if err != nil {
-			//	panic(err)
-			//}
-			//listen.conn.Write(jsonSize)
 			listener.conn.Write(jsonWorld)
-		default:
+			//fmt.Println(string(jsonWorld))
+		case message := <- clientChan :
+			if ( !listener.player.newInput(message) ) {
+				//fmt.Println("Input from player was invalid")
+			} else {
+				//fmt.Println("Look at me:", listener.ID, listener.player.X, listener.player.Y);
+			}
 		}
 	}
+}
+
+func (listener *Listener) readFromClient(clientChan chan *playerMessage) {
+	defer listener.panicCatcher(clientChan)
+	for {
+		bytes := make([]byte, 1024)
+		bytesRead, err := listener.conn.Read(bytes)
+		if err != nil {
+			panic(err)
+		}
+		//fmt.Println("CLIENT SENT A MESSAGE!", string(bytes[:bytesRead]))
+		message := new(playerMessage)
+		err = json.Unmarshal(bytes[:bytesRead], &message)
+		if err != nil {
+			panic(err)
+		}
+		clientChan <- message
+	}
+}
+
+func (listener *Listener) panicCatcher(clientChan chan *playerMessage) {
+	fmt.Println(recover())
+	err := listener.conn.Close()
+	if (err != nil) {
+		panic(err)
+	}
+	err = listener.socket.Close()
+	if (err != nil) {
+		panic(err)
+	}
+	listener.socket, err = CreateSocket(listener.port)
+	if err != nil {
+		panic(err)
+	}
+	listener.conn, err = listener.socket.Accept()
+	if err != nil {
+		panic(err)
+	}
+	listener.readFromClient(clientChan)
 }
 
 //write writes game world to clients
@@ -168,4 +211,53 @@ func (player *Player) getLives() int {
 //setAlive sets the Alive state to true
 func (player *Player) setAlive() {
 	player.Alive = true
+}
+
+func (player *Player) tryMove(value string) bool {
+	switch (value) {
+	case "North": //North
+		if (player.Y + 1 > player.worldY) {
+			return false
+		} 
+		//Else
+		player.Y += player.step
+		return true
+		
+	case "East": //East
+		if (player.X + 1 > player.worldX) {
+			return false
+		} 
+		//Else
+		player.X += player.step
+		return true
+		
+	case "South": //South
+		if (player.Y < 0) {
+			return false
+		} 
+		//Else
+		player.Y -= player.step
+		return true
+		
+	case "West": //West
+		if (player.X - 1 < 0) {
+			return false
+		} 
+		//Else
+		player.X -= player.step
+		return true
+	}
+	return false;
+}
+
+//newInput returns true if the input was valid.
+func (player *Player) newInput(playMessage *playerMessage) bool {
+	switch playMessage.Action {
+	case "Move":
+		return player.tryMove(playMessage.Value)
+	case "Name":
+		player.Name = playMessage.Value
+		return true;
+	}
+	return false;
 }

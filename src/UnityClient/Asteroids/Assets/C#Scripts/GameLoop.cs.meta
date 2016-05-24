@@ -1,13 +1,12 @@
 fileFormatVersion: 2
-guid: 25d2951ed11081d47980578851a79765
-timeCreated: 1463468487
+guid: d1f7279bcf0da0c4f8c20116a0ffc234
+timeCreated: 1463949720
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
-  - playerPrefab: {fileID: 121178, guid: 759745ee984636048ad15b08c5f98b7f, type: 2}
-  - asteroidPrefab: {fileID: 121178, guid: 759745ee984636048ad15b08c5f98b7f, type: 2}
-  - testText1: {instanceID: 0}
+  - playerPrefab: {fileID: 101996, guid: 893083fb90d2d40b9bd9a20423dd9ecd, type: 2}
+  - asteroidPrefab: {fileID: 103972, guid: 65a30d14f66db5746b04ce39e719e233, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

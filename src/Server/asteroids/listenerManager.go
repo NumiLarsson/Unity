@@ -2,7 +2,6 @@ package asteroids
 
 import (
 	"fmt"
-	"math/rand"
 )
 
 //ListenerManager is used as a struct to basically emulate an object
@@ -55,8 +54,8 @@ func (manager *ListenerManager) init(sessionConn *Connection,
 	maxPlayers int, firstPort int) {
 
 	// TODO fix hardcoded variables
-	manager.xMax = 100
-	manager.yMax = 100
+	manager.xMax = 400
+	manager.yMax = 225
 	manager.maxPlayers = maxPlayers
 	manager.nextID = 1
 	manager.currentPort = firstPort
@@ -163,10 +162,4 @@ func (manager *ListenerManager) print() {
 	if len(list) > 0 {
 		debugPrint(fmt.Sprintln("[LIST.MAN] Collision:", list))
 	}
-}
-
-//TEMP FAKE func
-func (player *Player) fakeMovePlayer() {
-	player.X = rand.Intn(5)
-	player.Y = rand.Intn(5)
 }

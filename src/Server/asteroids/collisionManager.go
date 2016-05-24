@@ -36,7 +36,7 @@ func (world *World) playerCollision() {
 
 	for _, p := range world.Players {
 		for _, a := range world.Asteroids {
-			if isCollision(p.X, p.Y, a.X, p.Y) {
+			if isCollision(p.X, p.Y, a.X, a.Y) {
 				world.appendCollision(p.X, p.Y)
 				p.Alive = false
 				a.Alive = false
