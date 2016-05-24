@@ -113,8 +113,10 @@ Pga utbildning kommer med största sannolikhet veckan se mager ut från min sida
 ## Vecka 21
 
 ##### Måndag
+Träff med grupp för mindre skrivningar i koden samt förberedelser inför morgondagens redovisning, ca 5h
 
 ##### Tisdag
+Träff med grupp för sammanslagning av kod, förberedelser inför presentation samt påbörjat rapportskrivning, ca 7h
 
 ##### Onsdag
 
