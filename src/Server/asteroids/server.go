@@ -90,7 +90,7 @@ func (server *Server) Listen(external chan Data) {
 	// TEMPORARY
 	// ===
 	// Kill the server after 60 seconds of inactivity
-	timeout := time.After(180 * time.Second)
+	timeout := time.After(1800 * time.Second)
 
 	newPlayers := make(chan int)
 	go server.acceptNewPlayers(newPlayers)

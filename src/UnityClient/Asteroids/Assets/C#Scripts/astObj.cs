@@ -10,20 +10,20 @@ public class astObj : MonoBehaviour {
     public int Y { get; set; }
     public int Phase { get; set; }
     public int framesSinceDrawn;
-    public bool drawnLastFrame;
+    //public bool drawnLastFrame;
     private static float scaling = 1.25f;
 
+    /// <summary>
+    ///     UpdateMe is used when the object is already drawn and 
+    /// </summary>
+    /// <param name="newAsteroid"></param>
     public void UpdateMe ( Asteroid newAsteroid ) {
         this.X = newAsteroid.X;
         this.Y = newAsteroid.Y;
         this.Phase = newAsteroid.Phase;
         this.framesSinceDrawn = 0;
-        this.drawnLastFrame = true;
+        //this.drawnLastFrame = true;
         //Fake Comment
-    }
-
-    public void FlagFalse () {
-        drawnLastFrame = false;
     }
 
     public void KillSelf () {
@@ -34,7 +34,7 @@ public class astObj : MonoBehaviour {
         ID = newID;
         this.name = ID.ToString();
         framesSinceDrawn = 0;
-        drawnLastFrame = true;
+        //drawnLastFrame = true;
     }
 
     // Use this for initialization
@@ -51,7 +51,7 @@ public class astObj : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         framesSinceDrawn++;
-        if ( framesSinceDrawn > 10 ) {
+        if ( framesSinceDrawn > 1 ) {
             Destroy( this.gameObject );
             Destroy( body );
             Destroy( this );
