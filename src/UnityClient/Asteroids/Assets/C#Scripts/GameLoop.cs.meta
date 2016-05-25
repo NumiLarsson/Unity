@@ -1,12 +1,32 @@
 fileFormatVersion: 2
 guid: d1f7279bcf0da0c4f8c20116a0ffc234
-timeCreated: 1463949720
+timeCreated: 1464083051
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - playerPrefab: {fileID: 101996, guid: 893083fb90d2d40b9bd9a20423dd9ecd, type: 2}
   - asteroidPrefab: {fileID: 103972, guid: 65a30d14f66db5746b04ce39e719e233, type: 2}
+  - background0: {fileID: 2800000, guid: 18640be6c33b99b4e9bce3bc48eb6dd5, type: 3}
+  - background1: {fileID: 2800000, guid: e03814709a3e7fb418e3ccf62cc66d28, type: 3}
+  - background2: {fileID: 2800000, guid: 5cc5222864a7e2f4eadd0775d4931194, type: 3}
+  - background3: {fileID: 2800000, guid: aa806d26e966572458fbbad166f59cc9, type: 3}
+  - background4: {fileID: 2800000, guid: fe37a370dbb53864d8bbd5d117bf6c9c, type: 3}
+  - background5: {fileID: 2800000, guid: c8f359c480fede24d9e762bbb63a46b6, type: 3}
+  - background6: {fileID: 2800000, guid: 54ef43fa118b9554ea803ebe8c1061b3, type: 3}
+  - background7: {fileID: 2800000, guid: 4f4875a48b9d33a4a9dcfc30f2ec8f9e, type: 3}
+  - background8: {fileID: 2800000, guid: 99c1531c3174bc94aafce869f4a910b5, type: 3}
+  - background9: {fileID: 2800000, guid: d137a9df9f005a54286bb559ae556dac, type: 3}
+  - background10: {fileID: 2800000, guid: d93b4aecd339a8b498a612487c3b6213, type: 3}
+  - background11: {fileID: 2800000, guid: f796b55b5c6f7914d8669cc148c27dec, type: 3}
+  - background12: {fileID: 2800000, guid: d56e288584e3f19488b1cb35c5a1cfb3, type: 3}
+  - background13: {fileID: 2800000, guid: 618de3f6091ce20448def86879440601, type: 3}
+  - background14: {fileID: 2800000, guid: 4c3e5a677dcd5c84ea15e8c298a29bc5, type: 3}
+  - background15: {fileID: 2800000, guid: 55584e18e79070149852cbb88f3fea66, type: 3}
+  - background16: {fileID: 2800000, guid: 06adec49a2484664c95c8702d95d6c36, type: 3}
+  - background17: {fileID: 2800000, guid: b1f09fad7a8551849b2308a44b5affef, type: 3}
+  - background18: {fileID: 2800000, guid: 525b04a4ff7074d4ba1a48aceef418fd, type: 3}
+  - background19: {fileID: 2800000, guid: 6ab27a22d35a4c1468470a412d9abd08, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

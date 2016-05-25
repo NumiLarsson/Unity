@@ -1,23 +1,31 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Net.Sockets;
 
 public class PlayerObject : MonoBehaviour {
-    public Rigidbody2D shipBody { get; set; }
-    public string Name { get; set; }
-    public int XCord { get; set; }
-    public int YCord { get; set; }
-    public int Lives { get; set; }
-    public int framesSinceDrawn = 0;
-    private static float scaling = 1.25f;
+    public Rigidbody2D  shipBody    { get; set; }
+    public string       Name        { get; set; }
+    public int          XCord       { get; set; }
+    public int          YCord       { get; set; }
+    public int          Lives       { get; set; }
+    public int          Rotation    { get; set; }
+    public bool         Alive     { get; set; }
+
+    public ParticleSystem ShipFlames;
+
+    public int framesSinceDrawn     = 0;
+    private static float scaling    = 1.25f;
 
     public void UpdateMe ( Player newPlayer ) {
+        if (XCord == newPlayer.X && this.YCord == newPlayer.Y) {
+            ShipFlames.Stop();
+        } else {
+            ShipFlames.Play();
+        }
         this.XCord = newPlayer.X;
         this.YCord = newPlayer.Y;
         this.Lives = newPlayer.Lives;
         this.framesSinceDrawn = 0;
-        //shipScript.X = XCord;
-        //shipScript.Y = YCord;
+        this.Rotation = newPlayer.Rotation;
+        this.Alive = newPlayer.Alive;
     }
 
     public void InitializeMe ( string playerName ) {
@@ -27,13 +35,10 @@ public class PlayerObject : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        //shipScript = ScriptableObject.CreateInstance("ShipControls") as ShipControls;
         shipBody = this.GetComponent<Rigidbody2D>();
         shipBody.isKinematic = false;
         shipBody.transform.position = new Vector3( ( XCord / (scaling) ), ( YCord / (scaling)) );
-        //shipScript.X = XCord;
-        //shipScript.Y = YCord;
-        shipBody.freezeRotation = true;
+        shipBody.transform.rotation = Quaternion.AngleAxis( 90 * Rotation, new Vector3(0,0));
         shipBody.velocity = Vector3.zero;
     }
 
@@ -41,13 +46,18 @@ public class PlayerObject : MonoBehaviour {
     void Update () {
         framesSinceDrawn++;
         if (framesSinceDrawn > 10) {
-            //Destroy( shipScript );
             Destroy( this.gameObject );
             Destroy( shipBody );
             Destroy( this ); 
         } else {
-            if ( Lives > 0 ) {
-                shipBody.transform.position = new Vector3( ( XCord/(scaling)  - 160f), ( YCord/(scaling) - 90f ));
+            shipBody.transform.rotation = Quaternion.Euler( new Vector3( 0, 0, 90 * Rotation ) );
+            shipBody.transform.position = new Vector3( ( XCord/(scaling)  - 160f), ( YCord/(scaling) - 90f ));
+            if (this.Alive) {
+                Renderer tempRend = this.GetComponent<Renderer>();
+                tempRend.enabled = true;
+            } else {
+                Renderer tempRend = this.GetComponent<Renderer>();
+                tempRend.enabled = false;
             }
         }
     }

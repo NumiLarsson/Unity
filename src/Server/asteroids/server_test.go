@@ -10,7 +10,7 @@ var maxPlayers = 8
 
 func TestCreateServer(t *testing.T) {
 
-	server := CreateServer(false)
+	server := CreateServer(false, 5)
 
 	if server.totalPlayers != 0 {
 		t.Error("Expected totalPlayers 0, got", server.totalPlayers)
@@ -28,7 +28,7 @@ func TestCreateServer(t *testing.T) {
 
 func TestGetNextPort(t *testing.T) {
 
-	server := CreateServer(false)
+	server := CreateServer(false, 5)
 	// Make sure server is up
 	time.Sleep(100 * time.Millisecond)
 
@@ -47,7 +47,7 @@ func TestGetNextPort(t *testing.T) {
 
 func TestGetNextSessionID(t *testing.T) {
 
-	server := CreateServer(false)
+	server := CreateServer(false, 5)
 	// Make sure server is up
 	time.Sleep(100 * time.Millisecond)
 
@@ -93,7 +93,7 @@ func TestMakeConnection(t *testing.T) {
 
 func TestAddPlayer(t *testing.T) {
 
-	server := CreateServer(false)
+	server := CreateServer(false, 5)
 
 	p1port := server.addPlayer()
 	p2port := server.addPlayer()

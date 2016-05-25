@@ -12,7 +12,8 @@ type ListenerManager struct {
 	currentPlayers int
 	currentPort    int
 	nextID         int
-	input          chan (Data)
+	input          chan Data
+	output         chan Data
 	listeners      []*Listener
 	players        []*Player
 }
@@ -33,17 +34,32 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 				manager.handleCollisions()
 				// TODO: below correct way to use handle ??
 				manager.players = manager.collectPlayerPositions()
-
 				// Send update + world to players
+			}
+
+			if msg.action == terminate {
+
+				DebugPrint(fmt.Sprintln("[LIST.MAN] Dead {TODO: Close socket & kill listeners}"))
+				manager.output <- Data{terminated, ok}
+				return
+
 			}
 		}
 	}
 }
 
+func (manager *ListenerManager) kill() {
+
+	go func() {
+		manager.input <- Data{terminate, request}
+	}()
+
+}
+
 // newAsteroidsManager creates a new asteroid manager
 func newListenerManager() *ListenerManager {
 
-	debugPrint(fmt.Sprintln("[LIST.MAN] Created"))
+	DebugPrint(fmt.Sprintln("[LIST.MAN] Created"))
 	return new(ListenerManager)
 
 }
@@ -60,16 +76,16 @@ func (manager *ListenerManager) init(sessionConn *Connection,
 	manager.nextID = 1
 	manager.currentPort = firstPort
 	manager.input = sessionConn.read
+	manager.output = sessionConn.write
 
 	//manager.listeners = make([]*Listener, 0)
-
-	sessionConn.write <- Data{"l.manager_ready", 200}
+	sessionConn.write <- Data{"l.manager_ready", ok}
 }
 
 // newPlayer creates a new listener for the listener manager, used to connect to a new player.
 func (manager *ListenerManager) newPlayer() (int, *Player) {
 
-	debugPrint(fmt.Sprintln("[LIST.MAN] Creating new object in listener manager"))
+	DebugPrint(fmt.Sprintln("[LIST.MAN] Creating new object in listener manager"))
 
 	//Creation of the listener and listener-player
 	listener := newListener()
@@ -127,9 +143,10 @@ func (manager *ListenerManager) getPlayers() []*Player {
 // sendToClient broadcasts world-info to every listener
 func (manager *ListenerManager) sendToClient(world *World) {
 	for _, listener := range manager.listeners {
-		if listener.ID != "" {
+		go listener.Write(world)
+		/*if listener.ID != "" {
 			go listener.Write(world)
-		}
+		}*/
 	}
 }
 
@@ -159,7 +176,8 @@ func (manager *ListenerManager) print() {
 			list = append(list, player.ID)
 		}
 	}
+
 	if len(list) > 0 {
-		debugPrint(fmt.Sprintln("[LIST.MAN] Collision:", list))
+		DebugPrint(fmt.Sprintln("[LIST.MAN] Collision:", list))
 	}
 }
