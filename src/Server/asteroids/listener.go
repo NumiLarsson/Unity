@@ -22,6 +22,7 @@ type Player struct {
 	Lives 		int
 	Alive 		bool
 	Rotation	int
+	Points      int
 }
 
 type playerMessage struct {
@@ -180,20 +181,12 @@ func (listener *Listener) panicCatcher(clientChan chan *playerMessage) {
 //write writes game world to clients
 func (listener *Listener) Write(world *World) {
 
-	//fmt.Println(world.Asteroids)
-	/*var list []int
-	for _, ass := range world.Asteroids {
-		list = append(list, ass.ID)
-	}
-	fmt.Println("LIST:", list)*/
-
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
 	}
 
 	listener.writeBuffer <- jsonWorld
-	//listener.writeBuffer = append(listener.writeBuffer, jsonWorld)
 }
 
 // getPlayer returns a listeners player

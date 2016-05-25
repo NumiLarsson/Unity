@@ -9,4 +9,5 @@ public class Player {
     public int      Lives       { get; set; }
     public bool     Alive       { get; set; }
     public int      Rotation    { get; set; }
+    public int      Points      { get; set; }
 }

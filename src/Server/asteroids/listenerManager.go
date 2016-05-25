@@ -31,7 +31,11 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 
 			if msg.action == "session.tick" {
 				//manager.print()
-				manager.handleCollisions()
+				for _, character := range manager.players {
+					if character.Alive {
+						character.Points++;
+					}
+				}
 				// TODO: below correct way to use handle ??
 				manager.players = manager.collectPlayerPositions()
 				// Send update + world to players
@@ -144,25 +148,6 @@ func (manager *ListenerManager) getPlayers() []*Player {
 func (manager *ListenerManager) sendToClient(world *World) {
 	for _, listener := range manager.listeners {
 		go listener.Write(world)
-		/*if listener.ID != "" {
-			go listener.Write(world)
-		}*/
-	}
-}
-
-// handleCollisions is used to check if any player has been in a collision
-// and needs to get updated
-func (manager *ListenerManager) handleCollisions() {
-
-	for _, player := range manager.players {
-		if !player.isAlive() {
-			if player.getLives() > 1 {
-				player.setAlive()
-				player.Lives--
-			} else {
-				// TODO : remove player
-			}
-		}
 	}
 }
 

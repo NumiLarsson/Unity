@@ -1,4 +1,6 @@
 ﻿using UnityEngine;                  //We're using Unity all over the place
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 using System.Collections.Generic;   //Use List<GameObject>
 using System.Net;                   //Use C#'s network package.
@@ -24,6 +26,8 @@ public class GameLoop : MonoBehaviour {
     //Just some temporary objects, no reason these are global anymore, but we gain a little bit of 
     // performance. _I THINK_.
 
+    public string playerName;
+
     List<GameObject> players;
     List<GameObject> asteroids;
     //These are all the gameobjects currently drawn on the server.
@@ -32,6 +36,10 @@ public class GameLoop : MonoBehaviour {
     //The thread we use to read from the server.
 
     float lastMovement;
+    int gameStage;
+
+    public InputField inputField;
+    public Canvas     testCanvas;
 
     //Temp?
     public ShipControls shipScript { get; set; }
@@ -45,67 +53,59 @@ public class GameLoop : MonoBehaviour {
     ///     and initializes the necessary objects.
     /// </summary>
     void Start () {
-        ipAddress = IPAddress.Parse( "127.0.0.1" ); //"192.168.43.170" );//
-        IPEndPoint serverIPEP = new IPEndPoint(ipAddress, 9000);
-        int listenerPort = requestPort(serverIPEP); //Ask the server for a client specific port.
-        listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
-        listenerSocket.Connect( listenerIPEP );
-        //Connect to the port specified by the server.
-
-        threadedUpdate = new ParallelUpdate( listenerSocket );
-        Thread oThread = new Thread(new ThreadStart(threadedUpdate.threadedUpdate));
-        oThread.Start();
-
-        players = new List<GameObject>();
-        asteroids = new List<GameObject>();
-        //backgroundStage = 0;
     }
-
 
     /// <summary>
     ///     FixedUpdate is called once every frame should've been drawn, without frame cap this is called
     ///     as often as possible.
     /// </summary>
     void FixedUpdate() {
-        if ( Time.time - 0.01f < lastMovement) {
-            return; //100hz tickrate, otherwise json stacks on eachother
+        if (gameStage > 1) {
+            if ( Time.time - 0.01f < lastMovement ) {
+                return; //100hz tickrate, otherwise json stacks on eachother
+            }
+            lastMovement = Time.time;
+            if ( Input.GetKey( KeyCode.A ) ) {
+                //West
+                playerMessage message = new playerMessage("Move", "West");
+                string jsonMessage = JsonMapper.ToJson(message);
+                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                listenerSocket.Send( msg );
+                //Tell the server Move West
+            } else if ( Input.GetKey( KeyCode.D ) ) {
+                //East
+                playerMessage message = new playerMessage( "Move", "East" );
+                string jsonMessage = JsonMapper.ToJson(message);
+                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                listenerSocket.Send( msg );
+                //Tell the server Move East
+            } else if ( Input.GetKey( KeyCode.W ) ) {
+                //North
+                playerMessage message = new playerMessage( "Move", "North" );
+                string jsonMessage = JsonMapper.ToJson(message);
+                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                listenerSocket.Send( msg );
+                //Tell the server Move North
+            } else if ( Input.GetKey( KeyCode.S ) ) {
+                //South
+                playerMessage message = new playerMessage( "Move", "South" );
+                string jsonMessage = JsonMapper.ToJson(message);
+                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                listenerSocket.Send( msg );
+                //Tell the server Move South
+            } else if ( Input.GetKey( KeyCode.Q ) ) {
+                playerMessage message = new playerMessage("Spawn", "Spawn");
+                string jsonMessage = JsonMapper.ToJson(message);
+                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                listenerSocket.Send( msg );
+            }
         }
-        lastMovement = Time.time;
-        if ( Input.GetKey( KeyCode.A ) ) {
-            //West
-            playerMessage message = new playerMessage("Move", "West");
-            string jsonMessage = JsonMapper.ToJson(message);
-            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-            listenerSocket.Send( msg );
-            //Tell the server Move West
-        } else if ( Input.GetKey( KeyCode.D ) ) {
-            //East
-            playerMessage message = new playerMessage( "Move", "East" );
-            string jsonMessage = JsonMapper.ToJson(message);
-            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-            listenerSocket.Send( msg );
-            //Tell the server Move East
-        } else if ( Input.GetKey( KeyCode.W ) ) {
-            //North
-            playerMessage message = new playerMessage( "Move", "North" );
-            string jsonMessage = JsonMapper.ToJson(message);
-            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-            listenerSocket.Send( msg );
-            //Tell the server Move North
-        } else if ( Input.GetKey( KeyCode.S ) ) {
-            //South
-            playerMessage message = new playerMessage( "Move", "South" );
-            string jsonMessage = JsonMapper.ToJson(message);
-            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-            listenerSocket.Send( msg );
-            //Tell the server Move South
-        } else if ( Input.GetKey( KeyCode.Q ) ) {
-            playerMessage message = new playerMessage("Spawn", "Spawn");
-            string jsonMessage = JsonMapper.ToJson(message);
-            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-            listenerSocket.Send( msg );
-            Debug.Log( "Respawning" );
-        }
+    }
+
+    public void SetName (Text testText) {
+        playerName = testText.text;
+        Destroy( inputField.gameObject );
+        gameStage++;
     }
    
     
@@ -115,77 +115,121 @@ public class GameLoop : MonoBehaviour {
     ///     drawn.
     /// </summary>
     void Update () {
+        if (gameStage == 1) {
+            ipAddress = IPAddress.Parse( "127.0.0.1" ); //"192.168.43.170" );//
+            IPEndPoint serverIPEP = new IPEndPoint(ipAddress, 9000);
+            int listenerPort = requestPort(serverIPEP); //Ask the server for a client specific port.
+            listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
+            listenerSocket.Connect( listenerIPEP );
+            //Connect to the port specified by the server.
+
+            threadedUpdate = new ParallelUpdate( listenerSocket );
+            Thread oThread = new Thread(new ThreadStart(threadedUpdate.threadedUpdate));
+            oThread.Start();
+
+            //Send playername
+            playerMessage message = new playerMessage("Name", playerName);
+            string jsonMessage = JsonMapper.ToJson(message);
+            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+            listenerSocket.Send( msg );
+
+            //Is it ok? 
+            /*
+            int bytesReceived = listenerSocket.Receive( msg );
+            string response = Encoding.UTF8.GetString( msg, 0, bytesReceived );
+            if (response == "OK") {*/
+                players = new List<GameObject>();
+                asteroids = new List<GameObject>();
+                gameStage = 2;
+            //} else {
+              //  Debug.Log("Player name was not OK")
+            //}
+        }
 
 
         //Make sure there's a world to look in to, otherwise it crashes.
-        if ( threadedUpdate.live ) {
-            World gameWorld = threadedUpdate.gameWorld;
-            //Read the latest world from the server, by accessing the thread and retreive that world.
+        if (gameStage == 2) {
+            if ( threadedUpdate.live ) {
+                World gameWorld = threadedUpdate.gameWorld;
+                //Read the latest world from the server, by accessing the thread and retreive that world.
 
-            //For each player in the latest world from the thread.
-            foreach (Player newPlayer in gameWorld.Players ) {
-                bool isDrawn = false;
-                //For each player in the old World.
-                foreach (GameObject oldPlayer in players) {
-                    if ( oldPlayer.name == newPlayer.Name) {
-                        oldPlayer.SendMessage( "UpdateMe", newPlayer );
-                        isDrawn = true;
+                //For each player in the latest world from the thread.
+                foreach ( Player newPlayer in gameWorld.Players ) {
+                    bool isDrawn = false;
+                    //For each player in the old World.
+                    foreach ( GameObject oldPlayer in players ) {
+                        if (oldPlayer != null ) {
+                            if ( oldPlayer.name == newPlayer.Name ) {
+                                oldPlayer.SendMessage( "UpdateMe", newPlayer );
+                                isDrawn = true;
+                            }
+                        } 
+                    }
+                    //The player is not yet created, so create it
+                    if ( !isDrawn ) {
+                        tempPlayer = Instantiate( playerPrefab ) as GameObject;
+                        tempPlayObj = tempPlayer.GetComponent<PlayerObject>();
+                        this.tempPlayObj.SendMessage( "InitializeMe", newPlayer.Name );
+                        this.tempPlayObj.SendMessage( "UpdateMe", newPlayer );
+                        players.Add( tempPlayer );
                     }
                 }
-                //The player is not yet created, so create it
-                if ( !isDrawn ) {
-                    tempPlayer = Instantiate( playerPrefab ) as GameObject;
-                    tempPlayObj = tempPlayer.GetComponent<PlayerObject>();
-                    this.tempPlayObj.SendMessage( "InitializeMe", newPlayer.Name );
-                    this.tempPlayObj.SendMessage( "UpdateMe", newPlayer );
-                    players.Add( tempPlayer );
+                //For each asteroid in the latest world from the thread.
+                /*
+                foreach ( GameObject oldAsteroid in asteroids) {
+                    if ( oldAsteroid != null ) {
+                        tempAsteroid = oldAsteroid;
+                        tempAsteroid.SendMessage( "FlagFalse" );
+                    }
+                }*/
+                //If the player is dead
+                for ( int i = 0; i < players.Count; i++ ) {
+                    int offset = 0;
+                    tempPlayer = players[i];
+                    if ( tempPlayer == null ) {
+                        players.RemoveAt( i + offset );
+                        offset--;
+                    }
                 }
-            }
-            //For each asteroid in the latest world from the thread.
-            /*
-            foreach ( GameObject oldAsteroid in asteroids) {
-                if ( oldAsteroid != null ) {
-                    tempAsteroid = oldAsteroid;
-                    tempAsteroid.SendMessage( "FlagFalse" );
-                }
-            }*/
 
-            //Make sure the world contains asteroids, otherwise this crashes
-            if (gameWorld.Asteroids != null ) { 
-                //For each asteroid in the new world from the thread
-                foreach ( Asteroid newAsteroid in gameWorld.Asteroids ) {
-                    //Another check if it's null, had a bug earlier, doubt this is neccessary anymore.
-                    if ( newAsteroid != null && newAsteroid.ID != -1 ) {
-                        if (newAsteroid.ID != 1) { 
-                            bool isDrawn = false;
-                            //For each old asteroid that is currently drawn.
-                            foreach ( GameObject oldAsteroid in asteroids ) {
-                                if (oldAsteroid != null ) {
-                                    if ( oldAsteroid.name == newAsteroid.ID.ToString() ) {
-                                        oldAsteroid.SendMessage( "UpdateMe", newAsteroid );
-                                        isDrawn = true;
+
+                //Make sure the world contains asteroids, otherwise this crashes
+                if ( gameWorld.Asteroids != null ) {
+                    //For each asteroid in the new world from the thread
+                    foreach ( Asteroid newAsteroid in gameWorld.Asteroids ) {
+                        //Another check if it's null, had a bug earlier, doubt this is neccessary anymore.
+                        if ( newAsteroid != null && newAsteroid.ID != -1 ) {
+                            if ( newAsteroid.ID != 1 ) {
+                                bool isDrawn = false;
+                                //For each old asteroid that is currently drawn.
+                                foreach ( GameObject oldAsteroid in asteroids ) {
+                                    if ( oldAsteroid != null ) {
+                                        if ( oldAsteroid.name == newAsteroid.ID.ToString() ) {
+                                            oldAsteroid.SendMessage( "UpdateMe", newAsteroid );
+                                            isDrawn = true;
+                                        }
                                     }
                                 }
-                            }
-                            //It isn't drawn, so spawn a new one!
-                            if ( !isDrawn ) {
-                                tempAsteroid = Instantiate( asteroidPrefab ) as GameObject;
-                                this.tempAsteroid.SendMessage( "InitMe", newAsteroid.ID );
-                                this.tempAsteroid.SendMessage( "UpdateMe", newAsteroid );
-                                asteroids.Add( tempAsteroid );
+                                //It isn't drawn, so spawn a new one!
+                                if ( !isDrawn ) {
+                                    tempAsteroid = Instantiate( asteroidPrefab ) as GameObject;
+                                    this.tempAsteroid.SendMessage( "InitMe", newAsteroid.ID );
+                                    this.tempAsteroid.SendMessage( "UpdateMe", newAsteroid );
+                                    asteroids.Add( tempAsteroid );
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            //If the asteroid is dead, remove it from the array of active asteroids.
-            for ( int i = 0; i < asteroids.Count; i++ ) {
-                int offset = 0;
-                tempAsteroid = asteroids[i];
-                if (tempAsteroid == null) { 
+                //If the asteroid is dead, remove it from the array of active asteroids.
+                for ( int i = 0; i < asteroids.Count; i++ ) {
+                    int offset = 0;
+                    tempAsteroid = asteroids[i];
+                    if ( tempAsteroid == null ) {
                         asteroids.RemoveAt( i + offset );
                         offset--;
+                    }
                 }
             }
         }
