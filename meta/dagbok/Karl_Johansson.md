@@ -148,12 +148,18 @@ Refaktorera kollisioner, mer generisk kod. Påbörja större merge<br>
 Refaktorera och strukturera listenerManager, ta bort överflödigt kod
 
 ##### Onsdag
-**10:00-
-Kommentera kod, försöka merge:a, påbörja inför presentation
+**10:00-17:00**
+Kommentera kod, försöka merge:a, skriva tester, påbörja inför presentation
 
 ##### Torsdag
+**10:00-15:00**
+Tester, justera kod
 
 ##### Fredag
+
+##### Lördag 
+**12:00-14:00**
+Små ändringar, tester
 
 ## Vecka 21
 

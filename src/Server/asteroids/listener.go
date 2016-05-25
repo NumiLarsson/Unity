@@ -11,15 +11,17 @@ import (
 
 //Player is used to represent the players in the game world
 type Player struct {
-	worldX	int
-	worldY	int
-	Name  string
-	ID    int
-	X     int
-	Y     int
-	Lives int
-	Alive bool
-	step  int
+	worldX		int
+	worldY		int
+	step  		int
+	size  		int
+	Name  		string
+	ID    		int
+	X     		int
+	Y     		int
+	Lives 		int
+	Alive 		bool
+	Rotation	int
 }
 
 type playerMessage struct {
@@ -93,14 +95,16 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	seed := time.Now().UnixNano()
 	rand.Seed(seed)
 
-	fmt.Println(seed)
+	//fmt.Println(seed)
 	player.Name = strconv.Itoa(id);
 	player.worldX = xMax
 	player.worldY = yMax
 	player.step = 1;
 	player.randomSpawn(player.worldX, player.worldY)
+	player.size = 10
+
 	player.Lives = 3 // updated
-	player.Alive = true
+	player.Alive = false;
 }
 
 // startUpListener
@@ -153,7 +157,7 @@ func (listener *Listener) readFromClient(clientChan chan *playerMessage) {
 }
 
 func (listener *Listener) panicCatcher(clientChan chan *playerMessage) {
-	fmt.Println(recover())
+	//fmt.Println(recover())
 	err := listener.conn.Close()
 	if (err != nil) {
 		panic(err)
@@ -175,6 +179,14 @@ func (listener *Listener) panicCatcher(clientChan chan *playerMessage) {
 
 //write writes game world to clients
 func (listener *Listener) Write(world *World) {
+
+	//fmt.Println(world.Asteroids)
+	/*var list []int
+	for _, ass := range world.Asteroids {
+		list = append(list, ass.ID)
+	}
+	fmt.Println("LIST:", list)*/
+
 	jsonWorld, err := json.Marshal(world)
 	if err != nil {
 		panic(err)
@@ -194,8 +206,6 @@ func (player *Player) randomSpawn(xMax int, yMax int) {
 
 	player.X = rand.Intn(xMax)
 	player.Y = rand.Intn(yMax)
-
-	fmt.Println(player.ID, player.X, player.Y)
 }
 
 //isAlive return if the player is alive or not
@@ -221,6 +231,7 @@ func (player *Player) tryMove(value string) bool {
 		} 
 		//Else
 		player.Y += player.step
+		player.Rotation = 0		
 		return true
 		
 	case "East": //East
@@ -228,6 +239,7 @@ func (player *Player) tryMove(value string) bool {
 			return false
 		} 
 		//Else
+		player.Rotation = 3
 		player.X += player.step
 		return true
 		
@@ -236,6 +248,7 @@ func (player *Player) tryMove(value string) bool {
 			return false
 		} 
 		//Else
+		player.Rotation = 2
 		player.Y -= player.step
 		return true
 		
@@ -244,6 +257,7 @@ func (player *Player) tryMove(value string) bool {
 			return false
 		} 
 		//Else
+		player.Rotation = 1
 		player.X -= player.step
 		return true
 	}
@@ -258,6 +272,17 @@ func (player *Player) newInput(playMessage *playerMessage) bool {
 	case "Name":
 		player.Name = playMessage.Value
 		return true;
+	case "Spawn":
+		if player.Alive {
+			return false;
+		}
+		if player.Lives > 0 {
+			player.Lives--
+			player.Alive = true;
+			fmt.Println("Respawning player", player.Name)
+			return true;
+		}
+		return false;
 	}
 	return false;
 }

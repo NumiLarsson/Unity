@@ -26,18 +26,27 @@ type gameSession struct {
 
 // Server struct used to store information about sessions, players etc.
 type Server struct {
-	totalPlayers int
-	nextPort     int
-	maxPlayers   int
-	nextSession  int
-	sessions     []*gameSession
+	totalPlayers    int
+	nextPort        int
+	maxPlayers      int
+	nextSession     int
+	inactivityLimit int
+	input           chan Data
+	sessions        []*gameSession
 }
 
-// inDebugMode used when running program with prints
-var inDebugMode = true
+// Some signal constants
+const terminate = "kill"
+const terminated = "dead"
+const request = 100
+const fail = -1
+const ok = 200
 
-//debugPrint prints the argument string, used to have same output in complete program
-func debugPrint(str string) {
+// inDebugMode used when running program with prints
+var inDebugMode = false
+
+// DebugPrint prints the argument string, used to have same output in complete program
+func DebugPrint(str string) {
 
 	if inDebugMode {
 		fmt.Print("* ", str)
@@ -86,11 +95,10 @@ func (server *Server) CreateFakeUser() chan Data {
 
 // Listen is a loop that server uses to listen for and setup new users
 func (server *Server) Listen(external chan Data) {
+	server.input = external
 
-	// TEMPORARY
-	// ===
-	// Kill the server after 60 seconds of inactivity
-	timeout := time.After(1800 * time.Second)
+	// Kill the server after x seconds of inactivity
+	timeout := time.After(time.Duration(server.inactivityLimit) * time.Second)
 
 	newPlayers := make(chan int)
 	go server.acceptNewPlayers(newPlayers)
@@ -100,12 +108,25 @@ func (server *Server) Listen(external chan Data) {
 		case <- newPlayers: //external:
 			port := server.addPlayer()
 			//external <- Data{"port", port}
-			debugPrint(fmt.Sprintln("[SERVER] Port set up for new user", port))
+			DebugPrint(fmt.Sprintln("[SERVER] Port set up for new user", port))
 			newPlayers <- port
+		case msg := <-server.input:
+			if msg.action == "server.new_user" {
+				port := server.addPlayer()
+				external <- Data{"port", port}
+				DebugPrint(fmt.Sprintln("[SERVER] Port set up for new user", port))
+			}
+
+			if msg.action == terminate {
+				DebugPrint(fmt.Sprintln("\nEXITING…\n========"))
+				server.killSessions()
+				DebugPrint(fmt.Sprintln("[SERVER] Dead"))
+				return
+			}
+			// newPlayers <- port
 
 		case <-timeout:
-			fmt.Println("\n========\n[SERVER] Terminated due to 60 seconds of inactivity\n========")
-			return
+			server.kill()
 		}
 	}
 
@@ -147,7 +168,7 @@ func (server *Server) addPlayer() int {
 	for _, session := range server.sessions {
 
 		// Ask a session whether there is enough room for a new player
-		session.write <- Data{"server.poke", 1}
+		session.write <- Data{"server.poke", request}
 		port := <-session.read
 
 		if port.result > -1 {
@@ -157,16 +178,18 @@ func (server *Server) addPlayer() int {
 
 	// If no session has capacity or available, creates a new session and player
 	return server.createSession()
+
 }
 
 // CreateServer creates a new server struct
-func CreateServer(debugMode bool) *Server {
+func CreateServer(debugMode bool, inactivityLimit int) *Server {
 
 	inDebugMode = debugMode
 
 	server := new(Server)
 	server.maxPlayers = 8
 	server.totalPlayers = 0
+	server.inactivityLimit = inactivityLimit
 
 	/*
 		9001 because it allows us to count acceptNewPlayers
@@ -175,6 +198,24 @@ func CreateServer(debugMode bool) *Server {
 	server.nextPort = 9001
 
 	return server
+
+}
+
+func (server *Server) kill() {
+
+	go func() {
+		server.input <- Data{terminate, request}
+	}()
+
+}
+
+func (server *Server) killSessions() {
+
+	for _, session := range server.sessions {
+		session.write <- Data{terminate, request}
+		<-session.read
+	}
+
 }
 
 // createSession creates a local copy of the session in the server
@@ -185,10 +226,10 @@ func (server *Server) createSession() int {
 	nextPort := server.getNextPort()
 
 	// Start a session and wait for it to send confirmation
-	go Session(sessConn.FlipConnection(), nextPort, server.maxPlayers, 400)
+	go Session(sessConn.FlipConnection(), nextPort, server.maxPlayers, 225, 400)
 	<-sessConn.read
 
-	debugPrint(fmt.Sprintln("[SERVER] Session created"))
+	DebugPrint(fmt.Sprintln("[SERVER] Session created"))
 
 	// Create a local fake-session to track some basic stats
 	session := new(gameSession)
@@ -198,15 +239,16 @@ func (server *Server) createSession() int {
 	server.sessions = append(server.sessions, session)
 
 	return server.createPlayer(session)
+
 }
 
 // createPlayer sends request to session to create a new player and waits for confirmation
 func (server *Server) createPlayer(gs *gameSession) int {
 
-	gs.write <- Data{"server.connect_player", 1}
+	gs.write <- Data{"server.connect_player", request}
 	data := <-gs.read
 
-	debugPrint(fmt.Sprintln("[SERVER] Player connected"))
+	DebugPrint(fmt.Sprintln("[SERVER] Player connected"))
 
 	server.totalPlayers++
 	return data.result

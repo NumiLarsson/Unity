@@ -45,7 +45,7 @@ public class GameLoop : MonoBehaviour {
     ///     and initializes the necessary objects.
     /// </summary>
     void Start () {
-        ipAddress = IPAddress.Parse( "192.168.43.170" );//"127.0.0.1" ); //
+        ipAddress = IPAddress.Parse( "127.0.0.1" ); //"192.168.43.170" );//
         IPEndPoint serverIPEP = new IPEndPoint(ipAddress, 9000);
         int listenerPort = requestPort(serverIPEP); //Ask the server for a client specific port.
         listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
@@ -58,6 +58,7 @@ public class GameLoop : MonoBehaviour {
 
         players = new List<GameObject>();
         asteroids = new List<GameObject>();
+        //backgroundStage = 0;
     }
 
 
@@ -98,15 +99,24 @@ public class GameLoop : MonoBehaviour {
             byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
             listenerSocket.Send( msg );
             //Tell the server Move South
+        } else if ( Input.GetKey( KeyCode.Q ) ) {
+            playerMessage message = new playerMessage("Spawn", "Spawn");
+            string jsonMessage = JsonMapper.ToJson(message);
+            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+            listenerSocket.Send( msg );
+            Debug.Log( "Respawning" );
         }
     }
-
+   
+    
     // Update is called once per frame
     /// <summary>
     ///     Update is called once per frame by the Unity engine, this is where most objects are created and
     ///     drawn.
     /// </summary>
     void Update () {
+
+
         //Make sure there's a world to look in to, otherwise it crashes.
         if ( threadedUpdate.live ) {
             World gameWorld = threadedUpdate.gameWorld;

@@ -9,7 +9,8 @@ import (
 //type World int
 // TODO: CHANGE THIS
 type World struct {
-	WorldSize  int
+	width      int
+	height     int
 	Players    []*Player
 	Asteroids  []*Asteroid
 	Collisions []*Collision
@@ -44,20 +45,42 @@ type session struct {
 }
 
 // Session initiates the sessions values and creates a new go-routine for the session
-func Session(serverConn *Connection, startPort int, players int, worldSize int) {
+func Session(serverConn *Connection, startPort int, players int, worldHeight int, worldWidth int) {
 
 	session := new(session)
 	session.maxPlayers = players
 
-	session.worldSize = worldSize
+	session.world = new(World)
+	session.world.height = worldHeight
+	session.world.width = worldWidth
 	session.write.server = serverConn.write
 	session.read.server = serverConn.read
 
-	session.write.server <- Data{"session_created", 200}
+	session.write.server <- Data{"session_created", ok}
 
 	session.createManagers(startPort)
 
 	go session.loop()
+
+}
+
+func (session *session) kill() {
+
+	go func() {
+		session.read.server <- Data{terminate, request}
+	}()
+
+}
+
+func (session *session) killManagers() {
+
+	// Kill listener manager and wait for confirmation
+	session.listenerManager.kill()
+	<-session.read.players
+
+	// Kill asteroid manager and wait for confirmation
+	session.asteroidManager.kill()
+	<-session.read.asteroids
 
 }
 
@@ -68,7 +91,6 @@ func (session *session) loop() {
 	for {
 
 		tick := time.After(16 * time.Millisecond)
-		//TEMP, tick should be 16 * millisecond
 
 		select {
 		case <-tick:
@@ -80,6 +102,13 @@ func (session *session) loop() {
 			session.world.collisionManager()
 			
 			// BROADCAST TO CLIENTS
+			/*var list []int
+			for _, ass := range session.world.Asteroids {
+				list = append(list, ass.ID)
+			}*/
+
+			//fmt.Println("SES:", session.world.Asteroids)
+			//fmt.Println("SES:", list)
 			session.listenerManager.sendToClient(session.world)
 
 			//session.world.Players[0].fakeMovePlayer()
@@ -88,28 +117,36 @@ func (session *session) loop() {
 			//Empty world {}, something is going wrong.
 			//session.world.players jsons fine, but world just doesn't
 
-			session.write.asteroids <- Data{"session.tick", 200}
-			session.write.players <- Data{"session.tick", 200}
+			session.write.asteroids <- Data{"session.tick", ok}
+			session.write.players <- Data{"session.tick", ok}
 
-		case input := <-session.read.server:
+		case msg := <-session.read.server:
 
-			if input.action == "server.poke" {
+			if msg.action == "server.poke" {
+
 				// Check if theres room inside the session
-				fmt.Println("POKE")
 				if session.currentPlayers < session.maxPlayers {
-					session.write.server <- Data{"session.has_room", 200}
+					session.write.server <- Data{"session.has_room", ok}
 				} else {
-					session.write.server <- Data{"session.no_room", -1}
+					session.write.server <- Data{"session.no_room", fail}
 				}
 
+			} else if msg.action == terminate {
+
+				session.killManagers()
+				DebugPrint(fmt.Sprintln("[SESSION] Dead"))
+				session.write.server <- Data{terminated, ok}
+				return
+
 			} else {
+
 				// Spawn a new player
-				fmt.Println("SPAWN")
 				var port, player = session.listenerManager.newPlayer()
 				session.currentPlayers++
 				session.world.Players = append(session.world.Players, player)
 
 				session.write.server <- Data{"session.player_created", port}
+
 			}
 		}
 	}
@@ -126,16 +163,10 @@ func (session *session) createManagers(startPort int /*maxPlayers int, maxAstero
 	session.write.asteroids = toAsteroids.write
 	session.read.asteroids = toAsteroids.read
 
-	session.world = new(World)
-	session.world.WorldSize = 400
-	//session.world.Players = make([]*Player, 0)
-	//session.world.Asteroids = make([]*Asteroid, 0)
-	//session.world.Collisions = make([]*Collision, 0)
-
 	session.asteroidManager = newAsteroidManager()
 	session.listenerManager = newListenerManager()
 
-	go session.asteroidManager.loop(toAsteroids.FlipConnection() /*,session.world.Asteroids*/)
+	go session.asteroidManager.loop(toAsteroids.FlipConnection(), session.world.height, session.world.width)
 	go session.listenerManager.loop(toPlayers.FlipConnection(),
 		session.maxPlayers, startPort)
 
