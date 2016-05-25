@@ -164,10 +164,24 @@ Små ändringar, tester
 ## Vecka 21
 
 ##### Måndag
+**10:00-12:30** 
+Inför presentation milstolpe<br>
+**15:00-17:00**
+Småfix med kod, milstolpe
 
 ##### Tisdag
+**09:00-10:00**
+Presentationsslides
+**12:30-14:15**
+Presentation
+**19:00-21:00**
+Rapport
 
 ##### Onsdag
+**11:00-17:00**
+Rapport<br>
+**18:30-22:00**
+Rapport
 
 ##### Torsdag
 
