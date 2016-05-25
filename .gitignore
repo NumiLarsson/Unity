@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 */[Ll]ibrary/
 src/UnityClient/Asteroids/[Tt]emp/
 */[Oo]bj/
@@ -39,12 +38,10 @@ sysinfo.txt
 *.o
 *.a
 *.so
-<<<<<<< HEAD
+*.dll
 */*.dll
-=======
 *.out
 *.bin
->>>>>>> f124cd8b1163d3b512bae12a0f23fd09ee8683c3
 
 # Folders
 _obj
