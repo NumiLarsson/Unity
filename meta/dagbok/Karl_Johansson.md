@@ -180,7 +180,7 @@ Rapport
 ##### Onsdag
 **11:00-17:00**
 Rapport<br>
-**18:30-22:00**
+**18:30-23:00**
 Rapport
 
 ##### Torsdag
