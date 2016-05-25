@@ -35,17 +35,21 @@ func (world *World) playerCollision() {
 	for _, p := range world.Players {
 		for _, a := range world.Asteroids {
 			if isCollisionSize(p.X, p.Y, p.size, a.X, a.Y, a.size) {
+				if(p.Alive){
 				world.appendCollision(p.X, p.Y)
 				p.Alive = false
 				a.Alive = false
+				}
 			}
 		}
 
 		for _, p2 := range world.Players {
 
 			if isCollisionSize(p.X, p.Y, p.size, p2.X, p2.Y, p2.size) && p.ID != p2.ID {
+				if(p.Alive && p2.Alive){
 				world.appendCollision(p.X, p.Y)
 				p.Alive = false
+				}
 			}
 
 		}
