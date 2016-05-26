@@ -119,6 +119,7 @@ Träff med grupp för mindre skrivningar i koden samt förberedelser inför morg
 Träff med grupp för sammanslagning av kod, förberedelser inför presentation samt påbörjat rapportskrivning, ca 7h
 
 ##### Onsdag
+Träff med grupp för att finputsa kod samt skriva klart first draft av rapporen, ca 6h
 
 ##### Torsdag
 
