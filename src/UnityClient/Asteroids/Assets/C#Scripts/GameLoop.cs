@@ -27,10 +27,17 @@ public class GameLoop : MonoBehaviour {
     // performance. _I THINK_.
 
     public string playerName;
+    public int playerPoints;
+    public int playerLives;
 
     List<GameObject> players;
     List<GameObject> asteroids;
     //These are all the gameobjects currently drawn on the server.
+
+    List<Text> AllPlayerNames;
+    List<Text> AllPlayerPoints;
+    List<Text> AllPlayerLives;
+
 
     ParallelUpdate threadedUpdate;
     //The thread we use to read from the server.
@@ -39,10 +46,22 @@ public class GameLoop : MonoBehaviour {
     int gameStage;
 
     public InputField inputField;
-    public Canvas     testCanvas;
+    public GameObject testCanvas;
 
-    //Temp?
-    public ShipControls shipScript { get; set; }
+    public string preNameText = "Name: ";
+    public string preLivesText = "Lives: ";
+    public string prePointsText = "Points: ";
+
+    public Text NameText;
+    public Text LivesText;
+    public Text PointsText;
+
+    public Text NameTextPrefab;
+    public Text LivesTextPrefab;
+    public Text PointsTextPrefab;
+
+    //Temp?;
+    public ShipControls shipScript;
     //This is hardcoded in the FixedUpdate, but it should be specific to a player once we
     //  start intrapolating player movement.
     //Temp?
@@ -60,7 +79,7 @@ public class GameLoop : MonoBehaviour {
     ///     as often as possible.
     /// </summary>
     void FixedUpdate() {
-        if (gameStage > 1) {
+        if (gameStage == 1 || gameStage == 2) {
             if ( Time.time - 0.01f < lastMovement ) {
                 return; //100hz tickrate, otherwise json stacks on eachother
             }
@@ -102,12 +121,87 @@ public class GameLoop : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    ///     Sets the name of the local player and removes the inputfields that we created to accept them.
+    /// </summary>
+    /// <param name="testText">The text we get from the inputfield once it's done</param>
     public void SetName (Text testText) {
         playerName = testText.text;
+        NameText.text = preNameText + playerName;
         Destroy( inputField.gameObject );
         gameStage++;
     }
    
+    void UpdateGUI() {
+        if (players != null ) {
+            foreach (GameObject currPlay in players) {
+                if (currPlay != null && currPlay.name != playerName) {
+                    PlayerObject tempScript = currPlay.GetComponent<PlayerObject>();
+                    if ( AllPlayerNames != null ) {
+                        bool isNotDrawn = true;
+                        for( int i = 0; i < AllPlayerNames.Count; i++ ) {
+                            if (AllPlayerNames[i].text == tempScript.Name ) {
+                                AllPlayerLives[i].text = tempScript.Lives.ToString();
+                                AllPlayerPoints[i].text = tempScript.Points.ToString();
+                                isNotDrawn = false;
+                            }
+                        }
+                        if ( isNotDrawn ) {
+                            Text nameText = Instantiate( NameTextPrefab );
+                            nameText.transform.SetParent( testCanvas.transform, false );
+                            nameText.text = tempScript.Name;
+                            AllPlayerNames.Add( nameText );
+
+                            Text livesText = Instantiate( LivesTextPrefab );
+                            livesText.transform.SetParent( testCanvas.transform, false );
+                            livesText.text = tempScript.Lives.ToString();
+                            AllPlayerLives.Add( livesText );
+
+                            Text pointsText = Instantiate( PointsTextPrefab );
+                            pointsText.transform.SetParent( testCanvas.transform, false );
+                            pointsText.text = tempScript.Points.ToString();
+                            AllPlayerPoints.Add( pointsText );
+
+                        }
+                    } else {
+                        AllPlayerNames = new List<Text>();
+                        AllPlayerLives = new List<Text>();
+                        AllPlayerPoints = new List<Text>();
+                        Text nameText = Instantiate( NameTextPrefab );
+                        nameText.transform.SetParent( testCanvas.transform, false );
+                        nameText.text = tempScript.Name;
+                        AllPlayerNames.Add( nameText );
+
+                        Text livesText = Instantiate( LivesTextPrefab );
+                        livesText.transform.SetParent( testCanvas.transform, false );
+                        livesText.text = tempScript.Lives.ToString();
+                        AllPlayerLives.Add( livesText );
+
+                        Text pointsText = Instantiate( PointsTextPrefab );
+                        pointsText.transform.SetParent( testCanvas.transform, false );
+                        pointsText.text = tempScript.Points.ToString();
+                        AllPlayerPoints.Add( pointsText );
+                    }
+                }
+            }
+        }
+        if (AllPlayerNames != null ) {
+            for (int i = 0; i < AllPlayerNames.Count; i++ ) {
+                if (i > 4) {
+                    AllPlayerNames[i].transform.position = new Vector3( -170, ( i%4 * 40 ) - 60 );
+                    AllPlayerNames[i].alignment = TextAnchor.MiddleLeft;
+                    AllPlayerLives[i].transform.position = new Vector3( -170, ( i%4 * 40 ) - 70 );
+                    AllPlayerLives[i].alignment = TextAnchor.MiddleLeft;
+                    AllPlayerPoints[i].transform.position = new Vector3( -170, ( i%4 * 40 ) - 80 );
+                    AllPlayerPoints[i].alignment = TextAnchor.MiddleLeft;
+                } else { 
+                    AllPlayerNames[i].transform.position = new Vector3( 60, (i * 40) - 60 );
+                    AllPlayerLives[i].transform.position = new Vector3( 60, ( i * 40 ) - 70 );
+                    AllPlayerPoints[i].transform.position = new Vector3( 60, ( i * 40 ) - 80 );
+                }
+            }
+        }
+    }
     
     // Update is called once per frame
     /// <summary>
@@ -115,6 +209,7 @@ public class GameLoop : MonoBehaviour {
     ///     drawn.
     /// </summary>
     void Update () {
+        UpdateGUI();
         if (gameStage == 1) {
             ipAddress = IPAddress.Parse( "127.0.0.1" ); //"192.168.43.170" );//
             IPEndPoint serverIPEP = new IPEndPoint(ipAddress, 9000);
@@ -123,24 +218,27 @@ public class GameLoop : MonoBehaviour {
             listenerSocket.Connect( listenerIPEP );
             //Connect to the port specified by the server.
 
-            threadedUpdate = new ParallelUpdate( listenerSocket );
-            Thread oThread = new Thread(new ThreadStart(threadedUpdate.threadedUpdate));
-            oThread.Start();
-
             //Send playername
             playerMessage message = new playerMessage("Name", playerName);
             string jsonMessage = JsonMapper.ToJson(message);
             byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
             listenerSocket.Send( msg );
 
+            //Start the concurrent thread.
+            threadedUpdate = new ParallelUpdate( listenerSocket );
+            Thread oThread = new Thread(new ThreadStart(threadedUpdate.threadedUpdate));
+            oThread.Start();
+
             //Is it ok? 
             /*
             int bytesReceived = listenerSocket.Receive( msg );
             string response = Encoding.UTF8.GetString( msg, 0, bytesReceived );
             if (response == "OK") {*/
-                players = new List<GameObject>();
-                asteroids = new List<GameObject>();
-                gameStage = 2;
+
+            //Right now we don't have time to implement ok on double names, but we deal with that anyway with ID.
+            players = new List<GameObject>();
+            asteroids = new List<GameObject>();
+            gameStage = 2;
             //} else {
               //  Debug.Log("Player name was not OK")
             //}
@@ -149,10 +247,16 @@ public class GameLoop : MonoBehaviour {
 
         //Make sure there's a world to look in to, otherwise it crashes.
         if (gameStage == 2) {
+            if (threadedUpdate.gameOver) {
+                gameStage++;
+                return;
+            }
             if ( threadedUpdate.live ) {
                 World gameWorld = threadedUpdate.gameWorld;
                 //Read the latest world from the server, by accessing the thread and retreive that world.
-
+                if (gameWorld.Players == null ) {
+                    return;
+                }
                 //For each player in the latest world from the thread.
                 foreach ( Player newPlayer in gameWorld.Players ) {
                     bool isDrawn = false;
@@ -160,6 +264,12 @@ public class GameLoop : MonoBehaviour {
                     foreach ( GameObject oldPlayer in players ) {
                         if (oldPlayer != null ) {
                             if ( oldPlayer.name == newPlayer.Name ) {
+                                if ( newPlayer.Name == playerName ) {
+                                    playerPoints = newPlayer.Points;
+                                    playerLives = newPlayer.Lives;
+                                    PointsText.text = prePointsText + playerPoints.ToString();
+                                    LivesText.text = preLivesText + playerLives.ToString();
+                                }
                                 oldPlayer.SendMessage( "UpdateMe", newPlayer );
                                 isDrawn = true;
                             }
@@ -231,7 +341,11 @@ public class GameLoop : MonoBehaviour {
                         offset--;
                     }
                 }
-            }
+            } 
+        } else if ( gameStage > 2 ) {
+            NameText.text = "Winner: " + threadedUpdate.gameWorld.Players[0].Name;
+            LivesText.text = "With points: " + threadedUpdate.gameWorld.Players[0].Points;
+            PointsText.text = "You got: " + playerPoints + " points";
         }
     }
 
@@ -261,6 +375,7 @@ public class GameLoop : MonoBehaviour {
     class ParallelUpdate {
         public World gameWorld;
         public bool live = false;
+        public bool gameOver = false;
         private Socket socket { get; set; }
 
         public ParallelUpdate ( Socket socket ) {
@@ -282,8 +397,15 @@ public class GameLoop : MonoBehaviour {
                 string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
 
                 //Convert to a C# object from Jsonstring.
-                World testWorld = JsonMapper.ToObject<World>(jsonString);
-                gameWorld = testWorld;
+                GameState tempState = JsonMapper.ToObject<GameState>(jsonString);
+                if (tempState.State == "Running" ) {
+                    gameWorld = tempState.World;
+                } else {
+                    gameOver = true;
+                    Thread.Sleep( 100 );
+                    socket.Shutdown( SocketShutdown.Both );
+                    socket.Close();
+                }
                 //Copy the testWorld to the gameWorld.
             }
         }

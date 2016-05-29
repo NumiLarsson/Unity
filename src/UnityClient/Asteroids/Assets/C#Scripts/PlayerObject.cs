@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerObject : MonoBehaviour {
     public Rigidbody2D  shipBody    { get; set; }
     public string       Name        { get; set; }
+    public int          ID          { get; set; }
     public int          XCord       { get; set; }
     public int          YCord       { get; set; }
     public int          Lives       { get; set; }
     public int          Rotation    { get; set; }
-    public bool         Alive     { get; set; }
+    public bool         Alive       { get; set; }
+    public int          Points      { get; set; }
 
     public ParticleSystem ShipFlames;
 
@@ -26,6 +29,7 @@ public class PlayerObject : MonoBehaviour {
         this.framesSinceDrawn = 0;
         this.Rotation = newPlayer.Rotation;
         this.Alive = newPlayer.Alive;
+        this.Points = newPlayer.Points;
     }
 
     public void InitializeMe ( string playerName ) {
@@ -53,7 +57,9 @@ public class PlayerObject : MonoBehaviour {
             shipBody.transform.rotation = Quaternion.Euler( new Vector3( 0, 0, 90 * Rotation ) );
             shipBody.transform.position = new Vector3( ( XCord/(scaling)  - 160f), ( YCord/(scaling) - 90f ));
             if (this.Alive) {
+                //Drag this out to gain performance
                 Renderer tempRend = this.GetComponent<Renderer>();
+                //Drag this out to gain performance
                 tempRend.enabled = true;
             } else {
                 Renderer tempRend = this.GetComponent<Renderer>();

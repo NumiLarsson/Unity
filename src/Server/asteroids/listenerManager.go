@@ -2,6 +2,8 @@ package asteroids
 
 import (
 	"fmt"
+	"os"
+	"time"
 )
 
 //ListenerManager is used as a struct to basically emulate an object
@@ -29,7 +31,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 
 		case msg := <-manager.input:
 
-			if msg.action == "session.tick" {
+			if msg.action == "session.tick" {				
 				//manager.print()
 				for _, character := range manager.players {
 					if character.Alive {
@@ -146,9 +148,27 @@ func (manager *ListenerManager) getPlayers() []*Player {
 
 // sendToClient broadcasts world-info to every listener
 func (manager *ListenerManager) sendToClient(world *World) {
+	AllDead := true
+	for _, character := range manager.getPlayers() {
+		if character.Alive || character.Lives > 0 {
+			AllDead = false
+		}
+	}
+				
+	if (AllDead) {
+		for _, listener := range manager.listeners {
+			listener.WriteEndGame(world)
+			shutdown();
+		}
+	}
+	
 	for _, listener := range manager.listeners {
 		go listener.Write(world)
 	}
+}
+func shutdown() {
+	time.Sleep(time.Second)
+	os.Exit(0)
 }
 
 // print is used to print all players that have been in a collision

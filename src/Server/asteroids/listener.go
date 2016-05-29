@@ -9,6 +9,12 @@ import (
 	"time"
 )
 
+//GameState is used to represent the entire gamestate
+type GameState struct {
+	State string
+	World *World
+}
+
 //Player is used to represent the players in the game world
 type Player struct {
 	worldX		int
@@ -120,21 +126,33 @@ func (listener *Listener) startUpListener() {
 	listener.idleListener()
 }
 
+func (listener *Listener) clientDead() {
+	listener.player.Lives = 0;
+	listener.player.Alive = false;
+}
+
 func (listener *Listener) idleListener() {
 	clientChan := make(chan *playerMessage)
 	go listener.readFromClient(clientChan)
 	
 	for {
+		defer listener.clientDead()
+		//30 second timeout, after that he's dead to us!
+		timeout := time.After(time.Second * 90)
 		select {
 		case jsonWorld := <-listener.writeBuffer:
 			listener.conn.Write(jsonWorld)
 			//fmt.Println(string(jsonWorld))
-		case message := <- clientChan :
+		case message := <- clientChan:
 			if ( !listener.player.newInput(message) ) {
 				//fmt.Println("Input from player was invalid")
 			} else {
 				//fmt.Println("Look at me:", listener.ID, listener.player.X, listener.player.Y);
 			}
+		//Remove player from the game if timeout
+		case <-timeout:
+			listener.player.Lives = 0
+			listener.player.Alive = false;
 		}
 	}
 }
@@ -180,8 +198,38 @@ func (listener *Listener) panicCatcher(clientChan chan *playerMessage) {
 
 //write writes game world to clients
 func (listener *Listener) Write(world *World) {
+	
+	runningState := new(GameState) 
+	runningState.State = "Running"
+	runningState.World = world
+	jsonWorld, err := json.Marshal(runningState)
+	if err != nil {
+		panic(err)
+	}
 
-	jsonWorld, err := json.Marshal(world)
+	listener.writeBuffer <- jsonWorld
+}
+
+//WriteEndGame is the last package sent (a couple of times) to the
+//Client to represent the game ending.
+func (listener *Listener) WriteEndGame(world *World) {
+
+	endState := new(GameState)
+	endState.State = "GameEnding"
+	currMax := 0;
+	currWinner := 0;
+	for variant, player := range world.Players {
+		if (player.Points > currMax) {
+			currMax = player.Points
+			currWinner = variant;
+		}
+	}
+	
+	endWorld := new(World)
+	endWorld.Players = append(endWorld.Players, world.Players[currWinner])
+	
+
+	jsonWorld, err := json.Marshal(endWorld)
 	if err != nil {
 		panic(err)
 	}
