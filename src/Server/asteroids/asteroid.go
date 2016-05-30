@@ -101,7 +101,7 @@ func (asteroid *Asteroid) randowSpawn(xMax int, yMax int) {
 
 	case 3:
 		// Spawn left edge
-		asteroid.X = 0 - asteroid.size
+		asteroid.X = 0
 		asteroid.Y = rand.Intn(yMax)
 		asteroid.xStep = 1
 		asteroid.yStep = randomDir
