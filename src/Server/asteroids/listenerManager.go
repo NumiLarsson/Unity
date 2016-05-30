@@ -2,6 +2,8 @@ package asteroids
 
 import (
 	"fmt"
+	"os"
+	"time"
 )
 
 //ListenerManager is used as a struct to basically emulate an object
@@ -29,9 +31,13 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 
 		case msg := <-manager.input:
 
-			if msg.action == "session.tick" {
+			if msg.action == "session.tick" {				
 				//manager.print()
-				manager.handleCollisions()
+				for _, character := range manager.players {
+					if character.Alive {
+						character.Points++;
+					}
+				}
 				// TODO: below correct way to use handle ??
 				manager.players = manager.collectPlayerPositions()
 				// Send update + world to players
@@ -142,28 +148,27 @@ func (manager *ListenerManager) getPlayers() []*Player {
 
 // sendToClient broadcasts world-info to every listener
 func (manager *ListenerManager) sendToClient(world *World) {
-	for _, listener := range manager.listeners {
-		go listener.Write(world)
-		/*if listener.ID != "" {
-			go listener.Write(world)
-		}*/
-	}
-}
-
-// handleCollisions is used to check if any player has been in a collision
-// and needs to get updated
-func (manager *ListenerManager) handleCollisions() {
-
-	for _, player := range manager.players {
-		if !player.isAlive() {
-			if player.getLives() > 1 {
-				player.setAlive()
-				player.Lives--
-			} else {
-				// TODO : remove player
-			}
+	AllDead := true
+	for _, character := range manager.getPlayers() {
+		if character.Alive || character.Lives > 0 {
+			AllDead = false
 		}
 	}
+				
+	if (AllDead) {
+		for _, listener := range manager.listeners {
+			listener.WriteEndGame(world)
+			shutdown();
+		}
+	}
+	
+	for _, listener := range manager.listeners {
+		go listener.Write(world)
+	}
+}
+func shutdown() {
+	time.Sleep(time.Second)
+	os.Exit(0)
 }
 
 // print is used to print all players that have been in a collision

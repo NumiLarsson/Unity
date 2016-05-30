@@ -101,7 +101,6 @@ func (session *session) loop() {
 			// Calculate collisions
 			session.world.collisionManager()
 			
-			// BROADCAST TO CLIENTS
 			/*var list []int
 			for _, ass := range session.world.Asteroids {
 				list = append(list, ass.ID)
@@ -109,13 +108,9 @@ func (session *session) loop() {
 
 			//fmt.Println("SES:", session.world.Asteroids)
 			//fmt.Println("SES:", list)
+			
+			// BROADCAST TO CLIENTS
 			session.listenerManager.sendToClient(session.world)
-
-			//session.world.Players[0].fakeMovePlayer()
-			//Faking player movement so that I have something to draw
-
-			//Empty world {}, something is going wrong.
-			//session.world.players jsons fine, but world just doesn't
 
 			session.write.asteroids <- Data{"session.tick", ok}
 			session.write.players <- Data{"session.tick", ok}
