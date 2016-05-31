@@ -131,7 +131,7 @@ Träff med grupp för att finputsa kod samt skriva klart first draft av rapporen
 Putsat färdigt presentationen samt en del personlig inlärning av det som skall sägas under presentationen, ca 7h
 
 ##### Tisdag
-Slutredovisning samt putsande av slutrapport med peer reviews som underlag
+Slutredovisning samt putsande av slutrapport med peer reviews som underlag, ca 7h
 
 ##### Onsdag
 
