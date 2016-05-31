@@ -57,23 +57,23 @@ Arbetstid: 2h Börjat kolla på asteroidmanager
 ## Vecka 19
 
 ##### Måndag
-
+Arbetstid: 5h Skriver om kod till mer objektorienterad lösning
 ##### Tisdag
-
+Arbetstid: 4h slå ihop kod
 ##### Onsdag
 
 ##### Torsdag
 
 ##### Fredag
-
+Arbetstid: 5h Jobba med asteroid - kollision!!
 ## Vecka 20
 
 ##### Måndag
-
+Arbetstid: 4h Påbörja tester
 ##### Tisdag
-
+Arbetstid: 5h Mer tester + refaktorera små delar av koden
 ##### Onsdag
-
+Arbetstid: 6h Första förberedelse för presentation, tester, kodskrivande!
 ##### Torsdag
 
 ##### Fredag
@@ -81,11 +81,11 @@ Arbetstid: 2h Börjat kolla på asteroidmanager
 ## Vecka 21
 
 ##### Måndag
-
+Arbetstid: 4h Admin, småfix med kod, sista tester, milstole förberedelse
 ##### Tisdag
-
+Arbetstid: 1.5 h presentation
 ##### Onsdag
-
+Arbetstid: 8h Rapport
 ##### Torsdag
 
 ##### Fredag
@@ -93,9 +93,9 @@ Arbetstid: 2h Börjat kolla på asteroidmanager
 ## Vecka 22
 
 ##### Måndag
-
+Arbetstid: 5h Peer-review, förberedelse slut presentation
 ##### Tisdag
-
+Arbetstid: 6h admin + slutpresentation
 ##### Onsdag
 
 ##### Torsdag
