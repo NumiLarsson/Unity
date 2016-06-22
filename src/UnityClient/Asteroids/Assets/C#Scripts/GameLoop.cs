@@ -20,8 +20,8 @@ public class GameLoop : MonoBehaviour {
     public GameObject playerPrefab; //Prefab to clone to create new players
     public GameObject asteroidPrefab; //Prefab to clone to create new asteroids
 
-    GameObject tempPlayer; 
-    PlayerObject tempPlayObj; 
+    GameObject tempPlayer;
+    PlayerObject tempPlayObj;
     GameObject tempAsteroid;
     //Just some temporary objects, no reason these are global anymore, but we gain a little bit of 
     // performance. _I THINK_.
@@ -60,12 +60,6 @@ public class GameLoop : MonoBehaviour {
     public Text LivesTextPrefab;
     public Text PointsTextPrefab;
 
-    //Temp?;
-    public ShipControls shipScript;
-    //This is hardcoded in the FixedUpdate, but it should be specific to a player once we
-    //  start intrapolating player movement.
-    //Temp?
-
     // Use this for initialization
     /// <summary>
     ///     This function is called once when the client is started, it requests a new port from the server
@@ -78,45 +72,45 @@ public class GameLoop : MonoBehaviour {
     ///     FixedUpdate is called once every frame should've been drawn, without frame cap this is called
     ///     as often as possible.
     /// </summary>
-    void FixedUpdate() {
-        if (gameStage == 1 || gameStage == 2) {
-            if ( Time.time - 0.01f < lastMovement ) {
-                return; //100hz tickrate, otherwise json stacks on eachother
-            }
-            lastMovement = Time.time;
-            if ( Input.GetKey( KeyCode.A ) ) {
-                //West
-                playerMessage message = new playerMessage("Move", "West");
-                string jsonMessage = JsonMapper.ToJson(message);
-                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-                listenerSocket.Send( msg );
-                //Tell the server Move West
-            } else if ( Input.GetKey( KeyCode.D ) ) {
-                //East
-                playerMessage message = new playerMessage( "Move", "East" );
-                string jsonMessage = JsonMapper.ToJson(message);
-                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-                listenerSocket.Send( msg );
-                //Tell the server Move East
-            } else if ( Input.GetKey( KeyCode.W ) ) {
-                //North
-                playerMessage message = new playerMessage( "Move", "North" );
-                string jsonMessage = JsonMapper.ToJson(message);
-                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-                listenerSocket.Send( msg );
-                //Tell the server Move North
-            } else if ( Input.GetKey( KeyCode.S ) ) {
-                //South
-                playerMessage message = new playerMessage( "Move", "South" );
-                string jsonMessage = JsonMapper.ToJson(message);
-                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-                listenerSocket.Send( msg );
-                //Tell the server Move South
-            } else if ( Input.GetKey( KeyCode.Q ) ) {
-                playerMessage message = new playerMessage("Spawn", "Spawn");
-                string jsonMessage = JsonMapper.ToJson(message);
-                byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
-                listenerSocket.Send( msg );
+    void FixedUpdate () {
+        if ( Time.time - 0.05f > lastMovement ) {
+            if ( gameStage == 2 ) {
+                lastMovement = Time.time;
+                if ( Input.GetKey( KeyCode.A ) ) {
+                    //West
+                    playerMessage message = new playerMessage("Move", "West");
+                    string jsonMessage = JsonMapper.ToJson(message);
+                    byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                    listenerSocket.Send( msg );
+                    //Tell the server Move West
+                } else if ( Input.GetKey( KeyCode.D ) ) {
+                    //East
+                    playerMessage message = new playerMessage( "Move", "East" );
+                    string jsonMessage = JsonMapper.ToJson(message);
+                    byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                    listenerSocket.Send( msg );
+                    //Tell the server Move East
+                } else if ( Input.GetKey( KeyCode.W ) ) {
+                    //North
+                    playerMessage message = new playerMessage( "Move", "North" );
+                    string jsonMessage = JsonMapper.ToJson(message);
+                    byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                    listenerSocket.Send( msg );
+                    //Tell the server Move North
+                } else if ( Input.GetKey( KeyCode.S ) ) {
+                    //South
+                    playerMessage message = new playerMessage( "Move", "South" );
+                    string jsonMessage = JsonMapper.ToJson(message);
+                    byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                    listenerSocket.Send( msg );
+                    //Tell the server Move South
+                } else if ( Input.GetKey( KeyCode.Q ) ) {
+                    playerMessage message = new playerMessage("Spawn", "Spawn");
+                    string jsonMessage = JsonMapper.ToJson(message);
+                    byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+                    listenerSocket.Send( msg );
+                }
+                lastMovement = Time.time;
             }
         }
     }
@@ -131,14 +125,23 @@ public class GameLoop : MonoBehaviour {
         Destroy( inputField.gameObject );
         gameStage++;
     }
-   
+    
+    /// <summary>
+    /// We manually call this at the start of Update() to update all the GUI text, could probably get away with calling this every second frame if we run in to performance issues.
+    /// </summary>
     void UpdateGUI() {
+        //If the players array is null, skip this, otherwise it crashes.
         if (players != null ) {
+            //For every GameObject in all the currently registered Players.
             foreach (GameObject currPlay in players) {
+                //There's a possibility there's null objects in currPlay, so we have to check for that first.
                 if (currPlay != null && currPlay.name != playerName) {
+                    //Pick out the script responsible for the player, to make sure we get the right values.
                     PlayerObject tempScript = currPlay.GetComponent<PlayerObject>();
+                    //If the array with all players is created already.
                     if ( AllPlayerNames != null ) {
-                        bool isNotDrawn = true;
+                        bool isNotDrawn = true; // Is he drawn? Let's us check if he exists before we create a new one.
+                        //Loop through all the players in the text array.
                         for( int i = 0; i < AllPlayerNames.Count; i++ ) {
                             if (AllPlayerNames[i].text == tempScript.Name ) {
                                 AllPlayerLives[i].text = tempScript.Lives.ToString();
@@ -146,7 +149,10 @@ public class GameLoop : MonoBehaviour {
                                 isNotDrawn = false;
                             }
                         }
+                        //If he's not in the current array of players, create him!
                         if ( isNotDrawn ) {
+                            //Spawn a new GUIText from the prefab and fix all the variables we need to.
+                            //Do this 3 times, once for every field we need on the GUI.
                             Text nameText = Instantiate( NameTextPrefab );
                             nameText.transform.SetParent( testCanvas.transform, false );
                             nameText.text = tempScript.Name;
@@ -164,9 +170,12 @@ public class GameLoop : MonoBehaviour {
 
                         }
                     } else {
+                        //The list is null, so we need to create one.
                         AllPlayerNames = new List<Text>();
                         AllPlayerLives = new List<Text>();
                         AllPlayerPoints = new List<Text>();
+
+                        //After the list is created we know the player isn't in it, so we spawn it like above.
                         Text nameText = Instantiate( NameTextPrefab );
                         nameText.transform.SetParent( testCanvas.transform, false );
                         nameText.text = tempScript.Name;
@@ -185,9 +194,12 @@ public class GameLoop : MonoBehaviour {
                 }
             }
         }
+        //If the array exists, update the positions. This should be done once on startup only, but we ran out of time to fix that.
         if (AllPlayerNames != null ) {
             for (int i = 0; i < AllPlayerNames.Count; i++ ) {
+                //For all player GUI texts, if there's more than 4 we need to put some on the left.
                 if (i > 4) {
+                    //These are on the left of the screen.
                     AllPlayerNames[i].transform.position = new Vector3( -170, ( i%4 * 40 ) - 60 );
                     AllPlayerNames[i].alignment = TextAnchor.MiddleLeft;
                     AllPlayerLives[i].transform.position = new Vector3( -170, ( i%4 * 40 ) - 70 );
@@ -195,6 +207,7 @@ public class GameLoop : MonoBehaviour {
                     AllPlayerPoints[i].transform.position = new Vector3( -170, ( i%4 * 40 ) - 80 );
                     AllPlayerPoints[i].alignment = TextAnchor.MiddleLeft;
                 } else { 
+                    //These are on the right of the screen.
                     AllPlayerNames[i].transform.position = new Vector3( 60, (i * 40) - 60 );
                     AllPlayerLives[i].transform.position = new Vector3( 60, ( i * 40 ) - 70 );
                     AllPlayerPoints[i].transform.position = new Vector3( 60, ( i * 40 ) - 80 );
@@ -211,88 +224,97 @@ public class GameLoop : MonoBehaviour {
     void Update () {
         UpdateGUI();
         if (gameStage == 1) {
+            //First we need to connect to the server and request a port.
+            //Hardcoded IP addresses are the new black, so fashionable!
             ipAddress = IPAddress.Parse( "127.0.0.1" ); //"192.168.43.170" );//
             IPEndPoint serverIPEP = new IPEndPoint(ipAddress, 9000);
+            //Hardcoded port to 9000 too, only truely skilled coders hardcode stuff like that!
             int listenerPort = requestPort(serverIPEP); //Ask the server for a client specific port.
-            listenerIPEP = new IPEndPoint( ipAddress, listenerPort );
+            listenerIPEP = new IPEndPoint( ipAddress, listenerPort ); //Create an endpoint to the port we received
             listenerSocket.Connect( listenerIPEP );
             //Connect to the port specified by the server.
 
             //Send playername
             playerMessage message = new playerMessage("Name", playerName);
             string jsonMessage = JsonMapper.ToJson(message);
-            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage);
+            byte[] msg = Encoding.UTF8.GetBytes(jsonMessage); //UTF8 because that's golangs native.
             listenerSocket.Send( msg );
 
-            //Start the concurrent thread.
+            //Start the concurrent thread that we use to read data from the server.
             threadedUpdate = new ParallelUpdate( listenerSocket );
             Thread oThread = new Thread(new ThreadStart(threadedUpdate.threadedUpdate));
             oThread.Start();
 
-            //Is it ok? 
+            //Is it ok? Not yet implemented.
             /*
             int bytesReceived = listenerSocket.Receive( msg );
             string response = Encoding.UTF8.GetString( msg, 0, bytesReceived );
             if (response == "OK") {*/
+            //Right now we don't have time to implement ok on double names, but we deal with that anyway with ID, which is a server assigned number.
 
-            //Right now we don't have time to implement ok on double names, but we deal with that anyway with ID.
             players = new List<GameObject>();
             asteroids = new List<GameObject>();
+            //These are arrays we use to store all the gameobjects we spawn so that we can update them midgame.
             gameStage = 2;
+            //The startup is complete, so we move the gamestage up one.
             //} else {
               //  Debug.Log("Player name was not OK")
             //}
         }
 
 
-        //Make sure there's a world to look in to, otherwise it crashes.
+        //GameStage 2 is the stage where the game is played, every frame must update all the positions of
+        //Players and asteroids.
         if (gameStage == 2) {
             if (threadedUpdate.gameOver) {
+                //Check the parallel thread to make sure the game isn't over, before doing any actual work.
                 gameStage++;
                 return;
             }
+            //Make sure there's a world to look in to, otherwise it crashes, live is set to true when the 
+            //World is ready.
             if ( threadedUpdate.live ) {
                 World gameWorld = threadedUpdate.gameWorld;
-                //Read the latest world from the server, by accessing the thread and retreive that world.
+                //Read the latest world from the server, by accessing the thread class and retreive that world.
                 if (gameWorld.Players == null ) {
+                    //There are no connected players to the server, so wait to make sure we don't crash anything. Since the player isn't connected yet, there's no reason to draw anything, so we simply return.
                     return;
                 }
                 //For each player in the latest world from the thread.
                 foreach ( Player newPlayer in gameWorld.Players ) {
-                    bool isDrawn = false;
+                    bool isDrawn = false; //set default to false to make sure we draw it if it's not drawn.z
                     //For each player in the old World.
                     foreach ( GameObject oldPlayer in players ) {
+                        //players may contain null objects, so make sure they're safe to use.
                         if (oldPlayer != null ) {
                             if ( oldPlayer.name == newPlayer.Name ) {
                                 if ( newPlayer.Name == playerName ) {
+                                    //If the names match, it's the same player, so simply update him                instead of spawning a new object.
                                     playerPoints = newPlayer.Points;
                                     playerLives = newPlayer.Lives;
                                     PointsText.text = prePointsText + playerPoints.ToString();
                                     LivesText.text = preLivesText + playerLives.ToString();
                                 }
                                 oldPlayer.SendMessage( "UpdateMe", newPlayer );
+                                //SendMessage seems to be the only way to update a currently living             GameObject with external data.
                                 isDrawn = true;
+                                //Make sure isDrawn is set to true so that we don't draw it again.
                             }
                         } 
                     }
                     //The player is not yet created, so create it
                     if ( !isDrawn ) {
+                        //The player isn't drawn yet, so make sure we draw him using the playerPrefab
                         tempPlayer = Instantiate( playerPrefab ) as GameObject;
-                        tempPlayObj = tempPlayer.GetComponent<PlayerObject>();
-                        this.tempPlayObj.SendMessage( "InitializeMe", newPlayer.Name );
-                        this.tempPlayObj.SendMessage( "UpdateMe", newPlayer );
+                        tempPlayObj = tempPlayer.GetComponent<PlayerObject>(); //Retreive the script.
+                        tempPlayObj.SendMessage( "InitializeMe", newPlayer.Name );
+                        tempPlayObj.SendMessage( "UpdateMe", newPlayer );
+                        //Send him important things he needs to know.
                         players.Add( tempPlayer );
+                        //Add it to the list of active players, otherwise we can't connect to him again.
                     }
                 }
-                //For each asteroid in the latest world from the thread.
-                /*
-                foreach ( GameObject oldAsteroid in asteroids) {
-                    if ( oldAsteroid != null ) {
-                        tempAsteroid = oldAsteroid;
-                        tempAsteroid.SendMessage( "FlagFalse" );
-                    }
-                }*/
-                //If the player is dead
+                //If the player is not in the game anymore, we need to remove him from it.
                 for ( int i = 0; i < players.Count; i++ ) {
                     int offset = 0;
                     tempPlayer = players[i];
@@ -315,8 +337,9 @@ public class GameLoop : MonoBehaviour {
                                 foreach ( GameObject oldAsteroid in asteroids ) {
                                     if ( oldAsteroid != null ) {
                                         if ( oldAsteroid.name == newAsteroid.ID.ToString() ) {
+                                            //.name is set to .ID.ToString(), so this will match on                         identical objects.
                                             oldAsteroid.SendMessage( "UpdateMe", newAsteroid );
-                                            isDrawn = true;
+                                            isDrawn = true; //Make sure we don't create a new object when                   it's already spawned.
                                         }
                                     }
                                 }
@@ -335,17 +358,22 @@ public class GameLoop : MonoBehaviour {
                 //If the asteroid is dead, remove it from the array of active asteroids.
                 for ( int i = 0; i < asteroids.Count; i++ ) {
                     int offset = 0;
-                    tempAsteroid = asteroids[i];
+                    tempAsteroid = asteroids[i]; //This didn't work otherwise, but fix please.
                     if ( tempAsteroid == null ) {
-                        asteroids.RemoveAt( i + offset );
+                        asteroids.RemoveAt( i + offset ); //Offset because if we remove multiple asteroids per frame, we would be removing further ahead in the array than we intend.
                         offset--;
                     }
                 }
             } 
         } else if ( gameStage > 2 ) {
-            NameText.text = "Winner: " + threadedUpdate.gameWorld.Players[0].Name;
-            LivesText.text = "With points: " + threadedUpdate.gameWorld.Players[0].Points;
+            //GameStage 3 means the game is over, provide info about the winner then shut down.
+            //The necessary information is provided by the parallel thread as below.
+            NameText.text = "Winner: " + threadedUpdate.winner.Name;
+            LivesText.text = "With points: " + threadedUpdate.winner.Points.ToString();
             PointsText.text = "You got: " + playerPoints + " points";
+            if ( Input.GetKey(KeyCode.Escape)) { //Exit the game if the user presses escape.
+                Application.Quit();
+            }
         }
     }
 
@@ -376,16 +404,11 @@ public class GameLoop : MonoBehaviour {
         public World gameWorld;
         public bool live = false;
         public bool gameOver = false;
+        public Player winner;
         private Socket socket { get; set; }
 
         public ParallelUpdate ( Socket socket ) {
             this.socket = socket;
-
-            byte[] message = new byte[8192];
-            int bytesReceived = socket.Receive(message);
-            string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
-            gameWorld = JsonMapper.ToObject<World>( jsonString );
-            live = true;
         }
 
         //This is the thread we actually spawn, it constantly updates the gameWorld for the main thread.
@@ -397,15 +420,17 @@ public class GameLoop : MonoBehaviour {
                 string jsonString = Encoding.UTF8.GetString( message, 0, bytesReceived );
 
                 //Convert to a C# object from Jsonstring.
-                GameState tempState = JsonMapper.ToObject<GameState>(jsonString);
-                if (tempState.State == "Running" ) {
-                    gameWorld = tempState.World;
+                GameState gameState = JsonMapper.ToObject<GameState>(jsonString);
+                if (gameState.State == "Running" ) {
+                    gameWorld = gameState.World;
                 } else {
                     gameOver = true;
-                    Thread.Sleep( 100 );
+                    winner = gameState.Winner;
+                    Thread.Sleep( 5000 );
                     socket.Shutdown( SocketShutdown.Both );
                     socket.Close();
                 }
+                live = true; //Make sure we tell the main process that we're ready to go!
                 //Copy the testWorld to the gameWorld.
             }
         }

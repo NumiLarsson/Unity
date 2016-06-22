@@ -77,16 +77,6 @@ func (listener *Listener) init(port int) {
 
 	listener.port = port
 
-	/*
-		This should be synchronized with listener?
-
-		listener.player = new(Player)
-		listener.player.Name = strconv.Itoa(port)
-		listener.player.X = 0
-		listener.player.Y = 0
-		listener.player.Lives = 3
-	*/
-
 	listener.writeBuffer = make(chan []byte, 60)
 	//1 second worth of writes
 }
@@ -106,7 +96,7 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	player.Name = strconv.Itoa(id);
 	player.worldX = xMax
 	player.worldY = yMax
-	player.step = 1;
+	player.step = 2;
 	player.randomSpawn(player.worldX, player.worldY)
 	player.size = 10
 
@@ -134,26 +124,43 @@ func (listener *Listener) clientDead() {
 func (listener *Listener) idleListener() {
 	clientChan := make(chan *playerMessage)
 	go listener.readFromClient(clientChan)
+
+
+	timeafter := time.After(time.Second * 10)
+			hasNotActed := false;
 	
 	for {
 		defer listener.clientDead()
-		//30 second timeout, after that he's dead to us!
-		timeout := time.After(time.Second * 90)
+		
 		select {
+		case <-timeafter:
+			fmt.Println("Timeout called");
+			if (hasNotActed) {
+				listener.clientDead()
+			} else {
+				timeafter = time.After(time.Second * 10)
+				hasNotActed = true;
+			}
 		case jsonWorld := <-listener.writeBuffer:
 			listener.conn.Write(jsonWorld)
 			//fmt.Println(string(jsonWorld))
 		case message := <- clientChan:
+			hasNotActed = false;
 			if ( !listener.player.newInput(message) ) {
 				//fmt.Println("Input from player was invalid")
 			} else {
 				//fmt.Println("Look at me:", listener.ID, listener.player.X, listener.player.Y);
 			}
-		//Remove player from the game if timeout
-		case <-timeout:
-			listener.player.Lives = 0
-			listener.player.Alive = false;
 		}
+		//Remove player from the game if timeout
+		// case :
+		// 	if !hasActed {
+		// 		listener.player.Lives = 0
+		// 		listener.player.Alive = false;	
+		// 	} else {
+				
+		// 	}
+		// }
 	}
 }
 
@@ -219,14 +226,15 @@ func (listener *Listener) WriteEndGame(world *World) {
 	currMax := 0;
 	currWinner := 0;
 	for variant, player := range world.Players {
-		if (player.Points > currMax) {
+		if (player.Points >= currMax) {
 			currMax = player.Points
 			currWinner = variant;
 		}
 	}
 	
+	fmt.Println("Currwinner:", currWinner)
 	endWorld := new(World)
-	endWorld.Players = append(endWorld.Players, world.Players[currWinner])
+	endWorld.Winner = world.Players[currWinner]
 	
 
 	jsonWorld, err := json.Marshal(endWorld)

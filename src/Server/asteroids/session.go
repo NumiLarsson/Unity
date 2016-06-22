@@ -11,6 +11,7 @@ import (
 type World struct {
 	width      int
 	height     int
+	Winner 		*Player
 	Players    []*Player
 	Asteroids  []*Asteroid
 	Collisions []*Collision

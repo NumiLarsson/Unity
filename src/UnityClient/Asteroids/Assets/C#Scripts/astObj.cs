@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 
+
+/// <summary>
+/// AstObj is the unity GameObject that we use to draw our asteroids, this because the asteroid can't be 
+/// properly spawned in Unity with new, meaning we need a special class for it.
+/// </summary>
 [System.Serializable]
 public class astObj : MonoBehaviour {
     //public asteroidObject astObj { get; set; }
