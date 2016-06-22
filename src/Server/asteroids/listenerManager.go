@@ -18,6 +18,12 @@ type ListenerManager struct {
 	output         chan Data
 	listeners      []*Listener
 	players        []*Player
+	lastWorld	   World
+}
+
+//Update is used to send all the changes in the world to the client, rather than sending the entire gamestate every frame.
+type Update struct {
+	World *World
 }
 
 // loop is where the listenerManager spinns waiting for tick message from session,
@@ -154,12 +160,14 @@ func (manager *ListenerManager) sendToClient(world *World) {
 			AllDead = false
 		}
 	}
-				
+		
 	if (AllDead) {
-		for _, listener := range manager.listeners {
-			listener.WriteEndGame(world)
-			shutdown();
+		fmt.Println("Range on manager:", len( manager.listeners))		
+		for variant, listener := range manager.listeners {
+			fmt.Println("Sendind endgame to:", variant)
+			go listener.WriteEndGame(world)			
 		}
+		shutdown();
 	}
 	
 	for _, listener := range manager.listeners {
@@ -167,7 +175,7 @@ func (manager *ListenerManager) sendToClient(world *World) {
 	}
 }
 func shutdown() {
-	time.Sleep(time.Second)
+	time.Sleep(time.Second * 4)
 	os.Exit(0)
 }
 
