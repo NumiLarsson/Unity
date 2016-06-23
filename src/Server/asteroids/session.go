@@ -5,9 +5,7 @@ import (
 	"time"
 )
 
-// World is a placeholder for the gameboard
-//type World int
-// TODO: CHANGE THIS
+// World is the struct we use to represent the game world object.
 type World struct {
 	width      int
 	height     int
@@ -18,6 +16,7 @@ type World struct {
 }
 
 // Collision holds the coordinates of a collision
+// TODO: Send this to clients to paint the pretty explosions!
 type Collision struct {
 	X int
 	Y int

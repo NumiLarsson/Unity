@@ -18,7 +18,10 @@ type Connection struct {
 	read  chan Data
 }
 
-// gameSession is a local copy of a session, to be used for handling where to connect new players
+// gameSession is a local copy of a session
+// We use this so that we have an array of all currently running sessions, which
+// we use when a new player wants to connect.
+// TODO: Implement session names and other information from it.
 type gameSession struct {
 	id int
 	*Connection
@@ -45,7 +48,9 @@ const ok = 200
 // inDebugMode used when running program with prints
 var inDebugMode = false
 
-// DebugPrint prints the argument string, used to have same output in complete program
+// DebugPrint prints the argument string, used throughout the program if you running it
+// with DebugMode. Allows us to easily track what's going on in the server and different
+// Sessions.
 func DebugPrint(str string) {
 
 	if inDebugMode {
@@ -75,6 +80,9 @@ func (conn *Connection) FlipConnection() *Connection {
 }
 
 // CreateFakeUser is a temporary/debug function to create a mock user
+// Not in use if not run in FakeMode.
+// The way the sessions currently are implemented means these only survive
+// until the listeners kick them out, which should be 10 seconds.
 func (server *Server) CreateFakeUser() chan Data {
 
 	fakeUser := make(chan Data)
@@ -132,9 +140,8 @@ func (server *Server) Listen(external chan Data) {
 
 }
 
-// TODO check this function, right now no call from listen to this one
-// acceptNewPlayers is used with a seperate go-routine waiting/ checking if any
-// new users want to connect
+// acceptNewPlayers is used with a seperate go-routine waiting for any
+// new users that want to connect
 func (server *Server) acceptNewPlayers(conn chan int) {
 
 	socket, err := CreateSocket(9000)
@@ -149,15 +156,15 @@ func (server *Server) acceptNewPlayers(conn chan int) {
 		}
 
 		conn <- 100
-		fmt.Println("Sent request to server")
+		DebugPrint("Sent request to server")
 		portData := <-conn
 		jsonPort, err := json.Marshal(&portData)
-
 		if err != nil {
 			panic(err)
 		}
+		
 		tcpConn.Write(jsonPort)
-
+		DebugPrint("Port received and written to client")
 		tcpConn.Close()
 	}
 }
@@ -193,7 +200,9 @@ func CreateServer(debugMode bool, inactivityLimit int) *Server {
 
 	/*
 		9001 because it allows us to count acceptNewPlayers
-		based on the ports, and also gives us 9000 as static server port
+		based on the ports, and also gives us 9000 as static server port which
+		the clients can use to be the first connection they make, asking for a 
+		port.
 	*/
 	server.nextPort = 9001
 

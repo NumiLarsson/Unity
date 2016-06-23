@@ -3,7 +3,6 @@ package asteroids
 import (
 	"fmt"
 	"math/rand"
-	//"math/rand"
 )
 
 // asteroidManager stores info regarding gameworlds boundaries, all asteroids etc.
@@ -86,13 +85,10 @@ func newAsteroidManager() *asteroidManager {
 
 }
 
-// init initiate the asteroid manager with hardcoded values TODO: input?
-// and sets channels to session and
+// init initiate the asteroid manager using the world size specified
+// and connects to session through channels.
+// TODO: Fix hardcoded maxRoids.
 func (manager *asteroidManager) init(sessionConn *Connection, height int, width int) {
-	// TODO fix hardcoded variables
-	//manager.xMax = 400
-	//manager.yMax = 225
-	//manager.maxRoids = 20
 	
 	manager.yMax = height
 	manager.xMax = width
@@ -123,48 +119,50 @@ func (manager *asteroidManager) shouldSpawn() bool {
 	r := rand.Intn(101)
 	scalar := 100 / manager.maxRoids
 
-
 	if r > manager.treshold && len(manager.asteroids) < manager.maxRoids {
+		//If threshold isn't reached and there's space for more asteroids.
 
+		//Adjust scalar for next time.
 		if len(manager.asteroids) > 0 {
 			manager.treshold = len(manager.asteroids) * scalar
 		} else {
 			manager.treshold = scalar
 		}
+		
+		//Return true to signal that an asteroid should spawn.
 		return true
 
 	}
 
+	//The if failed, so there shouldn't be another asteroid.
 	return false
 
 }
 
 // resumeAsteroids used to send "tick" to all asteroids
 func (manager *asteroidManager) resumeAsteroids() {
-
 	for _, asteroid := range manager.asteroids {
 		asteroid.input <- Data{"a.manager_tick", ok}
 	}
-
 }
 
 // handleCollisions used to check if any asteroid has been in a collision
 // or if it's out of bounds
 func (manager *asteroidManager) handleCollisions() {
 
-	var offset = 0
+	var offset = 0 //If we remove an asteroid from the array, all future 
+					//removals are offset by -1 per removal
 
-	var acopy = make([]*Asteroid, len(manager.asteroids))
-	copy(acopy, manager.asteroids)
+	var astcopy = make([]*Asteroid, len(manager.asteroids))
+	copy(astcopy, manager.asteroids)
 
-	for i, asteroid := range acopy {
+	for i, asteroid := range astcopy {
 
 		if !asteroid.isAlive() || !asteroid.inBounds(manager) {
 			manager.removeAsteroid(i + offset)
 			offset--
 		}
 	}
-
 }
 
 // getAsteroids return the array containing the current asteroids

@@ -57,8 +57,8 @@ func (world *World) playerCollision() {
 
 }
 
-// TODO is this function in use anymore?
-// isCollision checks if two objects are located at the same position
+// Legacy function no longer in use.
+// isCollision checks if two objects are located at the same position, but ignores size.
 func isCollision(x1 int, y1 int, x2 int, y2 int) bool {
 	return x1 == x2 && y1 == y2
 }
@@ -95,7 +95,7 @@ func (world *World) removeCollisions() {
 	world.Collisions = make([]*Collision, 0)
 }
 
-// print all players and asteroid that has collided
+// print all players and asteroids that has collided
 func (world *World) print() {
 	var deadPlayerIDs []int
 	var deadAsteroidIDs []int

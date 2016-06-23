@@ -21,7 +21,8 @@ type ListenerManager struct {
 	lastWorld	   World
 }
 
-//Update is used to send all the changes in the world to the client, rather than sending the entire gamestate every frame.
+//Update is used to send all the changes in the world to the client, 
+//rather than sending the entire gamestate every frame.
 type Update struct {
 	World *World
 }
@@ -40,11 +41,13 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 			if msg.action == "session.tick" {				
 				//manager.print()
 				for _, character := range manager.players {
+					//If the character is currently alive, award points
 					if character.Alive {
 						character.Points++;
 					}
 				}
 				// TODO: below correct way to use handle ??
+				//We should move this to use manager.listener.player positions instead.
 				manager.players = manager.collectPlayerPositions()
 				// Send update + world to players
 			}
@@ -60,6 +63,7 @@ func (manager *ListenerManager) loop(sessionConn *Connection, maxPlayers int, st
 	}
 }
 
+//Kill is used to terminate the listenerManager.
 func (manager *ListenerManager) kill() {
 
 	go func() {
@@ -84,6 +88,8 @@ func (manager *ListenerManager) init(sessionConn *Connection,
 	// TODO fix hardcoded variables
 	manager.xMax = 400
 	manager.yMax = 225
+	//World size in x = horizontal & y = longitude.
+	
 	manager.maxPlayers = maxPlayers
 	manager.nextID = 1
 	manager.currentPort = firstPort
@@ -123,12 +129,14 @@ func (manager *ListenerManager) getNextPort() int {
 	return manager.currentPort
 }
 
-// incrementCurrentPlayers increments currentPlayers
+// incrementCurrentPlayers increments currentPlayers in the manager.
+// This is a function so that we can use defer() in a better looking way.
 func (manager *ListenerManager) incrementCurrentPlayers() {
 	manager.currentPlayers++
 }
 
 // getNextID returns the id to be used and sets the next value
+//This is the alternative way to use defer(), but it's less readable.
 func (manager *ListenerManager) getNextID() int {
 	defer func() { manager.nextID++ }()
 	return manager.nextID
@@ -140,7 +148,7 @@ func (manager *ListenerManager) collectPlayerPositions() []*Player {
 	var playerList []*Player
 	for _, listener := range manager.listeners {
 
-		var player = listener.getPlayer()
+		player := listener.getPlayer()
 		playerList = append(playerList, player)
 	}
 

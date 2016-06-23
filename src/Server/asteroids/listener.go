@@ -31,6 +31,11 @@ type Player struct {
 	Points      int
 }
 
+//playerMessage is used to communicate with the clients, using specific strings to indicate different things
+//Mainly used in client responses to the server, for example:
+//Action:"Move", Value:"North"
+//Action:"Name", Value:"Myname"
+//Action:"Spawn", Value:""
 type playerMessage struct {
 	Action string
 	Value  string
@@ -217,8 +222,9 @@ func (listener *Listener) Write(world *World) {
 	listener.writeBuffer <- jsonWorld
 }
 
-//WriteEndGame is the last package sent (a couple of times) to the
+//WriteEndGame is the last package sent to the
 //Client to represent the game ending.
+//Only invoked when the game is completed.
 func (listener *Listener) WriteEndGame(world *World) {
 
 	endState := new(GameState)
