@@ -19,10 +19,9 @@ func TestListenerInit(t *testing.T) {
 	listener.init(8000)
 
 	if listener.port != 8000 {
-		t.Error("Listener.port is wrong! Expected: 9002, Got : ", listener.port)
+		t.Error("Listener.port is wrong! Expected: 8000, Got : ", listener.port)
 	}
-
-
+2
 }
 
 func TestPlayerInit(t *testing.T) {

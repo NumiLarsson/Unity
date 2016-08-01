@@ -1,15 +1,15 @@
 package asteroids
 
 import (
-	"encoding/json"
-	"fmt"
+	"encoding/json" //For easy transfer of data
+	"fmt"           //Output
 	"math/rand"
-	"net"
-	"strconv"
-	"time"
+	"net"     //streaming TCP sockets
+	"strconv" //Convert to and from strings
+	"time"    //Timeout for player inactivity
 )
 
-//GameState is used to represent the entire gamestate
+//GameState is used to tell the client what part of the game is currently running
 type GameState struct {
 	State string
 	World *World
@@ -17,18 +17,18 @@ type GameState struct {
 
 //Player is used to represent the players in the game world
 type Player struct {
-	worldX		int
-	worldY		int
-	step  		int
-	size  		int
-	Name  		string
-	ID    		int
-	X     		int
-	Y     		int
-	Lives 		int
-	Alive 		bool
-	Rotation	int
-	Points      int
+	worldX   int
+	worldY   int
+	step     int
+	size     int
+	Name     string
+	ID       int
+	X        int
+	Y        int
+	Lives    int
+	Alive    bool
+	Rotation int
+	Points   int
 }
 
 //playerMessage is used to communicate with the clients, using specific strings to indicate different things
@@ -44,8 +44,8 @@ type playerMessage struct {
 //Listener is responsible for a client each
 //Contains a tcp socket, with the specified port at creation
 type Listener struct {
-	worldX 		int
-	worldY		int
+	worldX      int
+	worldY      int
 	socket      net.Listener
 	ID          string
 	port        int
@@ -98,60 +98,61 @@ func (player *Player) init(id int, xMax int, yMax int) {
 	rand.Seed(seed)
 
 	//fmt.Println(seed)
-	player.Name = strconv.Itoa(id);
+	player.Name = strconv.Itoa(id)
 	player.worldX = xMax
 	player.worldY = yMax
-	player.step = 2;
+	player.step = 2
 	player.randomSpawn(player.worldX, player.worldY)
 	player.size = 10
 
 	player.Lives = 3 // updated
-	player.Alive = false;
+	player.Alive = false
 }
 
-// startUpListener
+// startUpListener simply initializes important things so that a client can connect.
 func (listener *Listener) startUpListener() {
 	var err error
 	listener.conn, err = listener.socket.Accept()
 	if err != nil {
 		panic(err)
 	}
-	listener.ID = "Hello World" 
+	listener.ID = "Hello World"
 
 	listener.idleListener()
 }
 
+//Kill the client.
 func (listener *Listener) clientDead() {
-	listener.player.Lives = 0;
-	listener.player.Alive = false;
+	listener.player.Lives = 0
+	listener.player.Alive = false
 }
 
+//"Paused" listener, waiting for either information to send to, or receive from, the player.
 func (listener *Listener) idleListener() {
 	clientChan := make(chan *playerMessage)
 	go listener.readFromClient(clientChan)
 
-
 	timeafter := time.After(time.Second * 10)
-			hasNotActed := false;
-	
+	hasNotActed := false
+
 	for {
 		defer listener.clientDead()
-		
+
 		select {
 		case <-timeafter:
-			fmt.Println("Timeout called");
-			if (hasNotActed) {
+			fmt.Println("Timeout called")
+			if hasNotActed {
 				listener.clientDead()
 			} else {
 				timeafter = time.After(time.Second * 10)
-				hasNotActed = true;
+				hasNotActed = true
 			}
 		case jsonWorld := <-listener.writeBuffer:
 			listener.conn.Write(jsonWorld)
 			//fmt.Println(string(jsonWorld))
-		case message := <- clientChan:
-			hasNotActed = false;
-			if ( !listener.player.newInput(message) ) {
+		case message := <-clientChan:
+			hasNotActed = false
+			if !listener.player.newInput(message) {
 				//fmt.Println("Input from player was invalid")
 			} else {
 				//fmt.Println("Look at me:", listener.ID, listener.player.X, listener.player.Y);
@@ -161,14 +162,15 @@ func (listener *Listener) idleListener() {
 		// case :
 		// 	if !hasActed {
 		// 		listener.player.Lives = 0
-		// 		listener.player.Alive = false;	
+		// 		listener.player.Alive = false;
 		// 	} else {
-				
+
 		// 	}
 		// }
 	}
 }
 
+//Constantly listening for input from the player, will send it through the provided channel as a *playerMessage
 func (listener *Listener) readFromClient(clientChan chan *playerMessage) {
 	defer listener.panicCatcher(clientChan)
 	for {
@@ -190,11 +192,11 @@ func (listener *Listener) readFromClient(clientChan chan *playerMessage) {
 func (listener *Listener) panicCatcher(clientChan chan *playerMessage) {
 	//fmt.Println(recover())
 	err := listener.conn.Close()
-	if (err != nil) {
+	if err != nil {
 		panic(err)
 	}
 	err = listener.socket.Close()
-	if (err != nil) {
+	if err != nil {
 		panic(err)
 	}
 	listener.socket, err = CreateSocket(listener.port)
@@ -208,10 +210,10 @@ func (listener *Listener) panicCatcher(clientChan chan *playerMessage) {
 	listener.readFromClient(clientChan)
 }
 
-//write writes game world to clients
+//write encodes the world to be sent to the clients, then queues it in the listener.
 func (listener *Listener) Write(world *World) {
-	
-	runningState := new(GameState) 
+
+	runningState := new(GameState)
 	runningState.State = "Running"
 	runningState.World = world
 	jsonWorld, err := json.Marshal(runningState)
@@ -229,19 +231,18 @@ func (listener *Listener) WriteEndGame(world *World) {
 
 	endState := new(GameState)
 	endState.State = "GameEnding"
-	currMax := 0;
-	currWinner := 0;
+	currMax := 0
+	currWinner := 0
 	for variant, player := range world.Players {
-		if (player.Points >= currMax) {
+		if player.Points >= currMax {
 			currMax = player.Points
-			currWinner = variant;
+			currWinner = variant
 		}
 	}
-	
+
 	fmt.Println("Currwinner:", currWinner)
 	endWorld := new(World)
 	endWorld.Winner = world.Players[currWinner]
-	
 
 	jsonWorld, err := json.Marshal(endWorld)
 	if err != nil {
@@ -278,45 +279,46 @@ func (player *Player) setAlive() {
 	player.Alive = true
 }
 
+//Validates a move the player is trying to do, if it's successfull returns true.
 func (player *Player) tryMove(value string) bool {
-	switch (value) {
+	switch value {
 	case "North": //North
-		if (player.Y + 1 > player.worldY) {
+		if player.Y+1 > player.worldY {
 			return false
-		} 
+		}
 		//Else
 		player.Y += player.step
-		player.Rotation = 0		
+		player.Rotation = 0
 		return true
-		
+
 	case "East": //East
-		if (player.X + 1 > player.worldX) {
+		if player.X+1 > player.worldX {
 			return false
-		} 
+		}
 		//Else
 		player.Rotation = 3
 		player.X += player.step
 		return true
-		
+
 	case "South": //South
-		if (player.Y < 0) {
+		if player.Y < 0 {
 			return false
-		} 
+		}
 		//Else
 		player.Rotation = 2
 		player.Y -= player.step
 		return true
-		
+
 	case "West": //West
-		if (player.X - 1 < 0) {
+		if player.X-1 < 0 {
 			return false
-		} 
+		}
 		//Else
 		player.Rotation = 1
 		player.X -= player.step
 		return true
 	}
-	return false;
+	return false
 }
 
 //newInput returns true if the input was valid.
@@ -326,18 +328,18 @@ func (player *Player) newInput(playMessage *playerMessage) bool {
 		return player.tryMove(playMessage.Value)
 	case "Name":
 		player.Name = playMessage.Value
-		return true;
+		return true
 	case "Spawn":
 		if player.Alive {
-			return false;
+			return false
 		}
 		if player.Lives > 0 {
 			player.Lives--
-			player.Alive = true;
+			player.Alive = true
 			fmt.Println("Respawning player", player.Name)
-			return true;
+			return true
 		}
-		return false;
+		return false
 	}
-	return false;
+	return false
 }
