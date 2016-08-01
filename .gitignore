@@ -63,3 +63,7 @@ _testmain.go
 *.test
 *.prof
 *#*
+# Builds
+*.apk
+*.unitypackage
+
